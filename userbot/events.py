@@ -70,7 +70,7 @@ def register(**args):
                 return
 
             if groups_only and not check.is_group:
-                await check.respond("`I don't think this is a group.`")
+                await check.respond("`Saya tidak yakin ini adalah grup.`")
                 return
 
             if check.via_bot_id and not insecure and check.out:
@@ -98,31 +98,31 @@ def register(**args):
                 if not disable_errors:
                     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
-                    text = "**USERBOT ERROR REPORT**\n"
-                    text += "Nothing is logged except the fact of error and date\n\n"
+                    text = "**LAPORAN KESALAHAN USERBOT**\n"
+                    text += "Tidak ada yang dicatat kecuali fakta kesalahan dan tanggal\n\n"
 
-                    ftext = "========== DISCLAIMER =========="
-                    ftext += "\nThis file uploaded ONLY here,"
-                    ftext += "\nwe logged only fact of error and date,"
-                    ftext += "\nwe respect your privacy,"
-                    ftext += "\nyou may not report this error if you've"
-                    ftext += "\nany confidential data here, no one will see your data\n"
-                    ftext += "================================\n\n"
-                    ftext += "--------BEGIN USERBOT TRACEBACK LOG--------\n"
-                    ftext += "\nDate: " + date
-                    ftext += "\nChat ID: " + str(check.chat_id)
-                    ftext += "\nSender ID: " + str(check.sender_id)
-                    ftext += "\n\nEvent Trigger:\n"
+                    ftext = "=================  PENOLAKAN  ================="
+                    ftext += "\nFile ini HANYA diunggah di sini,"
+                    ftext += "\nkami hanya mencatat fakta kesalahan dan tanggal,"
+                    ftext += "\nkami menghormati privasi Anda,"
+                    ftext += "\nAnda tidak dapat melaporkan kesalahan ini jika Anda punya"
+                    ftext += "\ndata rahasia apa pun di sini, tidak ada yang akan melihat data Anda\n"
+                    ftext += "===============================================\n\n"
+                    ftext += "========== MULAI MELACAK LOG USERBOT ==========\n"
+                    ftext += "\nTanggal : " + date
+                    ftext += "\nID Obrolan : " + str(check.chat_id)
+                    ftext += "\nID Pengirim : " + str(check.sender_id)
+                    ftext += "\n\nPemicu Peristiwa :\n"
                     ftext += str(check.text)
-                    ftext += "\n\nTraceback info:\n"
+                    ftext += "\n\nInfo Pelacakan :\n"
                     ftext += str(format_exc())
-                    ftext += "\n\nError text:\n"
+                    ftext += "\n\nTeks Kesalahan :\n"
                     ftext += str(sys.exc_info()[1])
-                    ftext += "\n\n--------END USERBOT TRACEBACK LOG--------"
+                    ftext += "\n\n========== AKHIR MELACAK LOG USERBOT =========="
 
                     command = "git log --pretty=format:\"%an: %s\" -10"
 
-                    ftext += "\n\n\nLast 10 commits:\n"
+                    ftext += "\n\n\n10 komit terakhir : \n"
 
                     process = await asyncsubshell(command,
                                                   stdout=asyncsub.PIPE,
@@ -138,8 +138,8 @@ def register(**args):
 
                     if LOGSPAMMER:
                         await check.respond(
-                            "`Sorry, my userbot has crashed.\
-                        \nThe error logs are stored in the userbot's log chat.`"
+                            "`Maaf, bot saya ngadat.`\n"
+                            "`Kesalahan disimpan dalam obrolan log Userbot.`"
                         )
 
                         log = codecs.open("error.txt", "r", encoding="utf-8")
@@ -154,7 +154,7 @@ def register(**args):
                             .get("key")
                         )
                         url = f"https://nekobin.com/raw/{key}"
-                        anu = f"{text}Pasted to: [Nekobin]({url})"
+                        anu = f"{text}Ditempel ke : [Nekobin]({url})"
 
                         await check.client.send_file(send_to,
                                                      "error.txt",

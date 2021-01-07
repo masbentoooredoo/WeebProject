@@ -13,9 +13,9 @@ from userbot import LOGS, bot
 from userbot.modules import ALL_MODULES
 
 
-INVALID_PH = '\nERROR: The Phone No. entered is INVALID' \
-             '\n Tip: Use Country Code along with number.' \
-             '\n or check your phone number and try again !'
+INVALID_PH = '\nKESALAHAN : Nomor telepon yang dimasukkan TIDAK VALID' \
+             '\n Tip : Gunakan kode negara bersama dengan nomor.' \
+             '\n atau periksa nomor telepon Anda dan coba lagi!'
 
 try:
     bot.start()
@@ -26,7 +26,7 @@ except PhoneNumberInvalidError:
 for module_name in ALL_MODULES:
     imported_module = import_module("userbot.modules." + module_name)
 
-LOGS.info("You are running WeebProject Userbot")
+LOGS.info("Anda menjalankan WeebProject Userbot")
 
 if len(argv) not in (1, 3, 4):
     bot.disconnect()
