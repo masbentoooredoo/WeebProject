@@ -68,7 +68,7 @@ async def device_info(request):
     elif textx:
         device = textx.text
     else:
-        return await request.edit("`Gunakan .device [nama kode] / [model]`")
+        return await request.edit("`Gunakan .device <codename> / <model>`")
     try:
         found = get(DEVICES_DATA).json()[device]
     except KeyError:
@@ -100,7 +100,7 @@ async def codename_info(request):
         brand = textx.text.split(" ")[0]
         device = " ".join(textx.text.split(" ")[1:])
     else:
-        return await request.edit("`Gunakan .codename [merek] [perangkat]`")
+        return await request.edit("`Gunakan .codename <brand> <device>`")
     found = [
         i
         for i in get(DEVICES_DATA).json()
@@ -244,7 +244,7 @@ async def devices_specifications(request):
         brand = textx.text.split(" ")[0]
         device = " ".join(textx.text.split(" ")[1:])
     else:
-        return await request.edit("`Gunakan .specs [merek] [perangkat]`")
+        return await request.edit("`Gunakan .specs <brand> <device>`")
     all_brands = (
         BeautifulSoup(
             get("https://www.devicespecifications.com/en/brand-more").content, "lxml"
@@ -301,7 +301,7 @@ async def twrp(request):
     elif textx:
         device = textx.text.split(" ")[0]
     else:
-        return await request.edit("`Gunakan .twrp [nama kode]`")
+        return await request.edit("`Gunakan .twrp <codename>`")
     url = get(f"https://dl.twrp.me/{device}/")
     if url.status_code == 404:
         reply = f"`Tidak dapat menemukan unduhan twrp untuk {device}!`\n"
