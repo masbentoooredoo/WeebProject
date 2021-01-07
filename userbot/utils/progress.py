@@ -51,10 +51,10 @@ async def progress(
             round(percentage, 2))
         tmp = (
             f"{progress_str}\n"
-            f"`{humanbytes(current)} dari {humanbytes(total)}"
+            f"`{humanbytes(current)} of {humanbytes(total)}"
             f" @ {humanbytes(speed)}`\n"
-            f"`Perkiraan` -> {time_formatter(eta)}\n"
-            f"`Durasi` -> {time_formatter(elapsed_time)}"
+            f"`ETA` -> {time_formatter(eta)}\n"
+            f"`Duration` -> {time_formatter(elapsed_time)}"
         )
         await event.edit(f"`{prog_type}`\n\n"
                          f"`Status`\n{tmp}")
