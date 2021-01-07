@@ -1,5 +1,4 @@
-# WeebProject Userbot
-
+<h1 align="center">WeebProject Userbot</h1>
 <p align="center">
     <a href="https://app.codacy.com/gh/BianSepang/WeebProject/dashboard"> <img src="https://img.shields.io/codacy/grade/a723cb464d5a4d25be3152b5d71de82d?color=blue&logo=codacy&style=flat-square" alt="Codacy" /></a><br>
     <a href="https://github.com/BianSepang/WeebProject/stargazers"> <img src="https://img.shields.io/github/stars/BianSepang/WeebProject?logo=github&style=flat-square" alt="Stars" /></a>
@@ -24,24 +23,22 @@
     I will be rolling on the floor laughing at you.
 /**
 ```
+<p align="center">A modular Telegram Userbot running on Python3 with sqlalchemy database.</p>
+<p align="center">Based on <a href="https://github.com/adekmaulana/ProjectBish">ProjectBish</a> Userbot</p>
 
-A modular Telegram Userbot running on Python3 with sqlalchemy database. 
+<h2 align="center">Host</h2>
+<p align="center">Click this button below to Deploy to Heroku</p>
+<p align="center"><a href="https://heroku.com/deploy?template=https://github.com/masbentoooredoo/WeebProject/tree/master"> <img src="https://www.herokucdn.com/deploy/button.png" alt="Deploy to Heroku"/></a></p>
 
-based on [ProjectBish](https://github.com/adekmaulana/ProjectBish) Userbot
- 
- ## Host
-Click this button below to Deploy to Heroku
-<p align="center"><a href="https://heroku.com/deploy?template=https://github.com/BianSepang/WeebProject/tree/master"> <img src="https://www.herokucdn.com/deploy/button.png" alt="Deploy to Heroku"/></a></p>
+<h2 align="center">Credits</h2>
+<p align="left">• <a href="https://github.com/adekmaulana">Adek Maulana</a> - ProjectBish</p>
+<p align="left">• <a href="https://github.com/keselekpermen69">Mr. Miss</a> - UserButt</p>
+<p align="left">• <a href="https://github.com/MoveAngel">Move Angel</a> - One4uBot</p>
+<p align="left">• <a href="https://github.com/aidilaryanto">Aidil Aryanto</a> - ProjectDils</p>
+<p align="left">• <a href="https://github.com/alfianandaa">Alfianandaa</a> - ProjectAlf</p>
+<p align="left">• <a href="https://github.com/GengKapak">GengKapak</a> - DCLXVI</p>
+<p align="left">• <a href="https://github.com/BianSepang">BianSepang</a> - WeebProject</p>
+<p align="left">• and <a href="https://github.com/BianSepang/WeebProject/graphs/contributors">Everyone</a> that makes this userbot awesome.</p>
 
-## Credits
-* [Adek Maulana](https://github.com/adekmaulana) - ProjectBish
-* [Mr. Miss](https://github.com/keselekpermen69) - UserButt
-* [Move Angel](https://github.com/MoveAngel) - One4uBot
-* [Aidil Aryanto](https://github.com/aidilaryanto) - ProjectDils
-* [Alfianandaa](https://github.com/alfianandaa) - ProjectAlf
-* [GengKapak](https://github.com/GengKapak) - DCLXVI
-
-and [everyone](https://github.com/BianSepang/WeebProject/graphs/contributors) that makes this userbot awesome :D
-
-## License
-Licensed under [Raphielscape Public License](https://github.com/BianSepang/WeebProject/blob/master/LICENSE) - Version 1.d, February 2020
+<h2 align="center">License</h2>
+<h4 align="center"><a href="https://github.com/BianSepang/WeebProject/blob/master/LICENSE">Raphielscape Public License</a> - Version 1.d, February 2020</h4>
