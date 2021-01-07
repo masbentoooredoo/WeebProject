@@ -146,9 +146,9 @@ async def trump(event):
         if event.is_reply and not reply_to_id.media:
             text = reply_to_id.message
         else:
-            await event.edit("`Send you text to trump so he can tweet.`")
+            await event.edit("`Kirim teks Anda ke trump sehingga dia bisa tweet.`")
             return
-    await event.edit("`Requesting trump to tweet...`")
+    await event.edit("`Meminta trump untuk menge-tweet...`")
     text = deEmojify(text)
     img = await trumptweet(text)
     await event.client.send_file(event.chat_id, img, reply_to=reply_to_id)
@@ -159,7 +159,7 @@ async def trump(event):
 @register(outgoing=True, pattern=r"^\.ph(?: |$)(.*)")
 async def phcomment(event):
     try:
-        await event.edit("`Processing..`")
+        await event.edit("`Sedang memproses...`")
         text = event.pattern_match.group(1)
         reply = await event.get_reply_message()
         if reply:
@@ -180,7 +180,7 @@ async def phcomment(event):
                 name = user.first_name
             text = text
         else:
-            return await event.edit("`Give text..`")
+            return await event.edit("`Berikan teks...`")
         try:
             photo = await event.client.download_profile_photo(
                 user.id,
@@ -192,7 +192,7 @@ async def phcomment(event):
             uplded = "https://telegra.ph/file/7d110cd944d54f72bcc84.jpg"
     except BaseException as e:
         await purge()
-        return await event.edit(f"`Error: {e}`")
+        return await event.edit(f"**Kesalahan** : `{e}`")
     img = await phss(uplded, text, name)
     try:
         await event.client.send_file(
@@ -202,7 +202,7 @@ async def phcomment(event):
         )
     except BaseException:
         await purge()
-        return await event.edit("`Reply message has no text!`")
+        return await event.edit("`Pesan balasan tidak memiliki teks!`")
     await event.delete()
     await purge()
 
@@ -218,9 +218,9 @@ async def qg(event):
         if event.is_reply and not reply_to_id.media:
             text = reply_to_id.message
         else:
-            await event.edit("`Send you text to @QoryGore so he can tweet.`")
+            await event.edit("`Kirim teks Anda ke`  **@QoryGore**  `agar dia bisa tweet.`")
             return
-    await event.edit("`Requesting QoryGore to tweet...`")
+    await event.edit("`Meminta QoryGore untuk menge-tweet...`")
     text = deEmojify(text)
     img = await qorygore(text)
     await event.client.send_file(event.chat_id, img, reply_to=reply_to_id)
@@ -239,9 +239,9 @@ async def cmm(event):
         if event.is_reply and not reply_to_id.media:
             text = reply_to_id.message
         else:
-            await event.edit("`Give text for to write on banner!`")
+            await event.edit("`Berikan teks untuk ditulis di spanduk!`")
             return
-    await event.edit("`Your banner is under creation wait a sec...`")
+    await event.edit("`Spanduk Anda sedang dalam pembuatan\nTunggu sebentar...`")
     text = deEmojify(text)
     img = await changemymind(text)
     await event.client.send_file(event.chat_id, img, reply_to=reply_to_id)
@@ -260,9 +260,9 @@ async def kanna(event):
         if event.is_reply and not reply_to_id.media:
             text = reply_to_id.message
         else:
-            await event.edit("`What should kanna write give text!`")
+            await event.edit("`Apa yang harus`  **kanna**  `tulis?`\n`Berikan teks!`")
             return
-    await event.edit("`Kanna is writing your text...`")
+    await event.edit("`Kanna sedang menulis teks...`")
     text = deEmojify(text)
     img = await kannagen(text)
     await event.client.send_file(event.chat_id, img, reply_to=reply_to_id)
@@ -282,16 +282,16 @@ async def tweet(event):
             if not reply_to_id.media:
                 text = reply_to_id.message
             else:
-                await event.edit("`What should i tweet? Give your username and tweet!`")
+                await event.edit("`Apa yang harus saya tweet?`\n`Berikan nama pengguna dan tweet Anda!`")
                 return
         else:
-            await event.edit("What should i tweet? Give your username and tweet!`")
+            await event.edit("`Apa yang harus saya tweet?`\n`Berikan nama pengguna dan tweet Anda!`")
             return
     if "." in text:
         username, text = text.split(".")
     else:
-        await event.edit("`What should i tweet? Give your username and tweet!`")
-    await event.edit(f"`Requesting {username} to tweet...`")
+        await event.edit("`Apa yang harus saya tweet?`\n`Berikan nama pengguna dan tweet Anda!`")
+    await event.edit(f"`Meminta {username} untuk menge-tweet...`")
     text = deEmojify(text)
     img = await tweets(text, username)
     await event.client.send_file(event.chat_id, img, reply_to=reply_to_id)
@@ -301,17 +301,17 @@ async def tweet(event):
 
 CMD_HELP.update(
     {
-        "nekobot": ">`.tweet` <username>.<tweet>"
-        "\nUsage: Create tweet with custom username.\n\n"
-        ">`.trump` <tweet>"
-        "\nUsage: Create tweet for Donald Trump.\n\n"
-        ">`.qg` <tweet>"
-        "\nUsage: Create tweet for `@QoryGore`.\n\n"
-        ">`.cmm` <text>"
-        "\nUsage: Create banner for Change My Mind.\n\n"
-        ">`.kanna` <text>"
-        "\nUsage: Kanna is writing your text.\n\n"
-        ">`.ph` <text/reply with or w/o text>"
-        "\nUsage: writing comment on p*rnhub XD"
+        "nekobot": "`.tweet [nama pengguna].[tweet]`"
+        "\n➥  Buat tweet dengan nama pengguna khusus."
+        "\n\n`.trump [tweet]`"
+        "\n➥  Buat tweet untuk Donald Trump."
+        "\n\n`.qg [tweet]`"
+        "\n➥  Buat tweet untuk **@QoryGore**."
+        "\n\n`.cmm [teks]`"
+        "\n➥  Buat spanduk untuk “Change My Mind”."
+        "\n\n`.kanna [teks]`"
+        "\n➥  Kanna sedang menulis teks Anda."
+        "\n\n`.ph [balas dengan teks/tanpa teks]`"
+        "\n➥  Menulis komentar di p*rnhub XD."
     }
 )

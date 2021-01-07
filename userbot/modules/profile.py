@@ -22,16 +22,16 @@ from userbot import CMD_HELP, bot
 from userbot.events import register
 
 # ====================== CONSTANT ===============================
-INVALID_MEDIA = "```The extension of the media entity is invalid.```"
-PP_CHANGED = "```Profile picture changed successfully.```"
-PP_TOO_SMOL = "```This image is too small, use a bigger image.```"
-PP_ERROR = "```Failure occured while processing image.```"
+INVALID_MEDIA = "`Ekstensi entitas media tidak valid.`"
+PP_CHANGED = "`Foto profil berhasil diubah.`"
+PP_TOO_SMOL = "`Gambar ini terlalu kecil, gunakan gambar yang lebih besar.`"
+PP_ERROR = "`Kegagalan terjadi saat memproses gambar.`"
 
-BIO_SUCCESS = "```Successfully edited Bio.```"
+BIO_SUCCESS = "`Bio berhasil diubah.`"
 
-NAME_OK = "```Your name was succesfully changed.```"
-USERNAME_SUCCESS = "```Your username was succesfully changed.```"
-USERNAME_TAKEN = "```This username is already taken.```"
+NAME_OK = "`Nama Anda berhasil diubah.`"
+USERNAME_SUCCESS = "`Nama pengguna Anda berhasil diubah.`"
+USERNAME_TAKEN = "`Nama pengguna ini sudah dipakai.`"
 # ===============================================================
 
 
@@ -117,7 +117,7 @@ async def count(event):
     bc = 0
     b = 0
     result = ""
-    await event.edit("`Processing..`")
+    await event.edit("`Sedang memproses...`")
     dialogs = await bot.get_dialogs(limit=None, ignore_migrated=True)
     for d in dialogs:
         currrent_entity = d.entity
@@ -136,11 +136,11 @@ async def count(event):
         else:
             print(d)
 
-    result += f"`Users:`\t**{u}**\n"
-    result += f"`Groups:`\t**{g}**\n"
-    result += f"`Super Groups:`\t**{c}**\n"
-    result += f"`Channels:`\t**{bc}**\n"
-    result += f"`Bots:`\t**{b}**"
+    result += f"**Pengguna** : \t**{u}**\n"
+    result += f"**Grup** : \t**{g}**\n"
+    result += f"**Super Grup** : \t**{c}**\n"
+    result += f"**Saluran** : \t**{bc}**\n"
+    result += f"**Bot** : \t**{b}**"
 
     await event.edit(result)
 
@@ -169,24 +169,24 @@ async def remove_profilepic(delpfp):
             )
         )
     await delpfp.client(DeletePhotosRequest(id=input_photos))
-    await delpfp.edit(f"`Successfully deleted {len(input_photos)} profile picture(s).`")
+    await delpfp.edit(f"`Berhasil menghapus`  **{len(input_photos)}**  `foto profil.`")
 
 
 CMD_HELP.update(
     {
-        "profile": ">`.username <new_username>`"
-        "\nUsage: Changes your Telegram username."
-        "\n\n>`.name <firstname>` or >`.name <firstname> <lastname>`"
-        "\nUsage: Changes your Telegram name.(First and last name will get split by the first space)"
-        "\n\n>`.setpfp`"
-        "\nUsage: Reply with .setpfp to an image to change your Telegram profie picture."
-        "\n\n>`.setbio <new_bio>`"
-        "\nUsage: Changes your Telegram bio."
-        "\n\n>`.delpfp` or >`.delpfp <number>/<all>`"
-        "\nUsage: Deletes your Telegram profile picture(s)."
-        "\n\n>`.reserved`"
-        "\nUsage: Shows usernames reserved by you."
-        "\n\n>`.count`"
-        "\nUsage: Counts your groups, chats, bots etc..."
+        "profile": "`.username [nama pengguna baru]`"
+        "\n➥  Ubah nama pengguna Telegram Anda."
+        "\n\n`.name [nama depan]`\n`.name [nama depan] [nama belakang]`"
+        "\n➥  Ubah nama Telegram Anda. (Nama depan dan belakang akan dipisahkan oleh spasi pertama)"
+        "\n\n`.setpfp`"
+        "\n➥  Balas dengan `.setpfp` ke gambar untuk mengubah gambar profil telegram Anda."
+        "\n\n`.setbio [bio baru]`"
+        "\n➥  Ubah bio Telegram Anda."
+        "\n\n`.delpfp` / `.delpfp [nomor/semua]`"
+        "\n➥  Menghapus gambar profil Telegram Anda."
+        "\n\n`.reserved`"
+        "\n➥  Menampilkan nama pengguna yang dipesan oleh Anda."
+        "\n\n`.count`"
+        "\n➥  Menghitung grup Anda, obrolan, bot, dll..."
     }
 )

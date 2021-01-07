@@ -19,7 +19,7 @@ async def tmeme(e):
         await e.respond(letter)
     if BOTLOG:
         await e.client.send_message(
-            BOTLOG_CHATID, "#CSPAM\n" "TSpam was executed successfully"
+            BOTLOG_CHATID, "#CSPAM\n" "TSpam berhasil dijalankan."
         )
 
 
@@ -32,7 +32,7 @@ async def t_meme(e):
         await e.respond(word)
     if BOTLOG:
         await e.client.send_message(
-            BOTLOG_CHATID, "#WSPAM\n" "WSpam was executed successfully"
+            BOTLOG_CHATID, "#WSPAM\n" "WSpam berhasil dijalankan."
         )
 
 
@@ -44,7 +44,7 @@ async def spammers(e):
     await asyncio.wait([e.respond(spam_message) for i in range(counter)])
     if BOTLOG:
         await e.client.send_message(
-            BOTLOG_CHATID, "#SPAM\n" "Spam was executed successfully"
+            BOTLOG_CHATID, "#SPAM\n" "Spam berhasil dijalankan."
         )
 
 
@@ -59,7 +59,7 @@ async def tiny_pic_spam(e):
         await e.client.send_file(e.chat_id, link)
     if BOTLOG:
         await e.client.send_message(
-            BOTLOG_CHATID, "#PICSPAM\n" "PicSpam was executed successfully"
+            BOTLOG_CHATID, "#PICSPAM\n" "Spam gambar berhasil dijalankan."
         )
 
 
@@ -74,22 +74,22 @@ async def spammer(e):
         await sleep(spamDelay)
     if BOTLOG:
         await e.client.send_message(
-            BOTLOG_CHATID, "#DelaySPAM\n" "DelaySpam was executed successfully"
+            BOTLOG_CHATID, "#DELAYSPAM\n" "Spam tunda berhasil dijalankan."
         )
 
 
 CMD_HELP.update(
     {
-        "spam": ">`.cspam <text>`"
-        "\nUsage: Spam the text letter by letter."
-        "\n\n>`.spam <count> <text>`"
-        "\nUsage: Floods text in the chat !!"
-        "\n\n>`.wspam <text>`"
-        "\nUsage: Spam the text word by word."
-        "\n\n>`.picspam <count> <link to image/gif>`"
-        "\nUsage: As if text spam was not enough !!"
-        "\n\n>`.delayspam <delay> <count> <text>`"
-        "\nUsage: .bigspam but with custom delay."
-        "\n\n\nNOTE : Spam at your own risk !!"
+        "spam": "`.cspam [teks]`"
+        "\n➥  Spam teks huruf demi huruf."
+        "\n\n`.spam [jumlah] [teks]`"
+        "\n➥  Spam teks dalam obrolan sebanyak [jumlah]."
+        "\n\n`.wspam [teks]`"
+        "\n➥  Spam teks kata demi kata."
+        "\n\n`.picspam [jumlah] [tautan ke gambar/gif]`"
+        "\n➥  Spam gambar/gif.\nMemangnya spam teks tidak cukup?!"
+        "\n\n`.delayspam [tunda] [jumlah] [teks]`"
+        "\n➥  Spam besar tetapi dengan penundaan khusus."
+        "\n\n**CATATAN :** Resiko Anda tanggung sendiri...!!!"
     }
 )

@@ -22,7 +22,7 @@ from userbot.events import register
 async def who(event):
 
     await event.edit(
-        "`Sit tight while I steal some data from *Global Network Zone*...`"
+        "`Harap tunggu sementara saya mengambil beberapa data dari`  **Zona Jaringan Global**`...`"
     )
 
     if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
@@ -31,14 +31,14 @@ async def who(event):
     replied_user = await get_user(event)
     if replied_user is None:
         await event.edit(
-            "`This is anonymous admin in this group.\nCan't fetch the info`"
+            "`Ini adalah admin anonim dalam grup ini\nTidak dapat mengambil info`"
         )
         return
 
     try:
         photo, caption = await fetch_info(replied_user, event)
     except AttributeError:
-        await event.edit("`Could not fetch info of that user.`")
+        await event.edit("`Tidak dapat mengambil info dari orang ini.`")
         return
 
     message_id_to_reply = event.message.reply_to_msg_id
@@ -118,7 +118,7 @@ async def fetch_info(replied_user, event):
     try:
         dc_id, location = get_input_location(replied_user.profile_photo)
     except Exception as e:
-        dc_id = "Couldn't fetch DC ID!"
+        dc_id = "Tidak dapat mengambil ID DC!"
         str(e)
     common_chat = replied_user.common_chats_count
     username = replied_user.user.username
@@ -132,27 +132,27 @@ async def fetch_info(replied_user, event):
     first_name = (
         first_name.replace("\u2060", "")
         if first_name
-        else ("This User has no First Name")
+        else ("Orang ini tidak memiliki nama depan")
     )
     last_name = (
-        last_name.replace("\u2060", "") if last_name else ("This User has no Last Name")
+        last_name.replace("\u2060", "") if last_name else ("Orang ini tidak memiliki nama belakang")
     )
-    username = "@{}".format(username) if username else ("This User has no Username")
-    user_bio = "This User has no About" if not user_bio else user_bio
+    username = "@{}".format(username) if username else ("Orang ini tidak memiliki nama pengguna")
+    user_bio = "Orang ini tidak memiliki tentang" if not user_bio else user_bio
 
-    caption = "<b>USER INFO:</b>\n\n"
-    caption += f"First Name: {first_name}\n"
-    caption += f"Last Name: {last_name}\n"
-    caption += f"Username: {username}\n"
-    caption += f"Data Centre ID: {dc_id}\n"
-    caption += f"Number of Profile Pics: {replied_user_profile_photos_count}\n"
-    caption += f"Is Bot: {is_bot}\n"
-    caption += f"Is Restricted: {restricted}\n"
-    caption += f"Is Verified by Telegram: {verified}\n"
-    caption += f"ID: <code>{user_id}</code>\n\n"
-    caption += f"Bio: \n<code>{user_bio}</code>\n\n"
-    caption += f"Common Chats with this user: {common_chat}\n"
-    caption += f"Permanent Link To Profile: "
+    caption = "<b>INFO</b>\n\n"
+    caption += f"<b>Nama Depan</b> : {first_name}\n"
+    caption += f"<b>Nama Belakang</b> : {last_name}\n"
+    caption += f"<b>Nama Pengguna</b> : {username}\n"
+    caption += f"<b>ID Pusat Data</b> : {dc_id}\n"
+    caption += f"<b>Jumlah Foto Profil</b> : {replied_user_profile_photos_count}\n"
+    caption += f"<b>Apakah Bot</b> : {is_bot}\n"
+    caption += f"<b>Apakah Dibatasi</b> : {restricted}\n"
+    caption += f"<b>Diverifikasi oleh Telegram</b> : {verified}\n"
+    caption += f"<b>ID</b> : <code>{user_id}</code>\n\n"
+    caption += f"<b>BIO</b> \n<code>{user_bio}</code>\n\n"
+    caption += f"<b>Obrolan Umum dengan Pengguna</b> : {common_chat}\n"
+    caption += f"<b>Tautan Permanan ke Profil</b> : "
     caption += f'<a href="tg://user?id={user_id}">{first_name}</a>'
 
     return photo, caption
@@ -160,7 +160,7 @@ async def fetch_info(replied_user, event):
 
 CMD_HELP.update(
     {
-        "whois": ">`.whois <username> or reply to someones text with .whois`"
-        "\nUsage: Gets info of an user."
+        "whois": "`.whois [nama pengguna/balas pesan]`"
+        "\n➥  Dapatkan info seseorang."
     }
 )

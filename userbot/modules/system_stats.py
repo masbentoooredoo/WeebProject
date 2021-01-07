@@ -5,6 +5,10 @@
 #
 """ Userbot module for getting information about the server. """
 
+import platform
+import shutil
+import sys
+import time
 from asyncio import create_subprocess_exec as asyncrunapp
 from asyncio.subprocess import PIPE as asyncPIPE
 from os import remove
@@ -15,13 +19,42 @@ from git import Repo
 from telethon import version
 from telethon.errors.rpcerrorlist import MediaEmptyError
 
-from userbot import ALIVE_LOGO, ALIVE_NAME, CMD_HELP, bot
+from userbot import ALIVE_LOGO, ALIVE_NAME, CMD_HELP, HEROKU_APP_NAME, StartTime, bot
 from userbot.events import register
 
 # ================= CONSTANT =================
 DEFAULTUSER = str(ALIVE_NAME) if ALIVE_NAME else uname().node
 repo = Repo()
+modules = CMD_HELP
 # ============================================
+
+
+async def get_readable_time(seconds: int) -> str:
+    count = 0
+    up_time = ""
+    time_list = []
+    time_suffix_list = ["s", "m", "h", "days"]
+
+    while count < 4:
+        count += 1
+        if count < 3:
+            remainder, result = divmod(seconds, 60)
+        else:
+            remainder, result = divmod(seconds, 24)
+        if seconds == 0 and remainder == 0:
+            break
+        time_list.append(int(result))
+        seconds = int(remainder)
+
+    for x in range(len(time_list)):
+        time_list[x] = str(time_list[x]) + time_suffix_list[x]
+    if len(time_list) == 4:
+        up_time += time_list.pop() + ", "
+
+    time_list.reverse()
+    up_time += ":".join(time_list)
+
+    return up_time
 
 
 @register(outgoing=True, pattern=r"^\.sysd$")
@@ -41,7 +74,7 @@ async def sysdetails(sysd):
 
             await sysd.edit("`" + result + "`")
         except FileNotFoundError:
-            await sysd.edit("`Install neofetch first !!`")
+            await sysd.edit("`Instal neofetch terlebih dahulu!`")
 
 
 @register(outgoing=True, pattern=r"^\.botver$")
@@ -72,11 +105,11 @@ async def bot_ver(event):
             revout = str(stdout.decode().strip()) + str(stderr.decode().strip())
 
             await event.edit(
-                "`Userbot Version: " f"{verout}" "` \n" "`Revision: " f"{revout}" "`"
+                "**Versi Userbot** : " f"`{verout}" "` \n" "**Revisi** : " f"`{revout}" "`"
             )
         else:
             await event.edit(
-                "Shame that you don't have git, you're running - 'v1.beta.4' anyway!"
+                "Sayang sekali Anda tidak memiliki git, Anda tetap menjalankan “v1.beta.4”!"
             )
 
 
@@ -86,7 +119,7 @@ async def pipcheck(pip):
     if not pip.text[0].isalpha() and pip.text[0] not in ("/", "#", "@", "!"):
         pipmodule = pip.pattern_match.group(1)
         if pipmodule:
-            await pip.edit("`Searching . . .`")
+            await pip.edit("`Sedang mencari...`")
             pipc = await asyncrunapp(
                 "pip3",
                 "search",
@@ -100,7 +133,7 @@ async def pipcheck(pip):
 
             if pipout:
                 if len(pipout) > 4096:
-                    await pip.edit("`Output too large, sending as file`")
+                    await pip.edit("`Output terlalu besar, dikirim sebagai file`")
                     file = open("output.txt", "w+")
                     file.write(pipout)
                     file.close()
@@ -112,33 +145,35 @@ async def pipcheck(pip):
                     remove("output.txt")
                     return
                 await pip.edit(
-                    "**Query: **\n`"
+                    "**Pencarian** : \n`"
                     f"pip3 search {pipmodule}"
-                    "`\n**Result: **\n`"
+                    "`\n**Hasil** : \n`"
                     f"{pipout}"
                     "`"
                 )
             else:
                 await pip.edit(
-                    "**Query: **\n`"
+                    "**Pencarian** : \n`"
                     f"pip3 search {pipmodule}"
-                    "`\n**Result: **\n`No Result Returned/False`"
+                    "`\n**Hasil** : \n`Tidak ada hasil yang dikembalikan/salah`"
                 )
         else:
-            await pip.edit("`Use .help pip to see an example`")
+            await pip.edit("`Gunakan “.help pip” untuk melihat contoh`")
 
 
-@register(outgoing=True, pattern=r"^\.(alive|on)$")
+@register(outgoing=True, pattern=r"^\.alive$")
 async def amireallyalive(alive):
     """For .alive command, check if the bot is running."""
     logo = ALIVE_LOGO
+    uptime = await get_readable_time((time.time() - StartTime))
     output = (
-        f"`WeebProject` is running on `{repo.active_branch.name}`\n"
-        "`====================================`\n"
-        f"🐍 `Python         :` v{python_version()}\n"
-        f"⚙️ `Telethon       :` v{version.__version__}\n"
-        f"👤 `User           :` {DEFAULTUSER}\n"
-        "`====================================`\n"
+        f"❖  **WEEBPROJECT AKTIF - BERJALAN NORMAL**  ❖\n\n"
+        f"**⌯  Pengguna** : {DEFAULTUSER}\n"
+        f"**⌯  Versi Python** : `{python_version()}`\n"
+        f"**⌯  Versi Telethon** : `{version.__version__}`\n"
+        f"**⌯  Berjalan di** : `{repo.active_branch.name}`\n"
+        f"**⌯  Modul dimuat** : `{len(CMD_HELP)}`\n"
+        f"**⌯  Bot aktif sejak** : `{uptime}`\n"
     )
     if ALIVE_LOGO:
         try:
@@ -147,8 +182,8 @@ async def amireallyalive(alive):
             await alive.delete()
         except MediaEmptyError:
             await alive.edit(
-                output + "\n\n *`The provided logo is invalid."
-                "\nMake sure the link is directed to the logo picture`"
+                output + "\n\n`Logo yang diberikan tidak valid."
+                "\nPastikan tautan diarahkan ke gambar logo`."
             )
     else:
         await alive.edit(output)
@@ -158,12 +193,12 @@ async def amireallyalive(alive):
 async def amireallyaliveuser(username):
     """ For .aliveu command, change the username in the .alive command. """
     message = username.text
-    output = ".aliveu [new user without brackets] nor can it be empty"
+    output = ".aliveu [pengguna baru tanpa tanda kurung] juga tidak bisa kosong"
     if not (message == ".aliveu" or message[7:8] != " "):
         newuser = message[8:]
         global DEFAULTUSER
         DEFAULTUSER = newuser
-        output = "Successfully changed user to " + newuser + "!"
+        output = "`Berhasil mengubah pengguna menjadi` " + newuser + "!"
     await username.edit("`" f"{output}" "`")
 
 
@@ -172,19 +207,22 @@ async def amireallyalivereset(ureset):
     """ For .resetalive command, reset the username in the .alive command. """
     global DEFAULTUSER
     DEFAULTUSER = str(ALIVE_NAME) if ALIVE_NAME else uname().node
-    await ureset.edit("`" "Successfully reset user for alive!" "`")
+    await ureset.edit("`" "Berhasil menyetel ulang pengguna untuk alive!" "`")
 
 
 CMD_HELP.update(
     {
-        "sysd": ">`.sysd`" "\nUsage: Shows system information using neofetch.",
-        "botver": ">`.botver`" "\nUsage: Shows the userbot version.",
-        "pip": ">`.pip <module(s)>`" "\nUsage: Does a search of pip modules(s).",
-        "alive": ">`.alive`"
-        "\nUsage: Type .alive to see wether your bot is working or not."
-        "\n\n>`.aliveu <text>`"
-        "\nUsage: Changes the 'user' in alive to the text you want."
-        "\n\n>`.resetalive`"
-        "\nUsage: Resets the user to default.",
+        "sysd": "`.sysd`"
+        "\n➥  Menampilkan informasi sistem menggunakan neofetch.",
+        "botver": "`.botver`"
+        "\n➥  Menampilkan versi userbot.",
+        "pip": "`.pip [modul]`"
+        "\n➥  Melakukan pencarian modul pip.",
+        "alive": "`.alive`"
+        "\n➥  Melihat apakah bot Anda berfungsi atau tidak."
+        "\n\n`.aliveu [teks]`"
+        "\n➥  Mengubah “Pengguna” di `.alive` menjadi teks yang Anda inginkan."
+        "\n\n`.resetalive`"
+        "\n➥  Menyetel ulang “Pengguna” ke default.",
     }
 )

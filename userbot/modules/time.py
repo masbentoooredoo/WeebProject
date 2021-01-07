@@ -6,6 +6,9 @@
 """ Userbot module for getting the date
     and time of any country or the userbot server.  """
 
+
+import asyncio
+
 from datetime import datetime as dt
 
 from pytz import country_names as c_n
@@ -51,7 +54,7 @@ async def time_func(tdata):
     con = tdata.pattern_match.group(1).title()
     tz_num = tdata.pattern_match.group(2)
 
-    t_form = "%H:%M"
+    t_form = "%H:%M:%S"
     c_name = None
 
     if len(con) > 4:
@@ -65,10 +68,10 @@ async def time_func(tdata):
         tz_num = TZ_NUMBER
         timezones = await get_tz(COUNTRY)
     else:
-        return await tdata.edit(f"`It's`  **{dt.now().strftime(t_form)}**  `here.`")
+        return await tdata.edit(f"`Sekarang jam`  **{dt.now().strftime(t_form)}**")
 
     if not timezones:
-        return await tdata.edit("`Invaild country.`")
+        return await tdata.edit("`Negara tidak valid!`")
 
     if len(timezones) == 1:
         time_zone = timezones[0]
@@ -77,14 +80,14 @@ async def time_func(tdata):
             tz_num = int(tz_num)
             time_zone = timezones[tz_num - 1]
         else:
-            return_str = f"`{c_name} has multiple timezones:`\n\n"
+            return_str = f"`{c_name} memiliki banyak zona waktu :`\n\n"
 
             for i, item in enumerate(timezones):
                 return_str += f"`{i+1}. {item}`\n"
 
-            return_str += "\n`Choose one by typing the number "
-            return_str += "in the command.`\n"
-            return_str += f"`Example: .time {c_name} 2`"
+            return_str += "\n`Pilih salah satu dengan mengetik nomornya"
+            return_str += "\ndalam perintah.`\n"
+            return_str += f"`Contoh : .time {c_name} 2`"
 
             return await tdata.edit(return_str)
 
@@ -92,12 +95,14 @@ async def time_func(tdata):
 
     if c_name != COUNTRY:
         return await tdata.edit(
-            f"`It's`  **{dtnow}**  `in {c_name}({time_zone} timezone).`"
+            f"`Sekarang jam`  **{dtnow}**  `zona waktu di {c_name}({time_zone}).`"
         )
     elif COUNTRY:
         return await tdata.edit(
-            f"`It's`  **{dtnow}**  `here, in {COUNTRY}" f"({time_zone} timezone).`"
+            f"`Sekarang jam`  **{dtnow}**  `zona waktu di {COUNTRY}" f"({time_zone}).`"
         )
+        await asyncio.sleep(60)
+        await tdata.delete()
 
 
 @register(outgoing=True, pattern=r"^\.date(?: |$)(.*)(?<![0-9])(?: |$)([0-9]+)?")
@@ -110,7 +115,7 @@ async def date_func(dat):
     con = dat.pattern_match.group(1).title()
     tz_num = dat.pattern_match.group(2)
 
-    d_form = "%d/%m/%y - %A"
+    d_form = "%d-%m-%y - %A"
     c_name = ""
 
     if len(con) > 4:
@@ -124,10 +129,10 @@ async def date_func(dat):
         tz_num = TZ_NUMBER
         timezones = await get_tz(COUNTRY)
     else:
-        return await dat.edit(f"`It's`  **{dt.now().strftime(d_form)}**  `here.`")
+        return await dat.edit(f"`Sekarang`  **{dt.now().strftime(d_form)}**.")
 
     if not timezones:
-        return await dat.edit("`Invaild country.`")
+        return await dat.edit("`Negara tidak valid!`")
 
     if len(timezones) == 1:
         time_zone = timezones[0]
@@ -136,14 +141,14 @@ async def date_func(dat):
             tz_num = int(tz_num)
             time_zone = timezones[tz_num - 1]
         else:
-            return_str = f"`{c_name} has multiple timezones:`\n"
+            return_str = f"`{c_name} memiliki banyak zona waktu :`\n"
 
             for i, item in enumerate(timezones):
                 return_str += f"`{i+1}. {item}`\n"
 
-            return_str += "\n`Choose one by typing the number "
-            return_str += "in the command.`\n"
-            return_str += f"Example: .date {c_name} 2"
+            return_str += "\n`Pilih salah satu dengan mengetik nomornya"
+            return_str += "\ndalam perintah.`\n"
+            return_str += f"`Contoh : .date {c_name} 2`"
 
             return await dat.edit(return_str)
 
@@ -151,21 +156,23 @@ async def date_func(dat):
 
     if c_name != COUNTRY:
         return await dat.edit(
-            f"`It's`  **{dtnow}**  `in {c_name}({time_zone} timezone).`"
+            f"`Sekarang`  **{dtnow}**  `zona waktu di {c_name}({time_zone}).`"
         )
     elif COUNTRY:
         return await dat.edit(
-            f"`It's`  **{dtnow}**  `here, in {COUNTRY}" f"({time_zone} timezone).`"
+            f"`Sekarang`  **{dtnow}**  `zona waktu di {COUNTRY}" f"({time_zone}).`"
         )
+        await asyncio.sleep(60)
+        await dat.delete()
 
 
 CMD_HELP.update(
     {
-        "time": ">`.time <country name/code> <timezone number>`"
-        "\nUsage: Get the time of a country. If a country has "
-        "multiple timezones, it will list all of them and let you select one.",
-        "date": ">`.date <country name/code> <timezone number>`"
-        "\nUsage: Get the date of a country. If a country has "
-        "multiple timezones, it will list all of them and let you select one.",
+        "time": "`.time [kode/nama negara] [nomor zona waktu]`"
+        "\n➥  Dapatkan waktu sebuah negara. Jika suatu negara memiliki "
+        "beberapa zona waktu, itu akan mencantumkan semuanya dan silahkan Anda memilih salah satu.",
+        "date": "`.date [kode/nama negara] [nomor zona waktu]`"
+        "\n➥  Dapatkan tanggal sebuah negara. Jika suatu negara memiliki "
+        "beberapa zona waktu, itu akan mencantumkan semuanya dan silahkan Anda memilih salah satu.",
     }
 )

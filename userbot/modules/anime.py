@@ -82,9 +82,9 @@ def get_anime_manga(mal_id, search_type, _user_id):
         result = jikan.anime(mal_id)
         trailer = result["trailer_url"]
         if trailer:
-            LOL = f"<a href='{trailer}'>Trailer</a>"
+            LOL = f"<a href='{trailer}'>Cuplikan</a>"
         else:
-            LOL = "<code>No Trailer Available</code>"
+            LOL = "<code>Tidak ada cuplikan yang tersedia</code>"
         image = getBannerLink(mal_id)
         studio_string = ", ".join(
             studio_info["name"] for studio_info in result["studios"]
@@ -106,7 +106,7 @@ def get_anime_manga(mal_id, search_type, _user_id):
     alternative_names.extend(result["title_synonyms"])
     if alternative_names:
         alternative_names_string = ", ".join(alternative_names)
-        caption += f"\n<b>Also known as</b>: <code>{alternative_names_string}</code>"
+        caption += f"\n<b>Juga dikenal sebagai</b> : <code>{alternative_names_string}</code>"
     genre_string = ", ".join(genre_info["name"] for genre_info in result["genres"])
     if result["synopsis"] is not None:
         synopsis = result["synopsis"].split(" ", 60)
@@ -116,37 +116,37 @@ def get_anime_manga(mal_id, search_type, _user_id):
             pass
         synopsis_string = " ".join(synopsis) + "..."
     else:
-        synopsis_string = "Unknown"
+        synopsis_string = "Tidak diketahui"
     for entity in result:
         if result[entity] is None:
-            result[entity] = "Unknown"
+            result[entity] = "Tidak diketahui"
     if search_type == "anime_anime":
         caption += textwrap.dedent(
             f"""
-        🆎 <b>Type</b>: <code>{result['type']}</code>
-        📡 <b>Status</b>: <code>{result['status']}</code>
-        🎙️ <b>Aired</b>: <code>{result['aired']['string']}</code>
-        🔢 <b>Episodes</b>: <code>{result['episodes']}</code>
-        💯 <b>Score</b>: <code>{result['score']}</code>
-        🌐 <b>Premiered</b>: <code>{result['premiered']}</code>
-        ⌛ <b>Duration</b>: <code>{result['duration']}</code>
-        🎭 <b>Genres</b>: <code>{genre_string}</code>
-        🎙️ <b>Studios</b>: <code>{studio_string}</code>
-        💸 <b>Producers</b>: <code>{producer_string}</code>
-        🎬 <b>Trailer:</b> {LOL}
-        📖 <b>Synopsis</b>: <code>{synopsis_string}</code> <a href='{result['url']}'>Read More</a>
+        🆎 <b>Tipe</b> : <code>{result['type']}</code>
+        📡 <b>Status</b> : <code>{result['status']}</code>
+        🎙️ <b>Ditayangkan</b> : <code>{result['aired']['string']}</code>
+        🔢 <b>Episode</b> : <code>{result['episodes']}</code>
+        💯 <b>Skor</b> : <code>{result['score']}</code>
+        🌐 <b>Perdana</b> : <code>{result['premiered']}</code>
+        ⌛ <b>Durasi</b> : <code>{result['duration']}</code>
+        🎭 <b>Genre</b> : <code>{genre_string}</code>
+        🎙️ <b>Studio</b> : <code>{studio_string}</code>
+        💸 <b>Produser</b> : <code>{producer_string}</code>
+        🎬 <b>Cuplikan</b> : {LOL}
+        📖 <b>Ringkasan</b> : <code>{synopsis_string}</code> <a href='{result['url']}'>baca selengkapnya</a>
         """
         )
     elif search_type == "anime_manga":
         caption += textwrap.dedent(
             f"""
-        🆎 <b>Type</b>: <code>{result['type']}</code>
-        📡 <b>Status</b>: <code>{result['status']}</code>
-        🔢 <b>Volumes</b>: <code>{result['volumes']}</code>
-        📃 <b>Chapters</b>: <code>{result['chapters']}</code>
-        💯 <b>Score</b>: <code>{result['score']}</code>
-        🎭 <b>Genres</b>: <code>{genre_string}</code>
-        📖 <b>Synopsis</b>: <code>{synopsis_string}</code>
+        🆎 <b>Tipe</b> : <code>{result['type']}</code>
+        📡 <b>Status</b> : <code>{result['status']}</code>
+        🔢 <b>Volume</b> : <code>{result['volumes']}</code>
+        📃 <b>Bagian</b> : <code>{result['chapters']}</code>
+        💯 <b>Skor</b> : <code>{result['score']}</code>
+        🎭 <b>Genre</b> : <code>{genre_string}</code>
+        📖 <b>Ringkasan</b> : <code>{synopsis_string}</code>
         """
         )
     return caption, image
@@ -224,7 +224,7 @@ async def formatJSON(outData):
     jsonData = json.loads(outData)
     res = list(jsonData.keys())
     if "errors" in res:
-        msg += f"**Error** : `{jsonData['errors'][0]['message']}`"
+        msg += f"**Kesalahan** :  `{jsonData['errors'][0]['message']}`"
     else:
         jsonData = jsonData["data"]["Media"]
         if "bannerImage" in jsonData.keys():
@@ -234,15 +234,15 @@ async def formatJSON(outData):
         title = jsonData["title"]["romaji"]
         link = f"https://anilist.co/anime/{jsonData['id']}"
         msg += f"[{title}]({link})"
-        msg += f"\n\n**Type** : {jsonData['format']}"
-        msg += "\n**Genres** : "
+        msg += f"\n\n**Tipe** : {jsonData['format']}"
+        msg += "\n**Genre** : "
         for g in jsonData["genres"]:
             msg += g + " "
         msg += f"\n**Status** : {jsonData['status']}"
         msg += f"\n**Episode** : {jsonData['episodes']}"
-        msg += f"\n**Year** : {jsonData['startDate']['year']}"
-        msg += f"\n**Score** : {jsonData['averageScore']}"
-        msg += f"\n**Duration** : {jsonData['duration']} min\n\n"
+        msg += f"\n**Tahun** : {jsonData['startDate']['year']}"
+        msg += f"\n**Skor** : {jsonData['averageScore']}"
+        msg += f"\n**Durasi** : {jsonData['duration']} min\n\n"
         cat = f"{jsonData['description']}"
         msg += " __" + re.sub("<br>", "\n", cat) + "__"
 
@@ -263,25 +263,25 @@ async def anilist(event):
 async def anime(event):
     query = event.pattern_match.group(1)
     reply = await event.get_reply_message()
-    await event.edit("`Searching Anime...`")
+    await event.edit("`Mencari Anime...`")
     if query:
         pass
     elif reply:
         query = reply.text
     else:
-        await event.edit("`Bruh.. What I am supposed to search ?`")
+        await event.edit("`Apa yang harus saya cari?`")
         await asyncio.sleep(6)
         await event.delete()
         return
     try:
         res = jikan.search("anime", query)
     except Exception as err:
-        await event.edit(f"**Error:** \n`{err}`")
+        await event.edit(f"**Kesalahan** : \n`{err}`")
         return
     try:
         res = res.get("results")[0].get("mal_id")  # Grab first result
     except APIException:
-        await event.edit("`Error connecting to the API. Please try again!`")
+        await event.edit("`Kesalahan saat menghubungkan ke API.\nSilahkan coba lagi!`")
         return
     if res:
         anime = jikan.anime(res)
@@ -311,47 +311,47 @@ async def anime(event):
         image_url = anime.get("image_url")
         trailer = anime.get("trailer_url")
         if trailer:
-            bru = f"<a href='{trailer}'>Trailer</a>"
+            bru = f"<a href='{trailer}'>Cuplikan</a>"
         url = anime.get("url")
     else:
-        await event.edit("`No results Found!`")
+        await event.edit("`Tidak ada hasil yang ditemukan!`")
         return
-    rep = f"<b>{title}</b> - ({japanese})\n"
-    rep += f"<b>Type:</b> <code>{type}</code>\n"
-    rep += f"<b>Source:</b> <code>{source}</code>\n"
-    rep += f"<b>Status:</b> <code>{status}</code>\n"
-    rep += f"<b>Genres:</b> <code>{genres}</code>\n"
-    rep += f"<b>Episodes:</b> <code>{episodes}</code>\n"
-    rep += f"<b>Duration:</b> <code>{duration}</code>\n"
-    rep += f"<b>Score:</b> <code>{score}</code>\n"
-    rep += f"<b>Studio(s):</b> <code>{studios}</code>\n"
-    rep += f"<b>Premiered:</b> <code>{premiered}</code>\n"
-    rep += f"<b>Rating:</b> <code>{rating}</code>\n\n"
+    rep = f"<b>{title}</b> - <b>({japanese})</b>\n"
+    rep += f"<b>Tipe</b> : <code>{type}</code>\n"
+    rep += f"<b>Sumber</b> : <code>{source}</code>\n"
+    rep += f"<b>Status</b> : <code>{status}</code>\n"
+    rep += f"<b>Genre</b> : <code>{genres}</code>\n"
+    rep += f"<b>Episode</b> : <code>{episodes}</code>\n"
+    rep += f"<b>Durasi</b> : <code>{duration}</code>\n"
+    rep += f"<b>Skor</b> : <code>{score}</code>\n"
+    rep += f"<b>Studio</b> : <code>{studios}</code>\n"
+    rep += f"<b>Perdana</b> : <code>{premiered}</code>\n"
+    rep += f"<b>Peringkat</b> : <code>{rating}</code>\n\n"
     rep += f"<a href='{image_url}'>\u200c</a>"
-    rep += f"📖 <b>Synopsis</b>: <i>{synopsis}</i>\n"
-    rep += f'<b>Read More:</b> <a href="{url}">MyAnimeList</a>'
+    rep += f"📖 <b>Ringkasan</b> : <i>{synopsis}</i>\n"
+    rep += f'<b>Baca selengkapnya</b> : <a href="{url}">Daftar Anime</a>'
     await event.edit(rep, parse_mode="HTML", link_preview=False)
 
 
 @register(outgoing=True, pattern=r"^\.manga ?(.*)")
 async def manga(event):
     query = event.pattern_match.group(1)
-    await event.edit("`Searching Manga...`")
+    await event.edit("`Mencari Manga...`")
     if not query:
-        await event.edit("`Bruh.. Gib me Something to Search`")
+        await event.edit("`Apa yang harus saya cari?`")
         return
     res = ""
     manga = ""
     try:
         res = jikan.search("manga", query).get("results")[0].get("mal_id")
     except APIException:
-        await event.edit("`Error connecting to the API. Please try again!`")
+        await event.edit("`Kesalahan saat menghubungkan ke API.\nSilahkan coba lagi!`")
         return ""
     if res:
         try:
             manga = jikan.manga(res)
         except APIException:
-            await event.edit("`Error connecting to the API. Please try again!`")
+            await event.edit("`Kesalahan saat menghubungkan ke API.\nSilahkan coba lagi!`")
             return ""
         title = manga.get("title")
         japanese = manga.get("title_japanese")
@@ -368,16 +368,16 @@ async def manga(event):
         synopsis = manga.get("synopsis")
         image = manga.get("image_url")
         url = manga.get("url")
-        rep = f"<b>{title} ({japanese})</b>\n"
-        rep += f"<b>Type:</b> <code>{type}</code>\n"
-        rep += f"<b>Status:</b> <code>{status}</code>\n"
-        rep += f"<b>Genres:</b> <code>{genres}</code>\n"
-        rep += f"<b>Score:</b> <code>{score}</code>\n"
-        rep += f"<b>Volumes:</b> <code>{volumes}</code>\n"
-        rep += f"<b>Chapters:</b> <code>{chapters}</code>\n\n"
+        rep = f"<b>{title}</b> - <b>({japanese})</b>\n"
+        rep += f"<b>Tipe</b> : <code>{type}</code>\n"
+        rep += f"<b>Status</b> : <code>{status}</code>\n"
+        rep += f"<b>Genre</b> : <code>{genres}</code>\n"
+        rep += f"<b>Skor</b> : <code>{score}</code>\n"
+        rep += f"<b>Volume</b> : <code>{volumes}</code>\n"
+        rep += f"<b>Bagian</b> : <code>{chapters}</code>\n\n"
         rep += f"<a href='{image}'>\u200c</a>"
-        rep += f"📖 <b>Synopsis</b>: <i>{synopsis}</i>\n"
-        rep += f'<b>Read More:</b> <a href="{url}">MyAnimeList</a>'
+        rep += f"📖 <b>Ringkasan</b> : <i>{synopsis}</i>\n"
+        rep += f'<b>Baca selengkapnya</b> : <a href="{url}">Daftar Anime</a>'
         await event.edit(rep, parse_mode="HTML", link_preview=False)
 
 
@@ -391,7 +391,7 @@ async def site_search(event):
     elif message:
         search_query = message.text
     else:
-        await event.edit("`Uuf Bro.. Gib something to Search`")
+        await event.edit("`Apa yang harus saya cari?`")
         return
 
     if site == "kaizoku":
@@ -401,14 +401,14 @@ async def site_search(event):
         search_result = soup.find_all("h2", {"class": "post-title"})
 
         if search_result:
-            result = f"<a href='{search_url}'>Click Here For More Results</a> <b>of</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>AnimeKaizoku</code>: \n\n"
+            result = f"Klik <a href='{search_url}'>disini</a> untuk hasil lainnya dari  <b>{html.escape(search_query)}</b>  di  <b>AnimeKaizoku</b> : \n\n"
             for entry in search_result:
                 post_link = entry.a["href"]
                 post_name = html.escape(entry.text.strip())
                 result += f"• <a href='{post_link}'>{post_name}</a>\n"
                 await event.edit(result, parse_mode="HTML")
         else:
-            result = f"<b>No result found for</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>AnimeKaizoku</code>"
+            result = f"Tidak ada hasil yang ditemukan untuk  <b>{html.escape(search_query)}</b>  di  <b>AnimeKaizoku</b>"
             await event.edit(result, parse_mode="HTML")
 
     elif site == "kayo":
@@ -417,11 +417,11 @@ async def site_search(event):
         soup = bs4.BeautifulSoup(html_text, "html.parser")
         search_result = soup.find_all("h2", {"class": "title"})
 
-        result = f"<a href='{search_url}'>Click Here For More Results</a> <b>of</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>AnimeKayo</code>: \n\n"
+        result = f"Klik <a href='{search_url}'>disini</a> untuk hasil lainnya dari  <b>{html.escape(search_query)}</b>  di  <b>AnimeKayo</b> : \n\n"
         for entry in search_result:
 
             if entry.text.strip() == "Nothing Found":
-                result = f"<b>No result found for</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>AnimeKayo</code>"
+                result = f"Tidak ada hasil yang ditemukan untuk  <b>{html.escape(search_query)}</b>  di  <b>AnimeKayo</b>"
                 break
 
             post_link = entry.a["href"]
@@ -439,13 +439,13 @@ async def character(event):
     elif message:
         search_query = message.text
     else:
-        await event.edit("Format: `.char <character name>`")
+        await event.edit("`Gunakan .char [nama karakter]`")
         return
 
     try:
         search_result = jikan.search("character", search_query)
     except APIException:
-        await event.edit("`Character not found.`")
+        await event.edit("`Karakter tidak ditemukan!`")
         return
     first_mal_id = search_result["results"][0]["mal_id"]
     character = jikan.character(first_mal_id)
@@ -457,7 +457,7 @@ async def character(event):
 
     if character["nicknames"]:
         nicknames_string = ", ".join(character["nicknames"])
-        caption += f"\n**Nicknames** : `{nicknames_string}`"
+        caption += f"\n**Nama panggilan** : `{nicknames_string}`"
     about = character["about"].split(" ", 60)
     try:
         about.pop(60)
@@ -467,9 +467,9 @@ async def character(event):
     mal_url = search_result["results"][0]["url"]
     for entity in character:
         if character[entity] is None:
-            character[entity] = "Unknown"
-    caption += f"\n🔰**Extracted Character Data**🔰\n\n{about_string}"
-    caption += f" [Read More]({mal_url})..."
+            character[entity] = "Tidak diketahui"
+    caption += f"\n🔰**Data Karakter yang Diekstrak**🔰\n\n{about_string}"
+    caption += f" [Baca selengkapnya...]({mal_url})"
     await event.delete()
     await event.client.send_file(
         event.chat_id,
@@ -481,13 +481,13 @@ async def character(event):
 
 @register(outgoing=True, pattern=r"^\.upcoming ?(.*)")
 async def upcoming(message):
-    rep = "<b>Upcoming anime</b>\n"
+    rep = "<b>Anime yang akan datang</b>\n\n"
     later = jikan.season_later()
     anime = later.get("anime")
     for new in anime:
         name = new.get("title")
         url = new.get("url")
-        rep += f"• <a href='{url}'>{name}</a>\n"
+        rep += f"• <a href='{url}'>{name}</a> \n"
         if len(rep) > 1000:
             break
         await message.edit(rep, parse_mode="html")
@@ -502,24 +502,24 @@ async def get_anime(message):
             query = await message.get_reply_message().text
         else:
             await message.reply(
-                "You gave nothing to search. (｡ì _ í｡)\n `Usage: .scanime <anime name>`"
+                "`Anda tidak memberikan apapun untuk dicari.\nGunakan .scanime [nama anime]`"
             )
             return
     except Exception as err:
-        await message.edit(f"**Encountered an Unknown Exception**: \n{err}")
+        await message.edit(f"`Menemukan pengecualian yang tidak diketahui :` \n{err}")
         return
 
-    p_rm = await message.reply("`Searching Anime...`")
+    p_rm = await message.reply("`Mencari Anime...`")
     f_mal_id = ""
     try:
         jikan = jikanpy.AioJikan()
         search_res = await jikan.search("anime", query)
         f_mal_id = search_res["results"][0]["mal_id"]
     except IndexError:
-        await p_rm.edit(f"No Results Found for {query}")
+        await p_rm.edit(f"`Tidak ada hasil yang ditemukan untuk`  **{query}**")
         return
     except Exception as err:
-        await p_rm.edit(f"**Encountered an Unknown Exception**: \n{err}")
+        await p_rm.edit(f"`Menemukan pengecualian yang tidak diketahui :` \n{err}")
         return
 
     results_ = await jikan.anime(f_mal_id)
@@ -577,21 +577,21 @@ async def get_anime(message):
     # Build synopsis telegraph post
     html_enc = ""
     html_enc += f"<img src = '{telegraph_poster}' title = {anime_title}/>"
-    html_enc += "<br><b>» Synopsis: </b></br>"
+    html_enc += "<br><b>• Ringkasan : </b></br>"
     html_enc += f"<br><em>{synopsis}</em></br>"
     synopsis_link = post_to_telegraph(anime_title, html_enc)
 
     # Build captions:
-    captions = f"""📺  `{anime_title}` - `{eng_title}` - `{jap_title}`
-**🎭 Genre:** `{genress_md}`
-**🆎 Type:** `{type_}`
-**🔢 Episodes:** `{episodes}`
-**📡 Status:** `{status}`
-**🔞 Rating:** `{rating}`
-**💯 Score:** `{score}`
-[📖 Synopsis]({synopsis_link})
-[🎬 Trailer]({trailer_link})
-[📚 More Info]({mal_dir_link})
+    captions = f"""📺  **{anime_title}** - **{eng_title}** - **{jap_title}**
+**🎭 Genre :** `{genress_md}`
+**🆎 Tipe :** `{type_}`
+**🔢 Episode :** `{episodes}`
+**📡 Status :** `{status}`
+**🔞 Peringkat :** `{rating}`
+**💯 Skor :** `{score}`
+[📖 Ringkasan]({synopsis_link})
+[🎬 Cuplikan]({trailer_link})
+[📚 Info selengkapnya]({mal_dir_link})
 """
 
     await p_rm.delete()
@@ -602,7 +602,7 @@ async def get_anime(message):
 async def manga(message):
     search_query = message.pattern_match.group(1)
     await message.get_reply_message()
-    await message.edit("`Searching Manga..`")
+    await message.edit("`Mencari Manga...`")
     jikan = jikanpy.jikan.Jikan()
     search_result = jikan.search("manga", search_query)
     first_mal_id = search_result["results"][0]["mal_id"]
@@ -617,7 +617,7 @@ async def manga(message):
 async def anime(message):
     search_query = message.pattern_match.group(1)
     await message.get_reply_message()
-    await message.edit("`Searching Anime..`")
+    await message.edit("`Mencari Anime...`")
     jikan = jikanpy.jikan.Jikan()
     search_result = jikan.search("anime", search_query)
     first_mal_id = search_result["results"][0]["mal_id"]
@@ -641,11 +641,11 @@ async def whatanime(e):
         r = await e.get_reply_message()
         media = getattr(r, "media", None)
     if not media:
-        await e.edit("`Media required`")
+        await e.edit("`Dibutuhkan media`")
         return
     ig = is_gif(media) or is_video(media)
     if not is_image(media) and not ig:
-        await e.edit("`Media must be an image or gif or video`")
+        await e.edit("`Media harus berupa gambar, gif atau video`")
         return
     filename = "file.jpg"
     if not ig and isinstance(media, MessageMediaDocument):
@@ -654,9 +654,9 @@ async def whatanime(e):
             if isinstance(i, DocumentAttributeFilename):
                 filename = i.file_name
                 break
-    await e.edit("`Downloading image..`")
+    await e.edit("`Mengunduh gambar...`")
     content = await e.client.download_media(media, bytes, thumb=-1 if ig else None)
-    await e.edit("`Searching for result..`")
+    await e.edit("`Mencari hasil...`")
     file = memory_file(filename, content)
     async with aiohttp.ClientSession() as session:
         url = "https://trace.moe/api/search"
@@ -664,7 +664,7 @@ async def whatanime(e):
             resp0 = await raw_resp0.text()
         js0 = json.loads(resp0)["docs"]
         if not js0:
-            await e.edit("`No results found.`")
+            await e.edit("`Tidak ada hasil yang ditemukan.`")
             return
         js0 = js0[0]
         text = f'<b>{html.escape(js0["title_romaji"])}'
@@ -672,11 +672,11 @@ async def whatanime(e):
             text += f' ({html.escape(js0["title_native"])})'
         text += "</b>\n"
         if js0["episode"]:
-            text += f'<b>Episode:</b> {html.escape(str(js0["episode"]))}\n'
+            text += f'<b>Episode :</b> {html.escape(str(js0["episode"]))}\n'
         percent = round(js0["similarity"] * 100, 2)
-        text += f"<b>Similarity:</b> {percent}%\n"
+        text += f"<b>Kesamaan :</b> {percent}%\n"
         dt = pendulum.from_timestamp(js0["at"])
-        text += f"<b>At:</b> {html.escape(dt.to_time_string())}"
+        text += f"<b>Di :</b> {html.escape(dt.to_time_string())}"
         await e.edit(text, parse_mode="html")
         dt0 = pendulum.from_timestamp(js0["from"])
         dt1 = pendulum.from_timestamp(js0["to"])
@@ -695,7 +695,7 @@ async def whatanime(e):
         try:
             await e.reply(ctext, file=file, parse_mode="html")
         except FilePartsInvalidError:
-            await e.reply("`Cannot send preview.`")
+            await e.reply("`Tidak dapat mengirim pratinjau.`")
 
 
 def memory_file(name=None, contents=None, *, bytes=True):
@@ -720,23 +720,23 @@ def is_gif(file):
 
 CMD_HELP.update(
     {
-        "anime": ">`.anilist` **<anime>**"
-        "\nUsage: Get anime information from anilist."
-        "\n\n>`.anime` **<anime>**"
-        "\nUsage: Returns with Anime information."
-        "\n\n>`.manga` **<manga name>**"
-        "\nUsage: Returns with the Manga information."
-        "\n\n>`.akaizoku` or `.akayo` **<anime name>**"
-        "\nUsage: Returns with the Anime Download link."
-        "\n\n>`.char` **<character name>**"
-        "\nUsage: Return with character information."
-        "\n\n>`.upcoming`"
-        "\nUsage: Returns with Upcoming Anime information."
-        "\n\n>`.scanime` **<anime>** or `.sanime` **<anime>**"
-        "\nUsage: Search anime."
-        "\n\n>`.smanga` **<manga>**"
-        "\nUsage: Search manga."
-        "\n\n>`.whatanime` **Reply to a Picture of an Anime Scene.**"
-        "\nUsage: Find anime from media file."
+        "anime": "`.anilist [anime]`"
+        "\n➥  Dapatkan informasi anime."
+        "\n\n`.anime [anime]`"
+        "\n➥  Dapatkan informasi Anime."
+        "\n\n`.manga [nama manga]`"
+        "\n➥  Dapatkan informasi Manga."
+        "\n\n`.akaizoku/.akayo [nama anime]`"
+        "\n➥  Dapatkan tautan unduhan Anime."
+        "\n\n`.char [nama karakter]`"
+        "\n➥  Dapatkan informasi karakter."
+        "\n\n`.upcoming`"
+        "\n➥  Dapatkan informasi Anime Mendatang."
+        "\n\n`.scanime` / `.sanime [anime]`"
+        "\n➥  Mencari anime."
+        "\n\n`.smanga [manga]`"
+        "\n➥  Mencari manga."
+        "\n\n`.whatanime [balas gambar adegan anime]`"
+        "\n➥  Temukan anime dari file media."
     }
 )

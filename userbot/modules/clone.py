@@ -26,24 +26,24 @@ async def clone(cloner):
         input_ = cloner.pattern_match.group(1)
 
     if not input_:
-        await cloner.edit("`Please reply to user or input username`")
+        await cloner.edit("`Harap balas ke pungguna atau masukkan nama pengguna`")
         await asyncio.sleep(5)
         await cloner.delete()
         return
 
-    await cloner.edit("`Cloning...`")
+    await cloner.edit("`Kloning...`")
 
     try:
         user = await cloner.client(GetFullUserRequest(input_))
     except ValueError:
-        await cloner.edit("`Invalid username!`")
+        await cloner.edit("`Nama pengguna tidak valid!`")
         await asyncio.sleep(2)
         await cloner.delete()
         return
     me = await cloner.client.get_me()
 
     if USER_DATA or os.path.exists(PHOTO):
-        await cloner.edit("`First revert!`")
+        await cloner.edit("`Kembalikan dulu!`")
         await asyncio.sleep(2)
         await cloner.delete()
         return
@@ -63,7 +63,7 @@ async def clone(cloner):
         )
     )
     if not user.profile_photo:
-        await cloner.edit("`User not have profile photo, cloned name and bio...`")
+        await cloner.edit("`Pengguna tidak memiliki foto profil.\nKloning nama dan bio...`")
         await asyncio.sleep(5)
         await cloner.delete()
         return
@@ -71,7 +71,7 @@ async def clone(cloner):
     await cloner.client(
         UploadProfilePhotoRequest(file=await cloner.client.upload_file(PHOTO))
     )
-    await cloner.edit("`Profile is successfully cloned!`")
+    await cloner.edit("`Profil berhasil di-klon!`")
     await asyncio.sleep(3)
     await cloner.delete()
 
@@ -80,7 +80,7 @@ async def clone(cloner):
 async def revert_(reverter):
     """ Returns Original Profile """
     if not (USER_DATA or os.path.exists(PHOTO)):
-        await reverter.edit("`Already reverted!`")
+        await reverter.edit("`Sudah dikembalikan!`")
         await asyncio.sleep(2)
         await reverter.delete()
         return
@@ -102,16 +102,16 @@ async def revert_(reverter):
             )
         )
         os.remove(PHOTO)
-    await reverter.edit("`Profile is successfully Reverted!`")
+    await reverter.edit("`Profil berhasil dikembalikan!`")
     await asyncio.sleep(3)
     await reverter.delete()
 
 
 CMD_HELP.update(
     {
-        "clone": ">`.clone` <reply to user>/<username>"
-        "\nUsage: Clones someone names, profile picture, and bio"
-        "\n\n>`.revert`"
-        "\nUsage: Reverts back to your profile"
+        "clone": "`.clone [balas/nama pengguna]`"
+        "\n➥  Mengkloning nama seseorang, foto profil dan bio."
+        "\n\n`.revert`"
+        "\n➥  Kembali ke profil Anda."
     }
 )

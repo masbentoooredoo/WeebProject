@@ -29,7 +29,7 @@ from userbot.utils.FastTelethon import download_file, upload_file
 @register(pattern=r"^\.dl(?: |$)(.*)", outgoing=True)
 async def download(target_file):
     """ For .download command, download files to the userbot's server. """
-    await target_file.edit("Processing ...")
+    await target_file.edit("`Sedang memproses...`")
     input_str = target_file.pattern_match.group(1)
     if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
         os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
@@ -57,19 +57,19 @@ async def download(target_file):
             percentage = downloader.get_progress() * 100
             speed = downloader.get_speed()
             progress_str = "[{0}{1}] `{2}%`".format(
-                "".join(["●" for i in range(math.floor(percentage / 10))]),
-                "".join(["○" for i in range(10 - math.floor(percentage / 10))]),
+                "".join(["■" for i in range(math.floor(percentage / 10))]),
+                "".join(["▨" for i in range(10 - math.floor(percentage / 10))]),
                 round(percentage, 2),
             )
             estimated_total_time = downloader.get_eta(human=True)
             try:
                 current_message = (
-                    f"`Name` : `{file_name}`\n"
+                    f"`Nama` : `{file_name}`\n"
                     "Status"
                     f"\n**{status}**... | {progress_str}"
-                    f"\n{humanbytes(downloaded)} of {humanbytes(total_length)}"
+                    f"\n{humanbytes(downloaded)} dari {humanbytes(total_length)}"
                     f" @ {humanbytes(speed)}"
-                    f"\n`ETA` -> {estimated_total_time}"
+                    f"\n`Perkiraan` -> {estimated_total_time}"
                 )
 
                 if round(diff % 10.00) == 0 and current_message != display_message:
@@ -79,10 +79,10 @@ async def download(target_file):
                 LOGS.info(str(e))
         if downloader.isSuccessful():
             await target_file.edit(
-                "Downloaded to `{}` successfully !!".format(downloaded_file_name)
+                "Berhasil diunduh ke `{}`!".format(downloaded_file_name)
             )
         else:
-            await target_file.edit("Incorrect URL\n{}".format(url))
+            await target_file.edit("URL salah.\n{}".format(url))
     elif target_file.reply_to_msg_id:
         try:
             replied = await target_file.get_reply_message()
@@ -96,17 +96,17 @@ async def download(target_file):
                     location=file,
                     out=f,
                     progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                        progress(d, t, target_file, c_time, "[DOWNLOAD]", input_str)
+                        progress(d, t, target_file, c_time, "[UNDUH]", input_str)
                     ),
                 )
         except Exception as e:  # pylint:disable=C0103,W0703
             await target_file.edit(str(e))
         else:
             await target_file.edit(
-                "Downloaded to `{}` successfully !!".format(result.name)
+                "Berhasil diunduh ke `{}`!".format(result.name)
             )
     else:
-        await target_file.edit("Reply to a message to download to my local server.")
+        await target_file.edit("`Balas pesan untuk diunduh ke server lokal.`")
 
 
 async def get_video_thumb(file, output=None, width=90):
@@ -124,10 +124,10 @@ async def get_video_thumb(file, output=None, width=90):
 @register(pattern=r"^\.up (.*)", outgoing=True)
 async def upload(u_event):
     """ For .upload command, allows you to upload a file from the userbot's server """
-    await u_event.edit("Processing ...")
+    await u_event.edit("`Sedang memproses...`")
     input_str = u_event.pattern_match.group(1)
     if input_str in ("userbot.session", "config.env"):
-        return await u_event.edit("`That's a dangerous operation! Not Permitted!`")
+        return await u_event.edit("`Itu tindakan yang berbahaya! Tidak diperbolehkan!`")
     if os.path.exists(input_str):
         thumb = await get_video_thumb(input_str, output="thumb.png")
         file_name = input_str.split("/")[-1]
@@ -138,7 +138,7 @@ async def upload(u_event):
                 file=f,
                 name=file_name,
                 progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, u_event, c_time, "[FILE - UPLOAD]", input_str)
+                    progress(d, t, u_event, c_time, "[FILE - UNGGAH]", input_str)
                 ),
             )
         if input_str.lower().endswith(("mp4", "mkv", "webm")):
@@ -171,7 +171,7 @@ async def upload(u_event):
                 ],
             )
             os.remove(thumb)
-            await u_event.edit("Uploaded successfully !!")
+            await u_event.edit("`Berhasil diunggah!`")
         else:
             await u_event.client.send_file(
                 u_event.chat_id,
@@ -181,16 +181,16 @@ async def upload(u_event):
                 allow_cache=False,
                 reply_to=u_event.message.id,
             )
-            await u_event.edit("Uploaded successfully !!")
+            await u_event.edit("`Berhasil diunggah!`")
     else:
-        await u_event.edit("404: File Not Found")
+        await u_event.edit("**Kesalahan 404** : `File tidak ditemukan.`")
 
 
 CMD_HELP.update(
     {
-        "download": ">`.dl <link|filename> or reply to media`"
-        "\nUsage: Downloads file to the server."
-        "\n\n>`.up <path in server>`"
-        "\nUsage: Uploads a locally stored file to the chat."
+        "download": "`.dl [tautan|nama file] atau balas media`"
+        "\n➥  Unduh file ke server."
+        "\n\n`.up [jalur di server]`"
+        "\n➥  Mengunggah yang disimpan secara lokal ke obrolan."
     }
 )

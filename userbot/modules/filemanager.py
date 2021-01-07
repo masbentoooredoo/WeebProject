@@ -23,14 +23,14 @@ async def lst(event):
     path = cat if cat else os.getcwd()
     if not exists(path):
         await event.edit(
-            f"There is no such directory or file with the name `{cat}` check again!"
+            f"`Tidak ada direktori atau file seperti itu dengan nama`  **{cat}**, `periksa lagi!`"
         )
         return
     if isdir(path):
         if cat:
-            msg = "**Folders and Files in `{}`** :\n\n".format(path)
+            msg = "`Folder dan file di `{}` :\n\n".format(path)
         else:
-            msg = "**Folders and Files in Current Directory** :\n\n"
+            msg = "`Folder dan file di direktori saat ini` :\n\n"
         lists = os.listdir(path)
         files = ""
         folders = ""
@@ -64,10 +64,10 @@ async def lst(event):
                     files += "🐍 "
                 else:
                     files += "📄 "
-                files += f"`{contents}` (__{humanbytes(size)}__)\n"
+                files += f"`{contents}`  - __{humanbytes(size)}__\n"
             else:
                 folders += f"📁 `{contents}`\n"
-        msg = msg + folders + files if files or folders else msg + "__empty path__"
+        msg = msg + folders + files if files or folders else msg + "__direktori kosong__"
     else:
         size = os.stat(path).st_size
         msg = "The details of given file :\n\n"
@@ -94,11 +94,11 @@ async def lst(event):
         time.ctime(os.path.getctime(path))
         time2 = time.ctime(os.path.getmtime(path))
         time3 = time.ctime(os.path.getatime(path))
-        msg += f"**Location :** `{path}`\n"
-        msg += f"**Icon :** `{mode}`\n"
-        msg += f"**Size :** `{humanbytes(size)}`\n"
-        msg += f"**Last Modified Time:** `{time2}`\n"
-        msg += f"**Last Accessed Time:** `{time3}`"
+        msg += f"**Lokasi** : `{path}`\n"
+        msg += f"**Ikon** : `{mode}`\n"
+        msg += f"**Ukuran** : `{humanbytes(size)}`\n"
+        msg += f"**Waktu terakhir diubah** : `{time2}`\n"
+        msg += f"**Waktu terakhir diakses** : `{time3}`"
 
     if len(msg) > MAX_MESSAGE_SIZE_LIMIT:
         with io.BytesIO(str.encode(msg)) as out_file:
@@ -120,16 +120,16 @@ async def rmove(event):
     """Removing Directory/File"""
     cat = event.pattern_match.group(1)
     if not cat:
-        await event.edit("`Missing file path!`")
+        await event.edit("`Jalur file tidak ada!`")
         return
     if not exists(cat):
-        await event.edit("`File path not exists!`")
+        await event.edit("`Jalur file tidak ada!`")
         return
     if isfile(cat):
         os.remove(cat)
     else:
         rmtree(cat)
-    await event.edit(f"Removed `{cat}`")
+    await event.edit(f"**{cat}**  `dihapus!`")
 
 
 @register(outgoing=True, pattern=r"^\.rn ([^|]+)\|([^|]+)")
@@ -138,20 +138,20 @@ async def rname(event):
     cat = str(event.pattern_match.group(1)).strip()
     new_name = str(event.pattern_match.group(2)).strip()
     if not exists(cat):
-        await event.edit(f"file path : {cat} not exists!")
+        await event.edit(f"`Jalur file` : **{cat}**  `tidak ada!`")
         return
     new_path = join(dirname(cat), new_name)
     shutil.move(cat, new_path)
-    await event.edit(f"Renamed `{cat}` to `{new_path}`")
+    await event.edit(f"`Nama diganti dari`  **{cat}**  `menjadi`  **{new_path}**")
 
 
 CMD_HELP.update(
     {
-        "file": ">`.ls` <directory>"
-        "\nUsage: Get list file inside directory."
-        "\n\n>`.rm` <directory/file>"
-        "\nUsage: remove file or directory"
-        "\n\n>`.rn` <directory/file> | <new name>"
-        "\nUsage: rename file or directory"
+        "file": "`.ls [direktori]`"
+        "\n➥  Dapatkan daftar file di dalam direktori."
+        "\n\n`.rm [direktori/file]`"
+        "\n➥  Hapus file atau direktori."
+        "\n\n`.rn [direktori/file] | [nama baru]`"
+        "\n➥  Mengubah nama file atau direktori."
     }
 )

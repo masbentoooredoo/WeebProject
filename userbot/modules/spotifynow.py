@@ -16,7 +16,7 @@ async def _(event):
     input_str = event.pattern_match.group(1).strip()
     chat = "@SpotifyNowBot"
     now = f"/now"
-    await event.edit("`Processing...`")
+    await event.edit("`Sedang memproses...`")
     try:
         async with event.client.conversation(chat) as conv:
             try:
@@ -25,16 +25,16 @@ async def _(event):
                 """don't spam notif"""
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await event.reply("`Please unblock` @SpotifyNowBot`...`")
+                await event.reply("`Harap buka blokir`  **@SpotifyNowBot**`...`")
                 return
             if response.text.startswith("You're"):
                 await event.edit(
-                    "`You're not listening to anything on Spotify at the moment`"
+                    "`Anda tidak mendengarkan apapun di Spotify saat ini`"
                 )
                 await event.client.delete_messages(conv.chat_id, [msg.id, response.id])
                 return
             if response.text.startswith("Ads."):
-                await event.edit("`You're listening to those annoying ads.`")
+                await event.edit("`Anda mendengarkan iklan yang mengganggu.`")
                 await event.client.delete_messages(conv.chat_id, [msg.id, response.id])
                 return
             else:
@@ -49,7 +49,7 @@ async def _(event):
                         force_document=False,
                     )
                     await event.respond(
-                        f"[Play on Spotify]({link})", reply_to=spot, link_preview=False
+                        f"[Putar di Spotify]({link})", reply_to=spot, link_preview=False
                     )
                 elif not input_str:
                     downloaded_file_name = await event.client.download_media(
@@ -60,22 +60,22 @@ async def _(event):
                         event.chat_id,
                         downloaded_file_name,
                         force_document=False,
-                        caption=f"[Play on Spotify]({link})",
+                        caption=f"[Putar di Spotify]({link})",
                     )
                 """cleanup chat after completed"""
                 await event.client.delete_messages(conv.chat_id, [msg.id, response.id])
         await event.delete()
         return os.remove(downloaded_file_name)
     except TimeoutError:
-        return await event.edit("`Error: `@SpotifyNowBot` is not responding!.`")
+        return await event.edit("**Kesalahan** :\n**@SpotifyNowBot**  `tidak menanggapi!`")
 
 
 CMD_HELP.update(
     {
-        "spotifynow": ">`.spotnow`"
-        "\nUsage: Show what you're listening on spotify."
-        "\n\n>`.spotnow s`"
-        "\nUsage: Same, but send as sticker"
-        "\n\n`@SpotifyNowBot`"
+        "spotifynow": "`.spotnow`"
+        "\n➥  Menampilkan apa yang Anda dengarkan di Spotify."
+        "\n\n`.spotnow s`"
+        "\n➥  Sama seperti `.spotnow`, tetapi dikirim sebagai stiker."
+        "\n**@SpotifyNowBot**"
     }
 )

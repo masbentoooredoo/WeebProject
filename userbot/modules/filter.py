@@ -20,7 +20,7 @@ async def filter_incoming_handler(handler):
             try:
                 from userbot.modules.sql_helper.filter_sql import get_filters
             except AttributeError:
-                await handler.edit("`Running on Non-SQL mode!`")
+                await handler.edit("`Berjalan di mode Non-SQL!`")
                 return
             name = handler.raw_text
             filters = get_filters(handler.chat_id)
@@ -46,7 +46,7 @@ async def add_new_filter(new_handler):
     try:
         from userbot.modules.sql_helper.filter_sql import add_filter
     except AttributeError:
-        await new_handler.edit("`Running on Non-SQL mode!`")
+        await new_handler.edit("`Berjalan di mode Non-SQL!`")
         return
     value = new_handler.pattern_match.group(1).split(None, 1)
     """ - The first words after .filter(space) is the keyword - """
@@ -61,8 +61,8 @@ async def add_new_filter(new_handler):
         if BOTLOG_CHATID:
             await new_handler.client.send_message(
                 BOTLOG_CHATID,
-                f"#FILTER\nCHAT ID: {new_handler.chat_id}\nTRIGGER: {keyword}"
-                "\n\nThe following message is saved as the filter's reply data for the chat, please do NOT delete it !!",
+                f"#FILTER\nID Obrolan : {new_handler.chat_id}\nPemicu : {keyword}"
+                "\n\nPesan berikut disimpan sebagai data balasan filter untuk obrolan.\n**Tolong jangan dihapus!**",
             )
             msg_o = await new_handler.client.forward_messages(
                 entity=BOTLOG_CHATID,
@@ -73,16 +73,16 @@ async def add_new_filter(new_handler):
             msg_id = msg_o.id
         else:
             return await new_handler.edit(
-                "`Saving media as reply to the filter requires the BOTLOG_CHATID to be set.`"
+                "`Menyimpan media sebagai balasan untuk filter membutuhkan penyetelan BOTLOG_CHATID.`"
             )
     elif new_handler.reply_to_msg_id and not string:
         rep_msg = await new_handler.get_reply_message()
         string = rep_msg.text
-    success = "`Filter`  **{}**  `{} successfully`."
+    success = "Filter  **{}**  berhasil  **{}**."
     if add_filter(str(new_handler.chat_id), keyword, string, msg_id) is True:
-        await new_handler.edit(success.format(keyword, "added"))
+        await new_handler.edit(success.format(keyword, "ditambahkan"))
     else:
-        await new_handler.edit(success.format(keyword, "updated"))
+        await new_handler.edit(success.format(keyword, "diperbarui"))
 
 
 @register(outgoing=True, pattern=r"^\.stop (.*)")
@@ -91,13 +91,13 @@ async def remove_a_filter(r_handler):
     try:
         from userbot.modules.sql_helper.filter_sql import remove_filter
     except AttributeError:
-        return await r_handler.edit("`Running on Non-SQL mode!`")
+        return await r_handler.edit("`Berjalan di mode Non-SQL!`")
     filt = r_handler.pattern_match.group(1)
     if not remove_filter(r_handler.chat_id, filt):
-        await r_handler.edit("`Filter`  **{}**  `doesn't exist`.".format(filt))
+        await r_handler.edit("Filter  **{}**  tidak ada.".format(filt))
     else:
         await r_handler.edit(
-            "`Filter`  **{}**  `was deleted successfully`.".format(filt)
+            "Filter  **{}**  berhasil dihapus.".format(filt)
         )
 
 
@@ -108,8 +108,8 @@ async def kick_marie_filter(event):
     event.text[0]
     bot_type = event.pattern_match.group(1).lower()
     if bot_type not in ["marie", "rose"]:
-        return await event.edit("`That bot is not yet supported!`")
-    await event.edit("```Will be kicking away all Filters!```")
+        return await event.edit("`Bot itu belum didukung!`")
+    await event.edit("`Akan menghapus semua filter!`")
     await sleep(3)
     resp = await event.get_reply_message()
     filters = resp.text.split("-")[1:]
@@ -120,10 +120,10 @@ async def kick_marie_filter(event):
             i = i.replace("`", "")
             await event.reply("/stop %s" % (i.strip()))
         await sleep(0.3)
-    await event.respond("```Successfully purged bots filters yaay!```\n Gimme cookies!")
+    await event.respond("`Berhasil membersihkan filter bot!`")
     if BOTLOG:
         await event.client.send_message(
-            BOTLOG_CHATID, "I cleaned all filters at " + str(event.chat_id)
+            BOTLOG_CHATID, "Saya membersihkan semua filter di " + str(event.chat_id)
         )
 
 
@@ -133,12 +133,12 @@ async def filters_active(event):
     try:
         from userbot.modules.sql_helper.filter_sql import get_filters
     except AttributeError:
-        return await event.edit("`Running on Non-SQL mode!`")
-    transact = "`There are no filters in this chat.`"
+        return await event.edit("`Berjalan di mode Non-SQL!`")
+    transact = "`Tidak ada filter dalam obrolan ini.`"
     filters = get_filters(event.chat_id)
     for filt in filters:
-        if transact == "`There are no filters in this chat.`":
-            transact = "Active filters in this chat:\n"
+        if transact == "`Tidak ada filter dalam obrolan ini.`":
+            transact = "**Filter aktif dalam obrolan ini** :\n"
             transact += "`{}`\n".format(filt.keyword)
         else:
             transact += "`{}`\n".format(filt.keyword)
@@ -148,15 +148,15 @@ async def filters_active(event):
 
 CMD_HELP.update(
     {
-        "filter": ">`.filters`"
-        "\nUsage: Lists all active userbot filters in a chat."
-        "\n\n>`.filter <keyword> <reply text>` or reply to a message with >`.filter <keyword>`"
-        "\nUsage: Saves the replied message as a reply to the 'keyword'."
-        "\nThe bot will reply to the message whenever 'keyword' is mentioned."
-        "\nWorks with everything from files to stickers."
-        "\n\n>`.stop <filter>`"
-        "\nUsage: Stops the specified filter."
-        "\n\n>`.rmbotfilters <marie/rose>`"
-        "\nUsage: Removes all filters of admin bots (Currently supported: Marie, Rose and their clones.) in the chat."
+        "filter": "`.filters`"
+        "\n➥  Menampilkan semua daftar filter userbot yang aktif dalam obrolan."
+        "\n\n`.filter [kata kunci] [balas teks]` `atau balas sebuah pesan dengan`\n`.filter [kata kunci]`"
+        "\n➥  Menyimpan pesan balasan sebagai balasan untuk “kata kunci”."
+        "\nBot akan membalas pesan setiap kali “kata kunci” disebutkan. "
+        "Bekerja dengan segala hal mulai dari file hingga stiker."
+        "\n\n`.stop [filter]`"
+        "\n➥  Menghentikan filter yang ditentukan."
+        "\n\n`.rmbotfilters [marie/rose]`"
+        "\n➥  Menghapus semua filter bot admin di obrolan.\n**Saat ini didukung** : Marie, Rose, dan klonnya."
     }
 )

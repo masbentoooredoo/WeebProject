@@ -53,13 +53,13 @@ EMOJI_PATTERN = re.compile(
 @register(outgoing=True, pattern=r"^\.glitch(?: |$)(.*)")
 async def glitch(event):
     if not event.reply_to_msg_id:
-        await event.edit("`I Wont Glitch A Ghost!`")
+        await event.edit("`Saya tidak akan membuat kesalahan pada hantu!`")
         return
     reply_message = await event.get_reply_message()
     if not reply_message.media:
-        await event.edit("`reply to a image/sticker`")
+        await event.edit("`Balas gambar/stiker`")
         return
-    await event.edit("`Downloading Media..`")
+    await event.edit("`Mengunduh media...`")
     if reply_message.photo:
         glitch_file = await bot.download_media(
             reply_message,
@@ -94,7 +94,7 @@ async def glitch(event):
             raise ValueError
     except ValueError:
         value = 2
-    await event.edit("```Glitching This Media..```")
+    await event.edit("`Mengacaukan media ini...`")
     await asyncio.sleep(2)
     glitcher = ImageGlitcher()
     img = Image.open(glitch_file)
@@ -109,7 +109,7 @@ async def glitch(event):
         duration=DURATION,
         loop=LOOP,
     )
-    await event.edit("`Uploading Glitched Media..`")
+    await event.edit("`Mengunggah media yang bermasalah...`")
     c_time = time.time()
     nosave = await event.client.send_file(
         event.chat_id,
@@ -117,7 +117,7 @@ async def glitch(event):
         force_document=False,
         reply_to=event.reply_to_msg_id,
         progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-            progress(d, t, event, c_time, "[UPLOAD]")
+            progress(d, t, event, c_time, "[UNGGAH]")
         ),
     )
     await event.delete()
@@ -140,14 +140,14 @@ async def glitch(event):
 async def mim(event):
     if not event.reply_to_msg_id:
         await event.edit(
-            "`Syntax: reply to an image with .mms` 'text on top' ; 'text on bottom' "
+            "`Sintaksis : membalas gambar dengan .mmf “texttop” ; “textbottom” `"
         )
         return
     reply_message = await event.get_reply_message()
     if not reply_message.media:
-        await event.edit("`Reply to a image/sticker/gif.`")
+        await event.edit("`Balas gambar/stiker/gif.`")
         return
-    await event.edit("`Downloading Media..`")
+    await event.edit("`Mengunduh media...`")
     if reply_message.photo:
         dls_loc = await bot.download_media(
             reply_message,
@@ -177,7 +177,7 @@ async def mim(event):
             "meme.png",
         )
     await event.edit(
-        "```Transfiguration Time! Mwahaha Memifying this image! (」ﾟﾛﾟ)｣ ```"
+        "`Waktunya Transfigurasi! Mwahaha Mengingat gambar ini! (」ﾟﾛﾟ)｣ `"
     )
     await asyncio.sleep(5)
     text = event.pattern_match.group(1)
@@ -303,19 +303,19 @@ async def quotess(qotli):
     if qotli.fwd_from:
         return
     if not qotli.reply_to_msg_id:
-        await qotli.edit("```Reply to any user message.```")
+        await qotli.edit("`Balas pesan pengguna mana pun.`")
         return
     reply_message = await qotli.get_reply_message()
     if not reply_message.text:
-        await qotli.edit("```Reply to text message```")
+        await qotli.edit("`Balas pesan teks.`")
         return
     chat = "@QuotLyBot"
     reply_message.sender
     if reply_message.sender.bot:
-        await qotli.edit("```Reply to actual users message.```")
+        await qotli.edit("`Balas pesan pengguna sebenarnya.`")
         return
     try:
-        await qotli.edit("`Processing..`")
+        await qotli.edit("`Sedang memproses...`")
         async with bot.conversation(chat) as conv:
             try:
                 response = conv.wait_event(
@@ -325,11 +325,11 @@ async def quotess(qotli):
                 response = await response
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await qotli.reply("```Please unblock @QuotLyBot and try again```")
+                await qotli.reply("`Harap buka blokir`  **@QuotLyBot**  `dan coba lagi.`")
                 return
             if response.text.startswith("Hi!"):
                 await qotli.edit(
-                    "```Can you kindly disable your forward privacy settings for good?```"
+                    "`Bisakah Anda dengan ramah menonaktifkan pengaturan privasi penerusan untuk selamanya?`"
                 )
             else:
                 downloaded_file_name = await qotli.client.download_media(
@@ -343,28 +343,28 @@ async def quotess(qotli):
                 await qotli.client.delete_messages(conv.chat_id, [msg.id, response.id])
                 os.remove(downloaded_file_name)
     except TimeoutError:
-        await qotli.edit("`@QuotlyBot doesnt responding`")
+        await qotli.edit("**@QuotLyBot**  `tidak menanggapi!`")
         await qotli.client.delete_messages(conv.chat_id, [msg.id])
 
 
 @register(outgoing=True, pattern=r"^\.hz(:? |$)(.*)?")
 async def hazz(hazmat):
-    await hazmat.edit("`Sending information...`")
+    await hazmat.edit("`Mengirim informasi...`")
     level = hazmat.pattern_match.group(2)
     if hazmat.fwd_from:
         return
     if not hazmat.reply_to_msg_id:
-        await hazmat.edit("`WoWoWo Capt!, we are not going suit a ghost!...`")
+        await hazmat.edit("`WoWoWo Kapten!, kita tidak akan cocok dengan hantu!`")
         return
     reply_message = await hazmat.get_reply_message()
     if not reply_message.media:
-        await hazmat.edit("`Word can destroy anything Capt!...`")
+        await hazmat.edit("`Kata bisa menghancurkan apapun, Kapten!`")
         return
     if reply_message.sender.bot:
-        await hazmat.edit("`Reply to actual user...`")
+        await hazmat.edit("`Balas ke pengguna sebenarnya...`")
         return
     chat = "@hazmat_suit_bot"
-    await hazmat.edit("```Suit Up Capt!, We are going to purge some virus...```")
+    await hazmat.edit("`Siapkan Kapten!, Kami akan membersihkan beberapa virus...`")
     message_id_to_reply = hazmat.message.reply_to_msg_id
     msg_reply = None
     async with hazmat.client.conversation(chat) as conv:
@@ -385,10 +385,10 @@ async def hazz(hazmat):
             """don't spam notif"""
             await bot.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            await hazmat.reply("`Please unblock` @hazmat_suit_bot`...`")
+            await hazmat.reply("`Harap buka blokir`  **@hazmat_suit_bot**`...`")
             return
         if response.text.startswith("I can't"):
-            await hazmat.edit("`Can't handle this GIF...`")
+            await hazmat.edit("`Tidak dapat menangani GIF ini...`")
             await hazmat.client.delete_messages(
                 conv.chat_id, [msg.id, response.id, r.id, msg_reply.id]
             )
@@ -416,19 +416,19 @@ async def hazz(hazmat):
 
 @register(outgoing=True, pattern=r"^\.df(:? |$)([1-8])?")
 async def fryerrr(fry):
-    await fry.edit("`Sending information...`")
+    await fry.edit("`Mengirim informasi...`")
     level = fry.pattern_match.group(2)
     if fry.fwd_from:
         return
     if not fry.reply_to_msg_id:
-        await fry.edit("`Reply to any user message photo...`")
+        await fry.edit("`Balas pesan foto pengguna mana pun...`")
         return
     reply_message = await fry.get_reply_message()
     if not reply_message.media:
-        await fry.edit("`No image found to fry...`")
+        await fry.edit("`Tidak ada gambar untuk digoreng...`")
         return
     if reply_message.sender.bot:
-        await fry.edit("`Reply to actual user...`")
+        await fry.edit("`Balas ke pengguna sebenarnya...`")
         return
     chat = "@image_deepfrybot"
     message_id_to_reply = fry.message.reply_to_msg_id
@@ -443,10 +443,10 @@ async def fryerrr(fry):
                 response = await conv.get_response()
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await fry.reply("`Please unblock` @image_deepfrybot`...`")
+                await fry.reply("`Harap buka blokir`  **@image_deepfrybot**`...`")
                 return
             if response.text.startswith("Forward"):
-                await fry.edit("`Please disable your forward privacy setting...`")
+                await fry.edit("`Nonaktifkan setelan privasi penerusan Anda...`")
             else:
                 downloaded_file_name = await fry.client.download_media(
                     response.media, TEMP_DOWNLOAD_DIRECTORY
@@ -470,7 +470,7 @@ async def fryerrr(fry):
         await fry.delete()
         return os.remove(downloaded_file_name)
     except TimeoutError:
-        await fry.edit("`@image_deepfrybot isnt responding..`")
+        await fry.edit("**@image_deepfrybot**  `tidak menanggapi!`")
         await fry.client.delete_messages(conv.chat_id, [msg.id])
 
 
@@ -484,7 +484,7 @@ async def deepfryer(event):
         frycount = 1
     reply_message = await event.get_reply_message()
     image = io.BytesIO()
-    await event.edit("`Downloading media..`")
+    await event.edit("`Mengunduh media...`")
     if reply_message.photo:
         image = await bot.download_media(
             reply_message,
@@ -516,7 +516,7 @@ async def deepfryer(event):
     image = Image.open(image)
 
     # fry the image
-    await event.edit("`Deep frying media…`")
+    await event.edit("`Menggoreng media...`")
     for _ in range(frycount):
         image = await deepfry(image)
 
@@ -574,16 +574,16 @@ async def lastname(steal):
     if steal.fwd_from:
         return
     if not steal.reply_to_msg_id:
-        await steal.edit("`Reply to any user message.`")
+        await steal.edit("`Balas pesan pengguna mana pun.`")
         return
     message = await steal.get_reply_message()
     chat = "@SangMataInfo_bot"
     user_id = message.sender.id
     id = f"/search_id {user_id}"
     if message.sender.bot:
-        await steal.edit("`Reply to actual users message.`")
+        await steal.edit("`Balas pesan pengguna sebenarnya.`")
         return
-    await steal.edit("`Sit tight while I steal some data from NASA`")
+    await steal.edit("`Tunggu sebentar sementara saya mengambil beberapa data dari NASA.`")
     try:
         async with bot.conversation(chat) as conv:
             try:
@@ -591,7 +591,7 @@ async def lastname(steal):
                 r = await conv.get_response()
                 response = await conv.get_response()
             except YouBlockedUserError:
-                await steal.reply("`Please unblock @sangmatainfo_bot and try again`")
+                await steal.reply("`Harap buka blokir`  **@sangmatainfo_bot**  `dan coba lagi.`")
                 return
             if r.text.startswith("Name"):
                 respond = await conv.get_response()
@@ -603,7 +603,7 @@ async def lastname(steal):
             if response.text.startswith("No records") or r.text.startswith(
                 "No records"
             ):
-                await steal.edit("```No records found for this user```")
+                await steal.edit("`Tidak ada catatan yang ditemukan untuk pengguna ini`")
                 await steal.client.delete_messages(
                     conv.chat_id, [msg.id, r.id, response.id]
                 )
@@ -615,18 +615,18 @@ async def lastname(steal):
                 conv.chat_id, [msg.id, r.id, response.id, respond.id]
             )
     except TimeoutError:
-        return await steal.edit("`Error: `@SangMataInfo_bot` is not responding!.`")
+        return await steal.edit("**Kesalahan** : **@SangMataInfo_bot** `tidak menanggapi!`")
 
 
 @register(outgoing=True, pattern=r"^\.waifu(?: |$)(.*)")
 async def waifu(animu):
     text = animu.pattern_match.group(1)
-    await animu.edit("`Finding your waifu...`")
+    await animu.edit("`Menemukan waifu Anda...`")
     if not text:
         if animu.is_reply:
             text = (await animu.get_reply_message()).message
         else:
-            await animu.answer("`No text given, hence the waifu ran away.`")
+            await animu.answer("`Tidak ada teks yang diberikan, maka waifu tersebut lari.`")
             return
     animus = [20, 32, 33, 40, 41, 42, 58]
     sticcers = await bot.inline_query(
@@ -647,51 +647,51 @@ def deEmojify(inputString: str) -> str:
 
 CMD_HELP.update(
     {
-        "glitch": ">`.glitch <1-8>`"
-        "\nUsage: Reply a sticker/image and send with cmd.\nvalue is range 1-8 if doenst it will give default value which is 2"
+        "glitch": "`.glitch [1-8]`"
+        "\n➥  Balas stiker/gambar dan kirim dengan cmd(perintah).\nNilainya berkisar 1-8 jika tidak maka akan memberikan nilai default yaitu 2."
     }
 )
 
 CMD_HELP.update(
     {
-        "memify": ">`.mmf texttop ; textbottom`"
-        "\nUsage: Reply a sticker/image/gif and send with cmd."
+        "memify": "`.mmf texttop ; textbottom`"
+        "\n➥  Balas stiker/gambar/gif dan kirim dengan cmd(perintah)."
     }
 )
 
 CMD_HELP.update(
     {
-        "quotly": ".q \
-          \nUsage: Enhance ur text to sticker."
+        "quotly": "`.q`"
+          "\n➥  Sempurnakan teks Anda menjadi stiker."
     }
 )
 
 CMD_HELP.update(
     {
-        "hazmat": ".hz or .hz [flip, x2, rotate (degree), background (number), black]"
-        "\nUsage: Reply to a image / sticker to suit up!"
-        "\n@hazmat_suit_bot"
+        "hazmat": "`.hz / .hz [flip, x2, rotate (degree), background (number), black]`"
+        "\n➥  Balas gambar/stiker yang sesuai!"
+        "\n**@hazmat_suit_bot**"
     }
 )
 
 CMD_HELP.update(
     {
-        "deepfry": ">`.df or .df [level(1-8)]`"
-        "\nUsage: deepfry image/sticker from the reply."
-        "\n@image_deepfrybot"
-        "\n\n>`.deepfry`"
-        "\nUsage: krispi image"
+        "deepfry": "`.df / .df [level(1-8)]`"
+        "\n➥  Goreng gambar/stiker dari balasan."
+        "\n**@image_deepfrybot**"
+        "\n\n`.deepfry`"
+        "\n➥  Gambar krispi."
     }
 )
 
 
-CMD_HELP.update({"sangmata": "`.sg`" "\nUsage: Steal ur or friend name."})
+CMD_HELP.update({"sangmata": "`.sg`" "\n➥  Menampilkan info nama Anda atau seseorang."})
 
 
 CMD_HELP.update(
     {
-        "waifu": ".waifu \
-          \nUsage: Enchance your text with beautiful anime girl templates. \
-          \n@StickerizerBot"
+        "waifu": "`.waifu`"
+        "\n➥  Tingkatkan teks Anda dengan templat gadis anime cantik."
+        "\n**@StickerizerBot**"
     }
 )

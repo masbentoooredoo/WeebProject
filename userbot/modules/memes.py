@@ -4,6 +4,7 @@
 # you may not use this file except in compliance with the License.
 """ Userbot module for having some fun with people. """
 
+import time
 from asyncio import sleep
 from collections import deque
 from random import choice, getrandbits, randint
@@ -18,13 +19,13 @@ from userbot.modules.admin import get_user_from_event
 
 # ================= CONSTANT =================
 METOOSTR = [
-    "Me too thanks",
-    "Haha yes, me too",
-    "Same lol",
-    "Me irl",
-    "Same here",
-    "Haha yes",
-    "Me rn",
+    "Aku juga terima kasih",
+    "Haha ya, aku juga",
+    "Sama LOL",
+    "Aku irl",
+    "Sama disini",
+    "Haha ya",
+    "Aku rn",
 ]
 
 ZALG_LIST = [
@@ -175,52 +176,52 @@ EMOJIS = [
 ]
 
 INSULT_STRINGS = [
-    "Owww ... Such a stupid idiot.",
-    "Don't drink and type.",
-    "I think you should go home or better a mental asylum.",
-    "Command not found. Just like your brain.",
-    "Do you realize you are making a fool of yourself? Apparently not.",
-    "You can type better than that.",
-    "Bot rule 544 section 9 prevents me from replying to stupid humans like you.",
-    "Sorry, we do not sell brains.",
-    "Believe me you are not normal.",
-    "I bet your brain feels as good as new, seeing that you never use it.",
-    "If I wanted to kill myself I'd climb your ego and jump to your IQ.",
-    "Zombies eat brains... you're safe.",
-    "You didn't evolve from apes, they evolved from you.",
-    "Come back and talk to me when your I.Q. exceeds your age.",
-    "I'm not saying you're stupid, I'm just saying you've got bad luck when it comes to thinking.",
-    "What language are you speaking? Cause it sounds like bullshit.",
-    "Stupidity is not a crime so you are free to go.",
-    "You are proof that evolution CAN go in reverse.",
-    "I would ask you how old you are but I know you can't count that high.",
-    "As an outsider, what do you think of the human race?",
-    "Brains aren't everything. In your case they're nothing.",
-    "Ordinarily people live and learn. You just live.",
-    "I don't know what makes you so stupid, but it really works.",
-    "Keep talking, someday you'll say something intelligent! (I doubt it though)",
-    "Shock me, say something intelligent.",
-    "Your IQ's lower than your shoe size.",
-    "Alas! Your neurotransmitters are no more working.",
-    "Are you crazy you fool.",
-    "Everyone has the right to be stupid but you are abusing the privilege.",
-    "I'm sorry I hurt your feelings when I called you stupid. I thought you already knew that.",
-    "You should try tasting cyanide.",
-    "Your enzymes are meant to digest rat poison.",
-    "You should try sleeping forever.",
-    "Pick up a gun and shoot yourself.",
-    "You could make a world record by jumping from a plane without parachute.",
-    "Stop talking BS and jump in front of a running bullet train.",
-    "Try bathing with Hydrochloric Acid instead of water.",
-    "Try this: if you hold your breath underwater for an hour, you can then hold it forever.",
-    "Go Green! Stop inhaling Oxygen.",
-    "God was searching for you. You should leave to meet him.",
-    "give your 100%. Now, go donate blood.",
-    "Try jumping from a hundred story building but you can do it only once.",
-    "You should donate your brain seeing that you never used it.",
-    "Volunteer for target in an firing range.",
-    "Head shots are fun. Get yourself one.",
-    "You should try swimming with great white sharks.",
+    "Owww ... Dasar bodoh idiot.",
+    "Jangan minum dan mengetik.",
+    "Saya pikir Anda harus pulang atau lebih baik ke rumah sakit jiwa.",
+    "Perintah tidak ditemukan. Sama seperti otakmu.",
+    "Apakah Anda sadar bahwa Anda membodohi diri Anda sendiri? Sepertinya tidak.",
+    "Anda bisa mengetik lebih baik dari itu.",
+    "Aturan bot 544 bagian 9 mencegah saya membalas orang bodoh seperti Anda.",
+    "Maaf, kami tidak menjual otak.",
+    "Percayalah kamu tidak normal.",
+    "Saya yakin otak Anda terasa seperti baru, mengingat Anda tidak pernah menggunakannya.",
+    "Jika saya ingin bunuh diri, saya akan meningkatkan ego Anda dan melompat ke IQ Anda.",
+    "Zombie memakan otak ... Anda aman.",
+    "Anda tidak berevolusi dari kera, mereka berevolusi dari Anda.",
+    "Kembalilah dan bicara dengan saya ketika IQ Anda melebihi usia Anda.",
+    "Saya tidak mengatakan Anda bodoh, saya hanya mengatakan bahwa Anda mendapat nasib buruk dalam hal berpikir.",
+    "Kamu berbicara bahasa apa? Karena itu terdengar seperti omong kosong.",
+    "Kebodohan bukanlah kejahatan jadi Anda bebas pergi.",
+    "Anda adalah bukti bahwa evolusi BISA mundur.",
+    "Saya ingin menanyakan berapa usia Anda, tetapi saya tahu Anda tidak dapat menghitung setinggi itu.",
+    "Sebagai orang luar, apa pendapat Anda tentang umat manusia?",
+    "Otak bukanlah segalanya. Dalam kasus Anda, mereka bukan apa-apa.",
+    "Biasanya orang hidup dan belajar. Anda hanya hidup",
+    "Aku tidak tahu apa yang membuatmu begitu bodoh, tapi itu sungguh.",
+    "Teruslah berbicara, suatu hari Anda akan mengatakan sesuatu yang cerdas! (Aku meragukannya)",
+    "Kejutkan saya, katakan sesuatu yang cerdas.",
+    "IQ Anda lebih rendah dari ukuran sepatu Anda.",
+    "Sayang! Neurotransmiter Anda tidak lagi berfungsi..",
+    "Apakah kamu gila kamu bodoh.",
+    "Setiap orang berhak untuk menjadi bodoh tetapi Anda menyalahgunakan hak istimewa tersebut",
+    "Saya minta maaf saya menyakiti perasaan Anda ketika saya menyebut Anda bodoh. Saya pikir Anda sudah tahu itu.",
+    "Anda harus mencoba mencicipi sianida.",
+    "Enzim Anda dimaksudkan untuk mencerna racun tikus.",
+    "Anda harus mencoba tidur selamanya.",
+    "Ambil pistol dan tembak dirimu sendiri.",
+    "Anda bisa membuat rekor dunia dengan melompat dari pesawat tanpa parasut.",
+    "Berhenti berbicara tentang BS dan melompat di depan kereta peluru yang sedang berlari.",
+    "Cobalah mandi dengan Asam Hidroklorik bukan air.",
+    "Coba ini: Jika Anda menahan napas di bawah air selama satu jam, Anda bisa menahan selamanya.",
+    "Peduli lingkungan! Berhenti menghirup Oksigen.",
+    "Tuhan sedang mencarimu, Kamu harus pergi untuk bertemu dengannya.",
+    "Berikan 100% Anda. Sekarang, donor darah.",
+    "Cobalah melompat dari gedung seratus lantai tetapi Anda hanya dapat melakukannya sekali.",
+    "Anda harus menyumbangkan otak Anda karena Anda tidak pernah menggunakannya.",
+    "Sukarelawan untuk target dalam jarak tembak.",
+    "Tembak kepala itu menyenangkan. Dapatkan untuk diri Anda sendiri.",
+    "Anda harus mencoba berenang dengan hiu putih besar.",
     "You should paint yourself red and run in a bull marathon.",
     "You can stay underwater for the rest of your life without coming back up.",
     "How about you stop breathing for like 1 day? That'll be great.",
@@ -256,32 +257,6 @@ UWUS = [
     "(♥_♥)",
     "*(^O^)*",
     "((+_+))",
-]
-
-IWIS = [
-    "┐(´д｀)┌",
-    "┐(´～｀)┌",
-    "┐(´ー｀)┌",
-    "┐(￣ヘ￣)┌",
-    "╮(╯∀╰)╭",
-    "╮(╯_╰)╭",
-    "┐(´д`)┌",
-    "┐(´∀｀)┌",
-    "ʅ(́◡◝)ʃ",
-    "┐(ﾟ～ﾟ)┌",
-    "┐('д')┌",
-    "┐(‘～`;)┌",
-    "ヘ(´－｀;)ヘ",
-    "┐( -“-)┌",
-    "ʅ（´◔౪◔）ʃ",
-    "ヽ(゜～゜o)ノ",
-    "ヽ(~～~ )ノ",
-    "┐(~ー~;)┌",
-    "┐(-。ー;)┌",
-    r"¯\_(ツ)_/¯",
-    r"¯\_(⊙_ʖ⊙)_/¯",
-    r"¯\_༼ ಥ ‿ ಥ ༽_/¯",
-    "乁( ⁰͡  Ĺ̯ ⁰͡ ) ㄏ",
 ]
 
 FACEREACTS = [
@@ -654,6 +629,15 @@ async def univsaye(cowmsg):
     await cowmsg.edit(f"`{cheese.milk(text).replace('`', '´')}`")
 
 
+@register(outgoing=True, pattern="^:/$", ignore_unsafe=True)
+async def kek(keks):
+    """ Check yourself ;)"""
+    uio = ["/", "\\"]
+    for i in range(1, 15):
+        time.sleep(0.3)
+        await keks.edit(":" + uio[i % 2])
+
+
 @register(outgoing=True, pattern=r"^\.coinflip (.*)")
 async def coin(event):
     r = choice(["heads", "tails"])
@@ -662,22 +646,22 @@ async def coin(event):
         input_str = input_str.lower()
     if r == "heads":
         if input_str == "heads":
-            await event.edit("The coin landed on: **Heads**.\nYou were correct.")
+            await event.edit("Koin itu jatuh di: **Heads**.\nAnda benar.")
         elif input_str == "tails":
             await event.edit(
-                "The coin landed on: **Heads**.\nYou weren't correct, try again ..."
+                "Koin itu jatuh di: **Heads**.\nAnda salah, coba lagi..."
             )
         else:
-            await event.edit("The coin landed on: **Heads**.")
+            await event.edit("Koin itu jatuh di: **Heads**.")
     elif r == "tails":
         if input_str == "tails":
-            await event.edit("The coin landed on: **Tails**.\nYou were correct.")
+            await event.edit("Koin itu jatuh di: **Tails**.\n Anda benar.")
         elif input_str == "heads":
             await event.edit(
-                "The coin landed on: **Tails**.\nYou weren't correct, try again ..."
+                "Koin itu jatuh di: **Tails**.\nAnda salah, coba lagi..."
             )
         else:
-            await event.edit("The coin landed on: **Tails**.")
+            await event.edit("Koin itu jatuh di: **Tails**.")
 
 
 @register(pattern=r"^\.slap(?: |$)(.*)", outgoing=True)
@@ -695,7 +679,7 @@ async def who(event):
 
     except BaseException:
         await event.edit(
-            "`Can't slap this person, need to fetch some sticks and stones !!`"
+            "`Tidak bisa menampar orang ini, perlu mengambil beberapa tongkat dan batu!`"
         )
 
 
@@ -723,6 +707,15 @@ async def slap(replied_user, event):
     return caption
 
 
+@register(outgoing=True, pattern="^-_-$", ignore_unsafe=True)
+async def lol(lel):
+    """ Ok... """
+    okay = "-_-"
+    for i in range(10):
+        okay = okay[:-1] + "_-"
+        await lel.edit(okay)
+
+
 @register(outgoing=True, pattern=r"^\.(yes|no|maybe|decide)$")
 async def decide(event):
     decision = event.pattern_match.group(1).lower()
@@ -735,6 +728,14 @@ async def decide(event):
     await event.client.send_message(
         event.chat_id, str(r["answer"]).upper(), reply_to=message_id, file=r["image"]
     )
+
+
+@register(outgoing=True, pattern="^;_;$", ignore_unsafe=True)
+async def fun(e):
+    t = ";_;"
+    for j in range(10):
+        t = t[:-1] + "_;"
+        await e.edit(t)
 
 
 @register(outgoing=True, pattern=r"^\.fp$")
@@ -766,7 +767,7 @@ async def copypasta(cp_e):
     elif textx:
         message = textx.text
     else:
-        return await cp_e.edit("`😂🅱️IvE👐sOME👅text👅for✌️Me👌tO👐MAkE👀iT💞funNy!💦`")
+        return await cp_e.edit("`😂bErIKan🅱️EbeRApa👐tEkS👅uNTuK👅sAYa✌️-👌aGaR👐tERliHaT👀.,💞lUCu!💦`")
 
     reply_text = choice(EMOJIS)
     # choose a random character in the message to be substituted with 🅱️
@@ -799,7 +800,7 @@ async def vapor(vpr):
     elif textx:
         message = textx.text
     else:
-        return await vpr.edit("`Ｇｉｖｅ ｓｏｍｅ ｔｅｘｔ ｆｏｒ ｖａｐｏｒ！`")
+        return await vpr.edit("`Ｂｅｒｉｋａｎ ｂｅｂｅｒａｐａ ｔｅｋｓ ｕｎｔｕｋ ｖａｐｏｒ!`")
 
     for charac in message:
         if 0x21 <= ord(charac) <= 0x7F:
@@ -823,7 +824,7 @@ async def stretch(stret):
     elif textx:
         message = textx.text
     else:
-        return await stret.edit("`GiiiiiiiB sooooooomeeeeeee teeeeeeext!`")
+        return await stret.edit("`Beriiiiikaaannnnn beebbberaaaaaapaaa teeeeeeeekkksssss!`")
 
     count = randint(3, 10)
     reply_text = sub(r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])", (r"\1" * count), message)
@@ -842,7 +843,7 @@ async def zal(zgfy):
         message = textx.text
     else:
         return await zgfy.edit(
-            "`gͫ ̆ i̛ ̺ v͇̆ ȅͅ   a̢ͦ   s̴̪ c̸̢ ä̸ rͩͣ y͖͞   t̨͚ é̠ x̢͖  t͔͛`"
+            "`B̟̈́̆̐̄̚͜ę̷̵̧̖̫̗̆̊r̶̷̲͍̭͐̾̀͟i̵͓͙̱͚̎͟k̶̸͙̭̹͆͟ă̶̸̝ͦ͊̿͋͞n̷̶̯͉̊̽̐ͦ͘ t̴͕͖͓̀ę̷̵̧̖̫̗̆̊k̶̸͙̭̹͆͟s̩͙͖̋͛͟ y̯̤͑́́̓́ă̶̸̝ͦ͊̿͋͞n̷̶̯͉̊̽̐ͦ͘g̴̶̛̮̣͙͠ m̶̷͔ͪ̽͡ę̷̵̧̖̫̗̆̊n̷̶̯͉̊̽̐ͦ͘ă̶̸̝ͦ͊̿͋͞k̶̸͙̭̹͆͟û̶͙̽̿͆̈t̴͕͖͓̀k̶̸͙̭̹͆͟ă̶̸̝ͦ͊̿͋͞n̷̶̯͉̊̽̐ͦ͘!`"
         )
 
     for charac in message:
@@ -869,26 +870,6 @@ async def zal(zgfy):
 async def hoi(hello):
     """ Greet everyone! """
     await hello.edit(choice(HELLOSTR))
-
-
-@register(outgoing=True, pattern=r"^\.iwi(?: |$)(.*)")
-async def faces(siwis):
-    """IwI"""
-    textx = await siwis.get_reply_message()
-    message = siwis.pattern_match.group(1)
-    if message:
-        pass
-    elif textx:
-        message = textx.text
-    else:
-        await siwis.edit("` IwI no text given! `")
-        return
-
-    reply_text = sub(r"(a|i|u|e|o)", "i", message)
-    reply_text = sub(r"(A|I|U|E|O)", "I", reply_text)
-    reply_text = sub(r"\!+", " " + choice(IWIS), reply_text)
-    reply_text += " " + choice(IWIS)
-    await siwis.edit(reply_text)
 
 
 @register(outgoing=True, pattern=r"^\.owo(?: |$)(.*)")
@@ -1007,7 +988,7 @@ async def spongemocktext(mock):
     elif textx:
         message = textx.text
     else:
-        return await mock.edit("`gIvE sOMEtHInG tO MoCk!`")
+        return await mock.edit("`bErIKan sESUatU uNtuK DIejEk! 😆`")
 
     for charac in message:
         if charac.isalpha() and randint(0, 1):
@@ -1029,7 +1010,7 @@ async def claptext(memereview):
     elif textx:
         message = textx.text
     else:
-        return await memereview.edit("`Hah, I don't clap pointlessly!`")
+        return await memereview.edit("`Hah, Saya tidak bertepuk tangan tanpa tujuan!`")
     reply_text = "👏 "
     reply_text += message.replace(" ", " 👏 ")
     reply_text += " 👏"
@@ -1080,7 +1061,7 @@ async def let_me_google_that_for_you(lmgtfy_q):
     payload = {"format": "json", "url": lfy_url}
     r = requests.get("http://is.gd/create.php", params=payload)
     await lmgtfy_q.edit(
-        "Here you are, help yourself." f"\n[{query}]({r.json()['shorturl']})"
+        "`Ini dia, bantu dirimu sendiri.`" f"\n[{query}]({r.json()['shorturl']})"
     )
 
 
@@ -1115,7 +1096,7 @@ async def scam(event):
         scam_action = str(args[0]).lower()
         scam_time = int(args[1])
     else:
-        await event.edit("`Invalid Syntax !!`")
+        await event.edit("`Sintaks tidak valid!`")
         return
     try:
         if scam_time > 0:
@@ -1136,7 +1117,7 @@ async def typewriter(typew):
     elif textx:
         message = textx.text
     else:
-        return await typew.edit("`Give a text to type!`")
+        return await typew.edit("`Berikan teks untuk diketik!`")
     sleep_time = 0.03
     typing_symbol = "|"
     old_text = ""
@@ -1153,71 +1134,71 @@ async def typewriter(typew):
 
 CMD_HELP.update(
     {
-        "memes": ">`.cowsay`"
-        "\nUsage: cow which says things."
-        "\n\n>`:/`"
-        "\nUsage: Check yourself ;)"
-        "\n\n>`-_-`"
-        "\nUsage: Ok..."
-        "\n\n>`;_;`"
-        "\nUsage: Like `-_-` but crying."
-        "\n\n>`.cp`"
-        "\nUsage: Copypasta the famous meme"
-        "\n\n>`.vapor`"
-        "\nUsage: Vaporize everything!"
-        "\n\n>`.str`"
-        "\nUsage: Stretch it."
-        "\n\n>`.10iq`"
-        "\nUsage: You retard !!"
-        "\n\n>`.zal`"
-        "\nUsage: Invoke the feeling of chaos."
-        "\n\n>`Oem`"
-        "\nUsage: Oeeeem"
-        "\n\n>`Oof`"
-        "\nUsage: Ooooof"
-        "\n\n>`.fp`"
-        "\nUsage: Facepalm :P"
-        "\n\n>`.moon`"
-        "\nUsage: kensar moon animation."
-        "\n\n>`.clock`"
-        "\nUsage: kensar clock animation."
-        "\n\n>`.hi`"
-        "\nUsage: Greet everyone!"
-        "\n\n>`.coinflip <heads/tails>`"
-        "\nUsage: Flip a coin !!"
-        "\n\n>`.owo`"
-        "\nUsage: UwU"
-        "\n\n>`.react`"
-        "\nUsage: Make your userbot react to everything."
-        "\n\n>`.slap`"
-        "\nUsage: reply to slap them with random objects !!"
-        "\n\n>`.cry`"
-        "\nUsage: y u du dis, i cri."
-        "\n\n>`.shg`"
-        "\nUsage: Shrug at it !!"
-        "\n\n>`.run`"
-        "\nUsage: Let Me Run, run, RUNNN!"
-        "\n\n>`.chase`"
-        "\nUsage: You better start running"
-        "\n\n>`.metoo`"
-        "\nUsage: Haha yes"
-        "\n\n>`.mock`"
-        "\nUsage: Do it and find the real fun."
-        "\n\n>`.clap`"
-        "\nUsage: Praise people!"
-        "\n\n>`.f <emoji/character>`"
-        "\nUsage: Pay Respects."
-        "\n\n>`.bt`"
-        "\nUsage: Believe me, you will find this useful."
-        "\n\n>`.type`"
-        "\nUsage: Just a small command to make your keyboard become a typewriter!"
-        "\n\n>`.lfy <query>`"
-        "\nUsage: Let me Google that for you real quick !!"
-        "\n\n>`.decide [Alternates: (.yes, .no, .maybe)]`"
-        "\nUsage: Make a quick decision."
-        "\n\n>`.scam <action> <time>`"
-        "\n[Available Actions: (typing, contact, game, location, voice, round, video, photo, document, cancel)]"
-        "\nUsage: Create fake chat actions, for fun. (Default action: typing)"
-        "\n\n\nThanks to 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot) for some of these."
+        "memes": "`.cowsay`"
+        "\n➥  Sapi yang mengatakan banyak hal."
+        "\n\n`:/`"
+        "\n➥  Periksa diri Anda sendiri ;)"
+        "\n\n`-_-`"
+        "\n➥  Ok..."
+        "\n\n`;_;`"
+        "\n➥  Seperti `-_-` tapi menangis."
+        "\n\n`.cp`"
+        "\n➥  Salin tempel meme terkenal."
+        "\n\n`.vapor`"
+        "\n➥  Menguapkan segalanya!"
+        "\n\n`.str`"
+        "\n➥  Regangkan."
+        "\n\n`.10iq`"
+        "\n➥  Kamu bodoh!"
+        "\n\n`.zal`"
+        "\n➥  Munculkan perasaan kacau."
+        "\n\n`Oem`"
+        "\n➥  Oeeeem"
+        "\n\n`Oof`"
+        "\n➥  Ooooof"
+        "\n\n`.fp`"
+        "\n➥  Telapak tangan :P"
+        "\n\n`.moon`"
+        "\n➥  Animasi bulan Kensar."
+        "\n\n`.clock`"
+        "\n➥  Animasi jam Kensar."
+        "\n\n`.hi`"
+        "\n➥  Sapa semuanya!"
+        "\n\n`.coinflip [heads/tails>]`"
+        "\n➥  Lempar koin!"
+        "\n\n`.owo`"
+        "\n➥  UwU"
+        "\n\n`.react`"
+        "\n➥  Buat bot Anda bereaksi terhadap segalanya."
+        "\n\n`.slap`"
+        "\n➥  Balas dengan menampar mereka dengan benda acak!"
+        "\n\n`.cry`"
+        "\n➥  Anda melakukan ini, saya menangis."
+        "\n\n`.shg`"
+        "\n➥  Angkat bahu!"
+        "\n\n`.run`"
+        "\n➥  Biarkan aku lari, lari, LARIII!"
+        "\n\n`.chase`"
+        "\n➥  Anda lebih baik mulai berlari."
+        "\n\n`.metoo`"
+        "\n➥  Haha yes"
+        "\n\n`.mock`"
+        "\n➥  Lakukan dan temukan kesenangan nyata."
+        "\n\n`.clap`"
+        "\n➥  Puji orang!"
+        "\n\n`.f [emoji/karakter]`"
+        "\n➥  Beri hormat."
+        "\n\n`.bt`"
+        "\n➥  Percayalah, ini berguna bagi Anda."
+        "\n\n`.type`"
+        "\n➥  Hanya perintah kecil untuk membuat keyboard Anda menjadi mesin tik!"
+        "\n\n`.lfy [kueri/pertanyaan]`"
+        "\n➥  Biarkan Google melakukannya untuk Anda dengan cepat!"
+        "\n\n`.decide [Alternatif: (.yes, .no, .maybe)]`"
+        "\n➥  Buat keputusan cepat."
+        "\n\n`.scam [tindakan] [waktu]`"
+        "\n[Tindakan yang tersedia: (typing, contact, game, location, voice, round, video, photo, document, cancel)]"
+        "\n➥  Buat tindakan obrolan palsu, untuk bersenang-senang. (Tindakan default: typing)"
+        "\n\nTerima kasih 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot) untuk beberapa di antaranya."
     }
 )

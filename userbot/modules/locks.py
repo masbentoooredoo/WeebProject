@@ -26,34 +26,34 @@ async def locks(event):
     changeinfo = None
     if input_str == "msg":
         msg = True
-        what = "messages"
+        what = "Pesan"
     elif input_str == "media":
         media = True
-        what = "media"
+        what = "Media"
     elif input_str == "sticker":
         sticker = True
-        what = "stickers"
+        what = "Stiker"
     elif input_str == "gif":
         gif = True
-        what = "GIFs"
+        what = "GIF"
     elif input_str == "game":
         gamee = True
-        what = "games"
+        what = "Game"
     elif input_str == "inline":
         ainline = True
-        what = "inline bots"
+        what = "Inline bots"
     elif input_str == "poll":
         gpoll = True
-        what = "polls"
+        what = "Jajak pendapat"
     elif input_str == "invite":
         adduser = True
-        what = "invites"
+        what = "Mengundang"
     elif input_str == "pin":
         cpin = True
-        what = "pins"
+        what = "Sematkan"
     elif input_str == "info":
         changeinfo = True
-        what = "chat info"
+        what = "Info obrolan"
     elif input_str == "all":
         msg = True
         media = True
@@ -65,12 +65,12 @@ async def locks(event):
         adduser = True
         cpin = True
         changeinfo = True
-        what = "everything"
+        what = "Semua"
     else:
         if not input_str:
-            return await event.edit("`I can't lock nothing !!`")
+            return await event.edit("`Saya tidak bisa mengunci apapun!`")
         else:
-            return await event.edit(f"`Invalid lock type:` {input_str}")
+            return await event.edit(f"`Jenis kunci tidak valid :` {input_str}")
 
     lock_rights = ChatBannedRights(
         until_date=None,
@@ -89,10 +89,10 @@ async def locks(event):
         await event.client(
             EditChatDefaultBannedRightsRequest(peer=peer_id, banned_rights=lock_rights)
         )
-        await event.edit(f"`Locked {what} for this chat !!`")
+        await event.edit(f"`Mengunci`  **{what}**  `untuk obrolan ini!`")
     except BaseException as e:
         return await event.edit(
-            f"`Do I have proper rights for that ??`\n**Error:** {str(e)}"
+            f"`Apakah saya memiliki hak yang layak untuk itu?`\n**Kesalahan** : {str(e)}"
         )
 
 
@@ -112,34 +112,34 @@ async def rem_locks(event):
     changeinfo = None
     if input_str == "msg":
         msg = False
-        what = "messages"
+        what = "Pesan"
     elif input_str == "media":
         media = False
-        what = "media"
+        what = "Media"
     elif input_str == "sticker":
         sticker = False
-        what = "stickers"
+        what = "Stiker"
     elif input_str == "gif":
         gif = False
-        what = "GIFs"
+        what = "GIF"
     elif input_str == "game":
         gamee = False
-        what = "games"
+        what = "Game"
     elif input_str == "inline":
         ainline = False
-        what = "inline bots"
+        what = "Inline bots"
     elif input_str == "poll":
         gpoll = False
-        what = "polls"
+        what = "Jajak pendapat"
     elif input_str == "invite":
         adduser = False
-        what = "invites"
+        what = "Mengundang"
     elif input_str == "pin":
         cpin = False
-        what = "pins"
+        what = "Sematkan"
     elif input_str == "info":
         changeinfo = False
-        what = "chat info"
+        what = "Info obrolan"
     elif input_str == "all":
         msg = False
         media = False
@@ -151,12 +151,12 @@ async def rem_locks(event):
         adduser = False
         cpin = False
         changeinfo = False
-        what = "everything"
+        what = "Semua"
     else:
         if not input_str:
-            return await event.edit("`I can't unlock nothing !!`")
+            return await event.edit("`Saya tidak bisa membuka kunci apa pun!`")
         else:
-            return await event.edit(f"`Invalid unlock type:` {input_str}")
+            return await event.edit(f"`Jenis buka kunci tidak valid :` {input_str}")
 
     unlock_rights = ChatBannedRights(
         until_date=None,
@@ -177,19 +177,21 @@ async def rem_locks(event):
                 peer=peer_id, banned_rights=unlock_rights
             )
         )
-        await event.edit(f"`Unlocked {what} for this chat !!`")
+        await event.edit(f"**{what}**  `tidak lagi dikunci untuk obrolan ini!`")
     except BaseException as e:
         return await event.edit(
-            f"`Do I have proper rights for that ??`\n**Error:** {str(e)}"
+            f"`Apakah saya memiliki hak yang layak untuk itu?`\n**Kesalahan** : {str(e)}"
         )
 
 
 CMD_HELP.update(
     {
-        "locks": ">`.lock <all (or) type(s)>` or >`.unlock <all (or) type(s)>`"
-        "\nUsage: Allows you to lock/unlock some common message types in the chat."
-        "\n[NOTE: Requires proper admin rights in the chat !!]"
-        "\n\nAvailable message types to lock/unlock are: "
+        "locks": "`.lock [all/type(s)]`"
+        "\n➥  Memungkinkan Anda mengunci beberapa jenis pesan umum dalam obrolan."
+        "\n\n`.unlock [all/type(s)]`"
+        "\n➥  Memungkinkan Anda membuka kunci beberapa jenis pesan umum dalam obrolan."
+        "\n\n**CATATAN** : Membutuhkan hak admin yang tepat dalam obrolan!"
+        "\n\n**Jenis pesan yang tersedia untuk dikunci / dibuka kuncinya adalah** : "
         "\n`all, msg, media, sticker, gif, game, inline, poll, invite, pin, info`"
     }
 )

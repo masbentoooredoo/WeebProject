@@ -19,15 +19,16 @@ async def help(event):
         if args in CMD_HELP:
             msg = await event.edit(str(CMD_HELP[args]))
         else:
-            msg = await event.edit("Please specify a valid module name.")
+            msg = await event.edit("`Harap tentukan nama modul yang valid!`")
+            await asyncio.sleep(10)
+            await event.delete()
     else:
-        head = "Please specify which module do you want help for !!"
-        head2 = f"Loaded Modules : {len(CMD_HELP)}"
-        head3 = "Usage: `.help` `<module name>`"
-        head4 = "List for all available command below: "
+        head = "Harap tentukan modul mana yang Anda inginkan untuk bantuan!"
+        head2 = f"Modul yang dimuat : `{len(CMD_HELP)}`"
+        head3 = "Gunakan : `.help [nama modul]`"
+        head4 = "Daftar untuk semua perintah tersedia di bawah ini: "
         string = ""
-        sep1 = "`••••••••••••••••••••••••••••••••••••••••••••••`"
-        sep2 = "`=========================================`"
+        sep1 = "`=======================================================`"
         for i in sorted(CMD_HELP):
             string += "`" + str(i)
             string += "`  |  "
@@ -35,12 +36,12 @@ async def help(event):
             f"{head}\
               \n{head2}\
               \n{head3}\
-              \n{sep2}\
               \n{head4}\
+              \n{sep1}\
               \n\n{string}\
-              \n{sep1}"
+              \n\n{sep1}"
         )
-    await asyncio.sleep(40)
+    await asyncio.sleep(45)
     await event.delete()
     try:
         await msg.delete()

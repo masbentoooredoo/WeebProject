@@ -78,20 +78,20 @@ async def sed(command):
             to_fix = textx.text
         else:
             return await command.edit(
-                "`Master, I don't have brains. Well you too don't I guess.`"
+                "`Master, Saya tidak punya otak.\nYah, kurasa Anda juga tidak.`"
             )
 
         repl, repl_with, flags = sed_result
 
         if not repl:
             return await command.edit(
-                "`Master, I don't have brains. Well you too don't I guess.`"
+                "`Master, Saya tidak punya otak.\nYah, kurasa Anda juga tidak.`"
             )
 
         try:
             check = re.match(repl, to_fix, flags=re.IGNORECASE)
             if check and check.group(0).lower() == to_fix.lower():
-                return await command.edit("`Boi!, that's a reply. Don't use sed`")
+                return await command.edit("`Boi!, itu balasan. Jangan gunakan sed.`")
 
             if "i" in flags and "g" in flags:
                 text = re.sub(repl, repl_with, to_fix, flags=re.I).strip()
@@ -102,15 +102,15 @@ async def sed(command):
             else:
                 text = re.sub(repl, repl_with, to_fix, count=1).strip()
         except sre_err:
-            return await command.edit("B O I! [Learn Regex](https://regexone.com)")
+            return await command.edit("B O I! [Pelajari Regex](https://regexone.com)")
         if text:
-            await command.edit(f"Did you mean? \n\n{text}")
+            await command.edit(f"`Apakah yang kamu maksud?` \n\n{text}")
 
 
 CMD_HELP.update(
     {
-        "sed": ">`.s<delimiter><old word(s)><delimiter><new word(s)>`"
-        "\nUsage: Replaces a word or words using sed."
-        "\nDelimiters: `/, :, |, _`"
+        "sed": "`.s[pembatas][kata lama][pembatas][kata baru]`"
+        "\n➥  Mengganti satu kata atau kata menggunakan sed."
+        "\nPembatas : `/, :, |, _`"
     }
 )

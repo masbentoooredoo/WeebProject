@@ -6,10 +6,7 @@
 """ Userbot module for executing code and terminal commands from Telegram. """
 
 import asyncio
-import io
 import re
-import sys
-import traceback
 from os import remove
 from sys import executable
 
@@ -18,63 +15,61 @@ from userbot.events import register
 
 
 @register(outgoing=True, pattern=r"^\.eval(?: |$|\n)(.*)")
-async def _(event):
-    if event.fwd_from:
-        return
-    s_m_ = await event.edit("Processing ...")
-    cmd = event.text.split(" ", maxsplit=1)[1]
-    event.message.id
-    if event.reply_to_msg_id:
-        event.reply_to_msg_id
+async def evaluate(query):
+    """ For .eval command, evaluates the given Python expression. """
+    if query.is_channel and not query.is_group:
+        return await query.edit("`Mengevaluasi tidak diizinkan di saluran.`")
 
-    old_stderr = sys.stderr
-    old_stdout = sys.stdout
-    redirected_output = sys.stdout = io.StringIO()
-    redirected_error = sys.stderr = io.StringIO()
-    stdout, stderr, exc = None, None, None
+    if query.pattern_match.group(1):
+        expression = query.pattern_match.group(1)
+    else:
+        return await query.edit("`Berikan ekspresi untuk dievaluasi.`")
+
+    for i in ("userbot.session", "env"):
+        if expression.find(i) != -1:
+            return await query.edit("`Itu tindakan yang berbahaya!\nTidak diperbolehkan!`")
+
+    if not re.search(r"echo[ \-\w]*\$\w+", expression) is None:
+        return await expression.edit("`Itu tindakan yang berbahaya!\nTidak diperbolehkan!`")
 
     try:
-        await aexec(cmd, s_m_)
-    except Exception:
-        exc = traceback.format_exc()
+        evaluation = str(eval(expression))
+        if evaluation:
+            if isinstance(evaluation, str):
+                if len(evaluation) >= 4096:
+                    file = open("output.txt", "w+")
+                    file.write(evaluation)
+                    file.close()
+                    await query.client.send_file(
+                        query.chat_id,
+                        "output.txt",
+                        reply_to=query.id,
+                        caption="`Output terlalu besar, dikirim sebagai file.`",
+                    )
+                    remove("output.txt")
+                    return
+                await query.edit(
+                    "**Kueri** : \n`"
+                    f"{expression}"
+                    "`\n**Hasil** : \n`"
+                    f"{evaluation}"
+                    "`"
+                )
+        else:
+            await query.edit(
+                "**Kueri** : \n`"
+                f"{expression}"
+                "`\n**Hasil : **\n`Tidak ada hasil yang dikembalikan/salah.`"
+            )
+    except Exception as err:
+        await query.edit(
+            "**Kueri** : \n`" f"{expression}" "`\n**Pengecualian** : \n" f"`{err}`"
+        )
 
-    stdout = redirected_output.getvalue()
-    stderr = redirected_error.getvalue()
-    sys.stdout = old_stdout
-    sys.stderr = old_stderr
-
-    evaluation = "😐"
-    if exc:
-        evaluation = exc
-    elif stderr:
-        evaluation = stderr
-    elif stdout:
-        evaluation = stdout
-
-    final_output = "**EVAL**: `{}` \n\n **OUTPUT**: \n`{}` \n".format(cmd, evaluation)
-
-    if len(final_output) >= 4096:
-        with io.BytesIO(str.encode(final_output)) as out_file:
-            out_file.name = "eval.text"
-            await s_m_.reply(cmd, file=out_file)
-            await event.delete()
-    else:
-        await s_m_.edit(final_output)
-
-
-async def aexec(code, smessatatus):
-    message = event = smessatatus
-
-    def p(_x):
-        return print(slitu.yaml_format(_x))
-
-    reply = await event.get_reply_message()
-    exec(
-        f"async def __aexec(message, reply, client, p): "
-        + "\n event = smessatatus = message"
-        + "".join(f"\n {l}" for l in code.split("\n"))
-    )
-    return await locals()["__aexec"](message, reply, message.client, p)
+    if BOTLOG:
+        await query.client.send_message(
+            BOTLOG_CHATID, f"`Permintaan evaluasi`  **{expression}**  `berhasil dijalankan.`"
+        )
 
 
 @register(outgoing=True, pattern=r"^\.exec(?: |$|\n)([\s\S]*)")
@@ -83,16 +78,16 @@ async def run(run_q):
     code = run_q.pattern_match.group(1)
 
     if run_q.is_channel and not run_q.is_group:
-        return await run_q.edit("`Exec isn't permitted on channels!`")
+        return await run_q.edit("`Eksekusi tidak diizinkan di saluran!`")
 
     if not code:
         return await run_q.edit(
-            "``` At least a variable is required to"
-            "execute. Use .help exec for an example.```"
+            "`Setidaknya variabel diperlukan untuk "
+            "dieksekusi.`\n`Gunakan “.help exec” sebagai contoh.`"
         )
 
     if code in ("userbot.session", "config.env"):
-        return await run_q.edit("`That's a dangerous operation! Not Permitted!`")
+        return await run_q.edit("`Itu tindakan yang berbahaya!\nTidak diperbolehkan!`")
 
     if len(code.splitlines()) <= 5:
         codepre = code
@@ -122,21 +117,21 @@ async def run(run_q):
                 run_q.chat_id,
                 "output.txt",
                 reply_to=run_q.id,
-                caption="`Output too large, sending as file`",
+                caption="`Output terlalu besar, dikirim sebagai file`",
             )
             remove("output.txt")
             return
         await run_q.edit(
-            "**Query: **\n`" f"{codepre}" "`\n**Result: **\n`" f"{result}" "`"
+            "**Kueri** : \n`" f"{codepre}" "`\n**Hasil** : \n`" f"{result}" "`"
         )
     else:
         await run_q.edit(
-            "**Query: **\n`" f"{codepre}" "`\n**Result: **\n`No result returned/False`"
+            "**Kueri** : \n`" f"{codepre}" "`\n**Hasil** : \n`Tidak ada hasil yang dikembalikan/salah.`"
         )
 
     if BOTLOG:
         await run_q.client.send_message(
-            BOTLOG_CHATID, "Exec query " + codepre + " was executed successfully."
+            BOTLOG_CHATID, "Kueri eksekusi " + codepre + " berhasil dieksekusi."
         )
 
 
@@ -150,22 +145,22 @@ async def terminal_runner(term):
 
         uid = geteuid()
     except ImportError:
-        uid = "This ain't it chief!"
+        uid = "Ini bukan kepala!"
 
     if term.is_channel and not term.is_group:
-        return await term.edit("`Term commands aren't permitted on channels!`")
+        return await term.edit("`Perintah istilah tidak diizinkan di saluran!`")
 
     if not command:
         return await term.edit(
-            "``` Give a command or use .help term for an example.```"
+            "`Berikan perintah atau gunakan` `“.help term”` `sebagai contoh.`"
         )
 
     for i in ("userbot.session", "env"):
         if command.find(i) != -1:
-            return await term.edit("`That's a dangerous operation! Not Permitted!`")
+            return await term.edit("`Itu tindakan yang berbahaya!\nTidak diperbolehkan!`")
 
     if not re.search(r"echo[ \-\w]*\$\w+", command) is None:
-        return await term.edit("`That's a dangerous operation! Not Permitted!`")
+        return await term.edit("`Itu tindakan yang berbahaya!\nTidak diperbolehkan!`")
 
     process = await asyncio.create_subprocess_shell(
         command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
@@ -181,7 +176,7 @@ async def terminal_runner(term):
             term.chat_id,
             "output.txt",
             reply_to=term.id,
-            caption="`Output too large, sending as file`",
+            caption="`Output terlalu besar, dikirm sebagai file.`",
         )
         remove("output.txt")
         return
@@ -194,15 +189,15 @@ async def terminal_runner(term):
     if BOTLOG:
         await term.client.send_message(
             BOTLOG_CHATID,
-            "Terminal command " + command + " was executed sucessfully.",
+            "Perintah terminal " + command + " berhasil dieksekusi.",
         )
 
 
 CMD_HELP.update(
     {
-        "eval": ">`.eval 2 + 3`" "\nUsage: Evalute mini-expressions.",
-        "exec": ">`.exec print('hello')`" "\nUsage: Execute small python scripts.",
-        "term": ">`.term <cmd>`"
-        "\nUsage: Run bash commands and scripts on your server.",
+        "eval": "`.eval 2 + 3`" "\n➥  Evaluasi ekspresi mini.",
+        "exec": "`.exec print(hello)`" "\n➥  Jalankan skrip python kecil.",
+        "term": "`.term [cmd]`"
+        "\n➥  Jalankan perintah dan skrip bash di server Anda.",
     }
 )

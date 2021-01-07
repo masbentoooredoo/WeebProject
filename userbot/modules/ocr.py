@@ -45,9 +45,9 @@ async def ocr_space_file(
 async def ocr(event):
     if not OCR_SPACE_API_KEY:
         return await event.edit(
-            "`Error: OCR.Space API key is missing! Add it to environment variables or config.env.`"
+            "**Kesalahan** :\n`Kunci API OCR.Space hilang! Tambahkan ke variabel atau config.env`"
         )
-    await event.edit("`Reading...`")
+    await event.edit("`Sedang membaca...`")
     if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
         os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
     lang_code = event.pattern_match.group(1)
@@ -58,16 +58,16 @@ async def ocr(event):
     try:
         ParsedText = test_file["ParsedResults"][0]["ParsedText"]
     except BaseException:
-        await event.edit("`Couldn't read it.`\n`I guess I need new glasses.`")
+        await event.edit("`Tidak bisa membaca.`\n`Saya rasa saya perlu kacamata baru.`")
     else:
-        await event.edit(f"`Here's what I could read from it:`\n\n{ParsedText}")
+        await event.edit(f"`Inilah yang bisa saya baca :`\n\n{ParsedText}")
     os.remove(downloaded_file_name)
 
 
 CMD_HELP.update(
     {
-        "ocr": ">`.ocr <language>`"
-        "\nUsage: Reply to an image or sticker to extract text from it."
-        "\n\nGet language codes from [here](https://ocr.space/OCRAPI#PostParameters)"
+        "ocr": "`.ocr [bahasa]`"
+        "\n➥  Balas gambar atau stiker untuk mengekstrak teks."
+        "\n\nDapatkan kode bahasa dari [sini](https://ocr.space/OCRAPI#PostParameters)"
     }
 )

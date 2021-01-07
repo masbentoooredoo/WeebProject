@@ -13,7 +13,7 @@ from userbot.events import register
 
 @register(outgoing=True, pattern=r"^\.covid(?: |$)(.*)")
 async def corona(event):
-    await event.edit("`Processing...`")
+    await event.edit("`Sedang memproses...`")
     query = event.pattern_match.group(1)
     if query:
         country = query
@@ -23,19 +23,19 @@ async def corona(event):
     try:
         country_data = covid.get_status_by_country_name(country)
         output_text = (
-            f"`Confirmed   : {format_integer(country_data['confirmed'])}`\n"
-            + f"`Active      : {format_integer(country_data['active'])}`\n"
-            + f"`Deaths      : {format_integer(country_data['deaths'])}`\n"
-            + f"`Recovered   : {format_integer(country_data['recovered'])}`\n\n"
-            + f"`New Cases   : {format_integer(country_data['new_cases'])}`\n"
-            + f"`New Deaths  : {format_integer(country_data['new_deaths'])}`\n"
-            + f"`Critical    : {format_integer(country_data['critical'])}`\n"
-            + f"`Total Tests : {format_integer(country_data['total_tests'])}`\n\n"
-            + f"Data provided by [Worldometer](https://www.worldometers.info/coronavirus/country/{country})"
+            f"**Dikonfirmasi** : `{format_integer(country_data['confirmed'])}`\n"
+            + f"**Aktif** : `{format_integer(country_data['active'])}`\n"
+            + f"**Meninggal** : `{format_integer(country_data['deaths'])}`\n"
+            + f"**Dipulihkan** : `{format_integer(country_data['recovered'])}`\n\n"
+            + f"**Kasus Baru** : `{format_integer(country_data['new_cases'])}`\n"
+            + f"**Kematian Baru** : `{format_integer(country_data['new_deaths'])}`\n"
+            + f"**Kritis** : `{format_integer(country_data['critical'])}`\n"
+            + f"**Tes Total** : `{format_integer(country_data['total_tests'])}`\n\n"
+            + f"**Data disediakan oleh** [Worldometer](https://www.worldometers.info/coronavirus/country/{country})"
         )
-        await event.edit(f"Corona Virus Info in {country}:\n\n{output_text}")
+        await event.edit(f"**Info Corona Virus di {country}**\n\n{output_text}")
     except ValueError:
-        await event.edit(f"No information found for: {country}!")
+        await event.edit(f"`Tidak ada informasi yang ditemukan untuk :`  **{country}**!")
 
 
 def format_integer(number, thousand_separator="."):
@@ -60,7 +60,7 @@ def format_integer(number, thousand_separator="."):
 
 CMD_HELP.update(
     {
-        "covid": ">`.covid` **country**"
-        "\nUsage: Get an information about data covid-19 in your country.\n"
+        "covid": "`.covid [negara]`"
+        "\n➥  Dapatkan informasi tentang data Covid-19 di negara Anda.\n"
     }
 )

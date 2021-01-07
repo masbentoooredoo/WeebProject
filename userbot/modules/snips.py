@@ -41,7 +41,7 @@ async def on_snip_save(event):
     try:
         from userbot.modules.sql_helper.snips_sql import add_snip
     except AttributeError:
-        return await event.edit("`Running on Non-SQL mode!`")
+        return await event.edit("`Berjalan di mode Non-SQL!`")
     keyword = event.pattern_match.group(1)
     string = event.text.partition(keyword)[2]
     msg = await event.get_reply_message()
@@ -50,9 +50,9 @@ async def on_snip_save(event):
         if BOTLOG_CHATID:
             await event.client.send_message(
                 BOTLOG_CHATID,
-                f"#SNIP\nKEYWORD: {keyword}"
-                "\n\nThe following message is saved as the data for the snip, "
-                "please do NOT delete it !!",
+                f"#SNIP\n**Kata Kunci** : {keyword}"
+                "\n\nPesan berikut disimpan sebagai data potongan media."
+                "\n**Tolong jangan dihapus!**",
             )
             msg_o = await event.client.forward_messages(
                 entity=BOTLOG_CHATID, messages=msg, from_peer=event.chat_id, silent=True
@@ -60,19 +60,19 @@ async def on_snip_save(event):
             msg_id = msg_o.id
         else:
             return await event.edit(
-                "`Saving snips with media requires the BOTLOG_CHATID to be set.`"
+                "`Untuk menyimpan potongan media, BOTLOG_CHATID harus disetel.`"
             )
     elif event.reply_to_msg_id and not string:
         rep_msg = await event.get_reply_message()
         string = rep_msg.text
-    success = "`Snip {} successfully. Use` `${}` `anywhere to get it`"
+    success = "`Berhasil memotong`  **{}**.\n`Gunakan`  **${}**  `di mana saja untuk mendapatkannya.`"
     try:
         if add_snip(keyword, string, msg_id) is False:
-            await event.edit(success.format("updated", keyword))
+            await event.edit(success.format("diperbarui", keyword))
         else:
-            await event.edit(success.format("saved", keyword))
+            await event.edit(success.format("disimpan", keyword))
     except UnmappedInstanceError:
-        return await event.edit(f"`Snip` `{keyword}` `already exists.`")
+        return await event.edit(f"`.snip`  **{keyword}**  `sudah ada.`")
 
 
 @register(outgoing=True, pattern=r"^\.snips$")
@@ -81,13 +81,13 @@ async def on_snip_list(event):
     try:
         from userbot.modules.sql_helper.snips_sql import get_snips
     except AttributeError:
-        return await event.edit("`Running on Non-SQL mode!`")
+        return await event.edit("`Berjalan di mode Non-SQL!`")
 
-    message = "`No snips available right now.`"
+    message = "`Tidak ada potongan yang tersedia saat ini.`"
     all_snips = get_snips()
     for a_snip in all_snips:
-        if message == "`No snips available right now.`":
-            message = "Available snips:\n"
+        if message == "`Tidak ada potongan yang tersedia saat ini.`":
+            message = "**Potongan yang tersedia** :\n"
             message += f"`${a_snip.snip}`\n"
         else:
             message += f"`${a_snip.snip}`\n"
@@ -101,24 +101,24 @@ async def on_snip_delete(event):
     try:
         from userbot.modules.sql_helper.snips_sql import remove_snip
     except AttributeError:
-        return await event.edit("`Running on Non-SQL mode!`")
+        return await event.edit("`Berjalan di mode Non-SQL!`")
     name = event.pattern_match.group(1)
     if remove_snip(name) is True:
-        await event.edit(f"`Successfully deleted snip:` **{name}**")
+        await event.edit(f"`Berhasil menghapus snip :` **{name}**")
     else:
-        await event.edit(f"`Couldn't find snip:` **{name}**")
+        await event.edit(f"`Tidak dapat menemukan snip :` **{name}**")
 
 
 CMD_HELP.update(
     {
-        "snips": ">`$<snip_name>`"
-        "\nUsage: Gets the specified snip, anywhere."
-        "\n\n>`.snip <name> <data> or reply to a message with .snip <name>`"
-        "\nUsage: Saves the message as a snip (global note) with the name."
-        " (Works with pics, docs, and stickers too!)"
-        "\n\n>`.snips`"
-        "\nUsage: Gets all saved snips."
-        "\n\n>`.remsnip <snip_name>`"
-        "\nUsage: Deletes the specified snip."
+        "snips": "`$[nama_potongan]`"
+        "\n➥  Mendapatkan snip yang ditentukan, di mana saja."
+        "\n\n`.snip [nama] [data]` `atau balas pesan dengan`\n`.snip [nama]`"
+        "\n➥  Menyimpan pesan sebagai potongan dgn nama (catatan global). "
+        "(Dapat digunakan dengan foto, dokumen, dan stiker juga)"
+        "\n\n`.snips`"
+        "\n➥  Melihat semua potongan yang disimpan."
+        "\n\n`.remsnip [nama_potongan]`"
+        "\n➥  Menghapus snip yang ditentukan."
     }
 )

@@ -23,7 +23,7 @@ async def paste(pstl):
     reply_id = pstl.reply_to_msg_id
 
     if not match and not reply_id:
-        return await pstl.edit("`Elon Musk said I cannot paste void.`")
+        return await pstl.edit("`Apa yang harus saya tempelkan?\nBalas sebuah pesan!`")
 
     if match:
         message = match
@@ -45,7 +45,7 @@ async def paste(pstl):
             message = message.message
 
     # Dogbin
-    await pstl.edit("`Pasting text . . .`")
+    await pstl.edit("`Menempelkan teks...`")
     resp = post(DOGBIN_URL + "documents", data=message.encode("utf-8"))
 
     if resp.status_code == 200:
@@ -55,26 +55,26 @@ async def paste(pstl):
 
         if response["isUrl"]:
             reply_text = (
-                "`Pasted successfully!`\n\n"
-                f"[Shortened URL]({dogbin_final_url})\n\n"
-                "`Original(non-shortened) URLs`\n"
-                f"[Dogbin URL]({DOGBIN_URL}v/{key})\n"
-                f"[View RAW]({DOGBIN_URL}raw/{key})"
+                "Berhasil ditempel!\n\n"
+                f"[URL Singkat]({dogbin_final_url})\n\n"
+                "`URL(non-shortened) Asli`\n"
+                f"[URL Dogbin]({DOGBIN_URL}v/{key})\n"
+                f"[Lihat RAW]({DOGBIN_URL}raw/{key})"
             )
         else:
             reply_text = (
-                "`Pasted successfully!`\n\n"
-                f"[Dogbin URL]({dogbin_final_url})\n"
-                f"[View RAW]({DOGBIN_URL}raw/{key})"
+                "Berhasil ditempel!\n\n"
+                f"[URL Dogbin]({dogbin_final_url})\n"
+                f"[Lihat RAW]({DOGBIN_URL}raw/{key})"
             )
     else:
-        reply_text = "`Failed to reach Dogbin`"
+        reply_text = "`Gagal menjangkau Dogbin`"
 
     await pstl.edit(reply_text)
     if BOTLOG:
         await pstl.client.send_message(
             BOTLOG_CHATID,
-            "Paste query was executed successfully",
+            "Kueri tempel berhasil dijalankan",
         )
 
 
@@ -83,7 +83,7 @@ async def get_dogbin_content(dog_url):
     """For .getpaste command, fetches the content of a dogbin URL."""
     textx = await dog_url.get_reply_message()
     message = dog_url.pattern_match.group(1)
-    await dog_url.edit("`Getting dogbin content...`")
+    await dog_url.edit("`Mendapatkan konten Dogbin...`")
 
     if textx:
         message = str(textx.message)
@@ -98,7 +98,7 @@ async def get_dogbin_content(dog_url):
     elif message.startswith("del.dog/"):
         message = message[len("del.dog/") :]
     else:
-        return await dog_url.edit("`Is that even a dogbin url?`")
+        return await dog_url.edit("`Apakah itu url Dogbin?`")
 
     resp = get(f"{DOGBIN_URL}raw/{message}")
 
@@ -106,28 +106,28 @@ async def get_dogbin_content(dog_url):
         resp.raise_for_status()
     except exceptions.HTTPError as HTTPErr:
         await dog_url.edit(
-            "Request returned an unsuccessful status code.\n\n" + str(HTTPErr)
+            "`Permintaan mengembalikan kode status tidak berhasil.`\n\n" + str(HTTPErr)
         )
         return
     except exceptions.Timeout as TimeoutErr:
-        await dog_url.edit("Request timed out." + str(TimeoutErr))
+        await dog_url.edit("`Waktu permintaan habis.`" + str(TimeoutErr))
         return
     except exceptions.TooManyRedirects as RedirectsErr:
         await dog_url.edit(
-            "Request exceeded the configured number of maximum redirections."
+            "`Permintaan melebihi jumlah pengalihan maksimum yang dikonfigurasi.`"
             + str(RedirectsErr)
         )
         return
 
     reply_text = (
-        "`Fetched dogbin URL content successfully!`" "\n\n`Content:` " + resp.text
+        "`Berhasil mengambil konten URL Dogbin`" "\n\n`Konten :` " + resp.text
     )
 
     await dog_url.edit(reply_text)
     if BOTLOG:
         await dog_url.client.send_message(
             BOTLOG_CHATID,
-            "Get dogbin content query was executed successfully",
+            "Dapatkan kueri konten dogbin berhasil dijalankan",
         )
 
 
@@ -139,7 +139,7 @@ async def neko(nekobin):
     reply_id = nekobin.reply_to_msg_id
 
     if not match and not reply_id:
-        return await nekobin.edit("`Cannot paste text.`")
+        return await nekobin.edit("`Tidak dapat menempelkan teks.`")
 
     if match:
         message = match
@@ -161,7 +161,7 @@ async def neko(nekobin):
             message = message.text
 
     # Nekobin
-    await nekobin.edit("`Pasting text . . .`")
+    await nekobin.edit("`Menempelkan teks...`")
     resp = post(NEKOBIN_URL + "api/documents", json={"content": message})
 
     if resp.status_code == 201:
@@ -169,28 +169,28 @@ async def neko(nekobin):
         key = response["result"]["key"]
         nekobin_final_url = NEKOBIN_URL + key
         reply_text = (
-            "`Pasted successfully!`\n\n"
-            f"[Nekobin URL]({nekobin_final_url})\n"
-            f"[View RAW]({NEKOBIN_URL}raw/{key})"
+            "Berhasil ditempel!\n\n"
+            f"[URL Nekobin]({nekobin_final_url})\n"
+            f"[Lihat RAW]({NEKOBIN_URL}raw/{key})"
         )
     else:
-        reply_text = "`Failed to reach Nekobin`"
+        reply_text = "`Gagal menjangkau Nokebin`"
 
     await nekobin.edit(reply_text)
     if BOTLOG:
         await nekobin.client.send_message(
             BOTLOG_CHATID,
-            "Paste query was executed successfully",
+            "`Kueri tempel berhasil dijalankan`",
         )
 
 
 CMD_HELP.update(
     {
-        "paste": ">`.paste <text/reply>`"
-        "\nUsage: Create a paste or a shortened url using dogbin (https://del.dog/)"
-        "\n\n>`.neko <text/reply>`"
-        "\nUsage: Create a paste or a shortened url using nekobin (https://nekobin.com/)"
-        "\n\n>`.getpaste`"
-        "\nUsage: Gets the content of a paste or shortened url from dogbin (https://del.dog/)"
+        "paste": "`.paste [teks/balas pesan]`"
+        "\n➥  Buat teks/url yang dipersingkat menggunakan [dogbin](https://del.dog/)"
+        "\n\n`.neko [teks/balas pesan]`"
+        "\n➥  Buat teks/url yang dipersingkat menggunakan [nekobin](https://nekobin.com/)"
+        "\n\n`.getpaste`"
+        "\n➥  Mendapat konten teks/url yang dipersingkat dari [dogbin](https://del.dog/)"
     }
 )

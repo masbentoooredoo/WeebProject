@@ -18,7 +18,7 @@ from userbot.utils import chrome, options
 @register(pattern=r"^\.ss (.*)", outgoing=True)
 async def capture(url):
     """ For .ss command, capture a website's screenshot and send the photo. """
-    await url.edit("`Processing...`")
+    await url.edit("`Sedang memproses...`")
     chrome_options = await options()
     chrome_options.add_argument("--test-type")
     chrome_options.add_argument("--ignore-certificate-errors")
@@ -29,7 +29,7 @@ async def capture(url):
     if link_match:
         link = link_match.group()
     else:
-        return await url.edit("`I need a valid link to take screenshots from.`")
+        return await url.edit("`Saya memerlukan tautan yang valid untuk mengambil tangkapan layar.`")
     driver.get(link)
     height = driver.execute_script(
         "return Math.max(document.body.scrollHeight, document.body.offsetHeight, "
@@ -44,10 +44,10 @@ async def capture(url):
     driver.set_window_size(width + 125, height + 125)
     wait_for = height / 1000
     await url.edit(
-        "`Generating screenshot of the page...`"
-        f"\n`Height of page = {height}px`"
-        f"\n`Width of page = {width}px`"
-        f"\n`Waiting ({int(wait_for)}s) for the page to load.`"
+        "**Menghasilkan tangkapan layar halaman**`...`"
+        f"\n`Tinggi halaman = {height}px`"
+        f"\n`Lebar halaman = {width}px`"
+        f"\n`Menunggu ({int(wait_for)}) halaman dimuat.`"
     )
     await sleep(int(wait_for))
     im_png = driver.get_screenshot_as_png()
@@ -58,7 +58,7 @@ async def capture(url):
         message_id = url.reply_to_msg_id
     with io.BytesIO(im_png) as out_file:
         out_file.name = "screencapture.png"
-        await url.edit("`Uploading screenshot as file..`")
+        await url.edit("`Mengunggah tangkapan layar sebagai file...`")
         await url.client.send_file(
             url.chat_id,
             out_file,
@@ -70,8 +70,8 @@ async def capture(url):
 
 CMD_HELP.update(
     {
-        "ss": ">`.ss <url>`"
-        "\nUsage: Takes a screenshot of a website and sends the screenshot."
-        "\nExample of a valid URL : `https://www.google.com`"
+        "ss": "`.ss [url]`"
+        "\n➥  Mengambil tangkapan layar dari situs web dan mengirim tangkapan layar sebagai file."
+        "\n**Contoh URL yang valid** : https://www.google.com"
     }
 )

@@ -20,7 +20,7 @@ async def _(event):
     link = event.pattern_match.group(1)
     chat = "@nHentaiBot"
     try:
-        await event.edit("```Processing```")
+        await event.edit("`Sedang memproses...`")
         async with bot.conversation(chat) as conv:
             try:
                 response = conv.wait_event(
@@ -29,17 +29,17 @@ async def _(event):
                 await bot.send_message(chat, link)
                 response = await response
             except YouBlockedUserError:
-                await event.reply("```Please unblock @nHentaiBot and try again```")
+                await event.reply("`Harap buka blokir`  **@nHentaiBot**  `dan coba lagi!`")
                 return
-            if response.text.startswith("**Sorry I couldn't get manga from**"):
-                await event.edit("```I think this is not the right link```")
+            if response.text.startswith("`Maaf, saya tidak bisa menemukan Manga dari`"):
+                await event.edit("`Saya kira ini bukan tautan yang valid!`")
             else:
                 await event.delete()
                 await bot.send_message(event.chat_id, response.message)
     except TimeoutError:
-        await event.edit("`Error: ``@nHentaiBot`` is not responding!`")
+        await event.edit("**Kesalahan** :\n**@nHentaiBot**  `tidak menanggapi!`")
 
 
 CMD_HELP.update(
-    {"nhentai": ">`.nhentai` <link / code>" "\nUsage: view nhentai in telegra.ph XD\n"}
+    {"nhentai": "`.nhentai [tautan/kode]`" "\n➥  Lihat nhentai di telegra.ph XD"}
 )

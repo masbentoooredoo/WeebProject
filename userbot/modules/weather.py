@@ -45,7 +45,7 @@ async def get_weather(weather):
 
     if not OWM_API:
         return await weather.edit(
-            "`Get an API key from` https://openweathermap.org/ `first.`"
+            f"Dapatkan kunci API dahulu dari [OpenWeatherMap](https://openweathermap.org/)"
         )
 
     APPID = OWM_API
@@ -54,7 +54,7 @@ async def get_weather(weather):
         CITY = DEFCITY
         if not CITY:
             return await weather.edit(
-                "`Please specify a city or set one as default using the WEATHER_DEFCITY config variable.`"
+                "`Harap tentukan kota atau tetapkan sebagai default menggunakan variabel config`  **WEATHER_DEFCITY**."
             )
     else:
         CITY = weather.pattern_match.group(1)
@@ -74,7 +74,7 @@ async def get_weather(weather):
             try:
                 countrycode = timezone_countries[f"{country}"]
             except KeyError:
-                return await weather.edit("`Invalid country.`")
+                return await weather.edit("`Negara tidak valid.`")
             CITY = newcity[0].strip() + "," + countrycode.strip()
 
     url = f"https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={APPID}"
@@ -82,7 +82,7 @@ async def get_weather(weather):
     result = json.loads(request.text)
 
     if request.status_code != 200:
-        return await weather.edit(f"`Invalid country.`")
+        return await weather.edit(f"`Negara tidak valid!`")
 
     cityname = result["name"]
     curtemp = result["main"]["temp"]
@@ -122,13 +122,13 @@ async def get_weather(weather):
         return xx
 
     await weather.edit(
-        f"**Temperature:** `{celsius(curtemp)}°C | {fahrenheit(curtemp)}°F`\n"
-        + f"**Min. Temp.:** `{celsius(min_temp)}°C | {fahrenheit(min_temp)}°F`\n"
-        + f"**Max. Temp.:** `{celsius(max_temp)}°C | {fahrenheit(max_temp)}°F`\n"
-        + f"**Humidity:** `{humidity}%`\n"
-        + f"**Wind:** `{kmph[0]} kmh | {mph[0]} mph, {findir}`\n"
-        + f"**Sunrise:** `{sun(sunrise)}`\n"
-        + f"**Sunset:** `{sun(sunset)}`\n\n"
+        f"**Suhu** :  `{celsius(curtemp)}°C | {fahrenheit(curtemp)}°F`\n"
+        + f"**Suhu Min.** :  `{celsius(min_temp)}°C | {fahrenheit(min_temp)}°F`\n"
+        + f"**Suhu Mak.** :  `{celsius(max_temp)}°C | {fahrenheit(max_temp)}°F`\n"
+        + f"**Kelembaban** :  `{humidity}%`\n"
+        + f"**Angin** :  `{kmph[0]} kmh | {mph[0]} mph, {findir}`\n"
+        + f"**Terbit** :  `{sun(sunrise)}`\n"
+        + f"**Terbenam** :  `{sun(sunset)}`\n\n"
         + f"**{desc}**\n"
         + f"`{cityname}, {fullc_n}`\n"
         + f"`{time}`"
@@ -137,7 +137,7 @@ async def get_weather(weather):
 
 CMD_HELP.update(
     {
-        "weather": ">`.weather <city> or .weather <city>, <country name/code>`"
-        "\nUsage: Gets the weather of a city."
+        "weather": "`.weather [kota/nama negara/kode]`"
+        "\n➥  Mendapatkan cuaca disebuah kota."
     }
 )

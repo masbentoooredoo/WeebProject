@@ -29,11 +29,11 @@ DEVICES_DATA = (
 async def magisk(request):
     """ magisk latest releases """
     magisk_dict = {
-        "Stable": "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json",
+        "Stabil": "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json",
         "Beta": "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json",
         "Canary": "https://raw.githubusercontent.com/topjohnwu/magisk_files/canary/canary.json",
     }
-    releases = "Latest Magisk Releases:\n"
+    releases = "**Rilis Magisk Terbaru**\n"
     for name, release_url in magisk_dict.items():
         data = get(release_url).json()
         if str(name) == "Canary":
@@ -68,13 +68,13 @@ async def device_info(request):
     elif textx:
         device = textx.text
     else:
-        return await request.edit("`Usage: .device <codename> / <model>`")
+        return await request.edit("`Gunakan .device [nama kode] / [model]`")
     try:
         found = get(DEVICES_DATA).json()[device]
     except KeyError:
-        reply = f"`Couldn't find info about {device}!`\n"
+        reply = f"`Tidak dapat menemukan info tentang {device}!`\n"
     else:
-        reply = f"Search results for {device}:\n\n"
+        reply = f"Hasil pencarian untuk {device}\n\n"
         for item in found:
             brand = item["brand"]
             name = item["name"]
@@ -82,8 +82,8 @@ async def device_info(request):
             model = item["model"]
             reply += (
                 f"{brand} {name}\n"
-                f"**Codename**: `{codename}`\n"
-                f"**Model**: {model}\n\n"
+                f"**Nama Kode** : {codename}\n"
+                f"**Model** : {model}\n\n"
             )
     await request.edit(reply)
 
@@ -100,7 +100,7 @@ async def codename_info(request):
         brand = textx.text.split(" ")[0]
         device = " ".join(textx.text.split(" ")[1:])
     else:
-        return await request.edit("`Usage: .codename <brand> <device>`")
+        return await request.edit("`Gunakan .codename [merek] [perangkat]`")
     found = [
         i
         for i in get(DEVICES_DATA).json()
@@ -109,7 +109,7 @@ async def codename_info(request):
     if len(found) > 8:
         found = found[:8]
     if found:
-        reply = f"Search results for {brand.capitalize()} {device.capitalize()}:\n\n"
+        reply = f"Hasil pencarian untuk {brand.capitalize()} {device.capitalize()}\n\n"
         for item in found:
             brand = item["brand"]
             name = item["name"]
@@ -117,17 +117,17 @@ async def codename_info(request):
             model = item["model"]
             reply += (
                 f"{brand} {name}\n"
-                f"**Codename**: `{codename}`\n"
-                f"**Model**: {model}\n\n"
+                f"**Nama kode** : {codename}\n"
+                f"**Model** : {model}\n\n"
             )
     else:
-        reply = f"`Couldn't find {device} codename!`\n"
+        reply = f"`Tidak dapat menemukan nama kode {device}!`\n"
     await request.edit(reply)
 
 
 @register(outgoing=True, pattern=r"^\.pixeldl(?: |$)(.*)")
 async def download_api(dl):
-    await dl.edit("`Collecting information...`")
+    await dl.edit("`Mengumpulkan informasi...`")
     URL = dl.pattern_match.group(1)
     URL_MSG = await dl.get_reply_message()
     if URL:
@@ -135,18 +135,18 @@ async def download_api(dl):
     elif URL_MSG:
         URL = URL_MSG.text
     else:
-        await dl.edit("`Empty information...`")
+        await dl.edit("`Informasi kosong...`")
         return
     if not re.findall(r"\bhttps?://download.*pixelexperience.*\.org\S+", URL):
-        await dl.edit("`Invalid information...`")
+        await dl.edit("`Informasi tidak valid...`")
         return
     driver = await chrome()
-    await dl.edit("`Getting information...`")
+    await dl.edit("`Mendapatkan informasi...`")
     driver.get(URL)
     error = driver.find_elements_by_class_name("swal2-content")
     if len(error) > 0:
         if error[0].text == "File Not Found.":
-            await dl.edit(f"`FileNotFoundError`: {URL} is not found.")
+            await dl.edit(f"**Kesalahan** : {URL} tidak ditemukan.")
             return
     datas = driver.find_elements_by_class_name("download__meta")
     """ - enumerate data to make sure we download the matched version - """
@@ -161,7 +161,7 @@ async def download_api(dl):
         if md5_origin is not None and i is not None:
             break
     if md5_origin is None and i is None:
-        await dl.edit("`There is no match version available...`")
+        await dl.edit("`Tidak ada versi cocok yang tersedia...`")
     if URL.endswith("/"):
         file_name = URL.split("/")[-2]
     else:
@@ -169,7 +169,7 @@ async def download_api(dl):
     file_path = TEMP_DOWNLOAD_DIRECTORY + file_name
     download = driver.find_elements_by_class_name("download__btn")[i]
     download.click()
-    await dl.edit("`Starting download...`")
+    await dl.edit("`Mulai mengunduh...`")
     file_size = human_to_bytes(download.text.split(None, 3)[-1].strip("()"))
     display_message = None
     complete = False
@@ -193,19 +193,19 @@ async def download_api(dl):
         percentage = downloaded / file_size * 100
         speed = round(downloaded / diff, 2)
         eta = round((file_size - downloaded) / speed)
-        prog_str = "`{0}` | [{1}{2}] `{3}%`".format(
+        prog_str = "**{0}** | [{1}{2}] `{3}%`".format(
             status,
-            "".join(["●" for i in range(math.floor(percentage / 10))]),
-            "".join(["○" for i in range(10 - math.floor(percentage / 10))]),
+            "".join(["■" for i in range(math.floor(percentage / 10))]),
+            "".join(["▨" for i in range(10 - math.floor(percentage / 10))]),
             round(percentage, 2),
         )
         current_message = (
-            "`[DOWNLOAD]`\n\n"
+            "`[UNDUH]`\n\n"
             f"`{file_name}`\n"
             f"`Status`\n{prog_str}\n"
-            f"`{humanbytes(downloaded)} of {humanbytes(file_size)}"
+            f"`{humanbytes(downloaded)} dari {humanbytes(file_size)}"
             f" @ {humanbytes(speed)}`\n"
-            f"`ETA` -> {time_formatter(eta)}"
+            f"`Perkiraan` -> {time_formatter(eta)}"
         )
         if (
             round(diff % 15.00) == 0
@@ -222,11 +222,11 @@ async def download_api(dl):
             if md5_origin == MD5:
                 complete = True
             else:
-                await dl.edit("`Download corrupt...`")
+                await dl.edit("`Unduhan rusak...`")
                 os.remove(file_path)
                 driver.quit()
                 return
-    await dl.respond(f"`{file_name}`\n\n" f"Successfully downloaded to `{file_path}`.")
+    await dl.respond(f"`{file_name}`\n\n" f"Berhasil diunduh ke `{file_path}`.")
     await dl.delete()
     driver.quit()
     return
@@ -244,7 +244,7 @@ async def devices_specifications(request):
         brand = textx.text.split(" ")[0]
         device = " ".join(textx.text.split(" ")[1:])
     else:
-        return await request.edit("`Usage: .specs <brand> <device>`")
+        return await request.edit("`Gunakan .specs [merek] [perangkat]`")
     all_brands = (
         BeautifulSoup(
             get("https://www.devicespecifications.com/en/brand-more").content, "lxml"
@@ -258,7 +258,7 @@ async def devices_specifications(request):
             i["href"] for i in all_brands if brand == i.text.strip().lower()
         ][0]
     except IndexError:
-        await request.edit(f"`{brand} is unknown brand!`")
+        await request.edit(f"`{brand} merek tidak dikenal!`")
     devices = BeautifulSoup(get(brand_page_url).content, "lxml").findAll(
         "div", {"class": "model-listing-container-80"}
     )
@@ -270,7 +270,7 @@ async def devices_specifications(request):
             if device in i.text.strip().lower()
         ]
     except IndexError:
-        await request.edit(f"`can't find {device}!`")
+        await request.edit(f"`Tidak dapat menemukan {device}!`")
     if len(device_page_url) > 2:
         device_page_url = device_page_url[:2]
     reply = ""
@@ -287,7 +287,7 @@ async def devices_specifications(request):
                 .replace("</b>", "")
                 .strip()
             )
-            reply += f"**{title}**: {data}\n"
+            reply += f"**{title}** : {data}\n"
     await request.edit(reply)
 
 
@@ -301,10 +301,10 @@ async def twrp(request):
     elif textx:
         device = textx.text.split(" ")[0]
     else:
-        return await request.edit("`Usage: .twrp <codename>`")
+        return await request.edit("`Gunakan .twrp [nama kode]`")
     url = get(f"https://dl.twrp.me/{device}/")
     if url.status_code == 404:
-        reply = f"`Couldn't find twrp downloads for {device}!`\n"
+        reply = f"`Tidak dapat menemukan unduhan twrp untuk {device}!`\n"
         return await request.edit(reply)
     page = BeautifulSoup(url.content, "lxml")
     download = page.find("table").find("tr").find("a")
@@ -313,26 +313,26 @@ async def twrp(request):
     size = page.find("span", {"class": "filesize"}).text
     date = page.find("em").text.strip()
     reply = (
-        f"**Latest TWRP for {device}:**\n"
+        f"**TWRP terbaru untuk {device}**\n"
         f"[{dl_file}]({dl_link}) - __{size}__\n"
-        f"**Updated:** __{date}__\n"
+        f"**Diperbarui** : __{date}__\n"
     )
     await request.edit(reply)
 
 
 CMD_HELP.update(
     {
-        "android": ">`.magisk`"
-        "\nGet latest Magisk releases"
-        "\n\n>`.device <codename>`"
-        "\nUsage: Get info about android device codename or model."
-        "\n\n>`.codename <brand> <device>`"
-        "\nUsage: Search for android device codename."
-        "\n\n>`.pixeldl` **<download.pixelexperience.org>**"
-        "\nUsage: Download pixel experience ROM into your userbot server."
-        "\n\n>`.specs <brand> <device>`"
-        "\nUsage: Get device specifications info."
-        "\n\n>`.twrp <codename>`"
-        "\nUsage: Get latest twrp download for android device."
+        "android": "`.magisk`"
+        "\n➥  Dapatkan rilis Magisk terbaru."
+        "\n\n`.device [nama kode]`"
+        "\n➥  Dapatkan info tentang nama kode atau model android."
+        "\n\n`.codename [merek] [perangkat]`"
+        "\n➥  Mencari nama kode perangkat android."
+        "\n\n`.pixeldl`  **<download.pixelexperience.org>**"
+        "\n➥  Unduh rom Pixel Experience ke server userbot Anda."
+        "\n\n`.specs [merek] [perangkat]`"
+        "\n➥  Dapatkan info spesifikasi perangkat."
+        "\n\n`.twrp [nama kode]`"
+        "\n➥  Dapatkan unduhan twrp terbaru untuk perangkat android."
     }
 )
