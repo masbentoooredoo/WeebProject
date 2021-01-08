@@ -28,7 +28,7 @@ async def figlet(event):
         result = pyfiglet.figlet_format(text, font=font)
     else:
         result = pyfiglet.figlet_format(text)
-    await event.respond("‌‌‎`{CMD_FIG}`".format(result))
+    await event.respond("‌‌‎`{}`".format(result))
     await event.delete()
 
 CMD_HELP.update(
