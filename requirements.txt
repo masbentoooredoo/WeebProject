@@ -51,5 +51,6 @@ telethon-session-sqlalchemy
 urbandict
 validators
 wikipedia
+wordcloud
 youtube-dl
 youtube-search
