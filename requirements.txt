@@ -42,6 +42,7 @@ python-dotenv
 pytz
 qrcode
 requests
+scipy
 search-engine-parser
 speedtest-cli
 sqlalchemy
