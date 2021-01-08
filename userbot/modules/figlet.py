@@ -23,12 +23,12 @@ async def figlet(event):
         try:
             font = CMD_FIG[cmd]
         except KeyError:
-            await event.edit("`Font yang dipilih tidak valid.")
+            await event.edit("`Font yang dipilih tidak valid.`")
             return
         result = pyfiglet.figlet_format(text, font=font)
     else:
         result = pyfiglet.figlet_format(text)
-    await event.respond("‌‌‎`{}`".format(result))
+    await event.respond("‌‌‎`{font}`".format(result))
     await event.delete()
 
 CMD_HELP.update(
