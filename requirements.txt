@@ -42,7 +42,6 @@ python-dotenv
 pytz
 qrcode
 requests
-scipy
 search-engine-parser
 speedtest-cli
 sqlalchemy
@@ -52,6 +51,5 @@ telethon-session-sqlalchemy
 urbandict
 validators
 wikipedia
-wordcloud
 youtube-dl
 youtube-search
