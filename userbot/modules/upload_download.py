@@ -14,11 +14,12 @@ import math
 import os
 import subprocess
 import time
+from datetime import datetime
 
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from pySmartDL import SmartDL
-from telethon.tl.types import DocumentAttributeVideo
+from telethon.tl.types import DocumentAttributeFilename, DocumentAttributeVideo
 
 from userbot import CMD_HELP, LOGS, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
@@ -87,9 +88,13 @@ async def download(target_file):
         try:
             replied = await target_file.get_reply_message()
             file = replied.document
-            file_name = replied.document.attributes[-1].file_name
-            outdir = TEMP_DOWNLOAD_DIRECTORY + file_name
+            attribs = replied.media.document.attributes
+            for attr in attribs:
+            	if isinstance(attr, DocumentAttributeFilename):
+                    filename = attr.file_name
+            outdir = TEMP_DOWNLOAD_DIRECTORY + filename
             c_time = time.time()
+            start_time = datetime.now()
             with open(outdir, "wb") as f:
                 result = await download_file(
                     client=target_file.client,
@@ -99,11 +104,12 @@ async def download(target_file):
                         progress(d, t, target_file, c_time, "[UNDUH]", input_str)
                     ),
                 )
+            dl_time = (datetime.now() - start_time).seconds
         except Exception as e:  # pylint:disable=C0103,W0703
             await target_file.edit(str(e))
         else:
             await target_file.edit(
-                "Berhasil diunduh ke `{}`!".format(result.name)
+                "Berhasil diunduh ke `{}` dalam `{}` detik.".format(result.name, dl_time)
             )
     else:
         await target_file.edit("`Balas pesan untuk diunduh ke server lokal.`")
@@ -111,13 +117,14 @@ async def download(target_file):
 
 async def get_video_thumb(file, output=None, width=90):
     """ Get video thumbnail """
-    extractMetadata(createParser(file))
-    popen = subprocess.Popen(
-        [f"ffmpeg -i {file} -ss 00:00:01.000 -vframes 1 {output}"],
+    command = f"ffmpeg -i {file} -ss 00:00:01.000 -filter:v scale={width}:-1 -vframes 1 {output}"
+    subprocess.Popen(
+        command,
         shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
     )
+    await asyncio.sleep(2.5)
     return output
 
 
@@ -129,9 +136,9 @@ async def upload(u_event):
     if input_str in ("userbot.session", "config.env"):
         return await u_event.edit("`Itu tindakan yang berbahaya! Tidak diperbolehkan!`")
     if os.path.exists(input_str):
-        thumb = await get_video_thumb(input_str, output="thumb.png")
         file_name = input_str.split("/")[-1]
         c_time = time.time()
+        start_time = datetime.now()
         with open(input_str, "rb") as f:
             result = await upload_file(
                 client=u_event.client,
@@ -141,7 +148,9 @@ async def upload(u_event):
                     progress(d, t, u_event, c_time, "[FILE - UNGGAH]", input_str)
                 ),
             )
+        up_time = (datetime.now() - start_time).seconds
         if input_str.lower().endswith(("mp4", "mkv", "webm")):
+        	thumb = await get_video_thumb(input_str, output="thumb_image.jpg")
             metadata = extractMetadata(createParser(input_str))
             duration = 0
             width = 0
@@ -171,7 +180,7 @@ async def upload(u_event):
                 ],
             )
             os.remove(thumb)
-            await u_event.edit("`Berhasil diunggah!`")
+            await u_event.edit("Berhasil diunggah dalam `{up_time}` detik.")
         else:
             await u_event.client.send_file(
                 u_event.chat_id,
@@ -181,9 +190,9 @@ async def upload(u_event):
                 allow_cache=False,
                 reply_to=u_event.message.id,
             )
-            await u_event.edit("`Berhasil diunggah!`")
+            await u_event.edit("Berhasil diunggah dalam `{up_time}` detik.")
     else:
-        await u_event.edit("**Kesalahan 404** : `File tidak ditemukan.`")
+        await u_event.edit("**404** : `File tidak ditemukan.`")
 
 
 CMD_HELP.update(
