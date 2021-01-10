@@ -198,8 +198,8 @@ async def amireallyaliveuser(username):
         newuser = message[8:]
         global DEFAULTUSER
         DEFAULTUSER = newuser
-        output = "Berhasil mengubah pengguna menjadi " + newuser + "!"
-    await username.edit("`" f"{output}" "`")
+        output = "`Berhasil mengubah pengguna menjadi " + newuser + ".`"
+    await username.edit(f"{output}")
 
 
 @register(outgoing=True, pattern=r"^\.resetalive$")
@@ -207,7 +207,7 @@ async def amireallyalivereset(ureset):
     """ For .resetalive command, reset the username in the .alive command. """
     global DEFAULTUSER
     DEFAULTUSER = str(ALIVE_NAME) if ALIVE_NAME else uname().node
-    await ureset.edit("`" "Berhasil menyetel ulang pengguna untuk alive!" "`")
+    await ureset.edit("`Berhasil menyetel ulang pengguna untuk “.alive”`")
 
 
 CMD_HELP.update(
@@ -221,7 +221,7 @@ CMD_HELP.update(
         "alive": "`.alive`"
         "\n➥  Melihat apakah bot Anda berfungsi atau tidak."
         "\n\n`.aliveu [teks]`"
-        "\n➥  Mengubah “Pengguna” di `.alive` menjadi teks yang Anda inginkan."
+        "\n➥  Mengubah “Pengguna” di  `.alive`  menjadi teks yang Anda inginkan."
         "\n\n`.resetalive`"
         "\n➥  Menyetel ulang “Pengguna” ke default.",
     }
