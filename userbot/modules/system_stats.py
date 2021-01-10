@@ -198,7 +198,7 @@ async def amireallyaliveuser(username):
         newuser = message[8:]
         global DEFAULTUSER
         DEFAULTUSER = newuser
-        output = "`Berhasil mengubah pengguna menjadi` " + newuser + "!"
+        output = "Berhasil mengubah pengguna menjadi " + newuser + "!"
     await username.edit("`" f"{output}" "`")
 
 
