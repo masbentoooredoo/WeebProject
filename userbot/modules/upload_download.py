@@ -150,7 +150,7 @@ async def upload(u_event):
             )
         up_time = (datetime.now() - start_time).seconds
         if input_str.lower().endswith(("mp4", "mkv", "webm")):
-        	thumb = await get_video_thumb(input_str, output="thumb_image.jpg")
+            thumb = await get_video_thumb(input_str, output="thumb_image.jpg")
             metadata = extractMetadata(createParser(input_str))
             duration = 0
             width = 0
