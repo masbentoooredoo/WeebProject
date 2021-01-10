@@ -5,7 +5,7 @@
     "telegram",
     "userbot"
   ],
-  "repository": "https://github.com/BianSepang/WeebProject",
+  "repository": "https://github.com/masbentoooredoo/WeebProject",
   "stack": "container",
   "env": {
     "API_KEY": {
@@ -41,7 +41,7 @@
     },
     "UPSTREAM_REPO_URL": {
       "description": "Your forked repo.",
-      "value": "https://github.com/adekmaulana/ProjectBish",
+      "value": "https://github.com/BianSepang/WeebProject",
       "required": true
     },
     "MAIN_REPO_BRANCH": {

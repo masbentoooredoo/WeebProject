@@ -1,4 +1,4 @@
-# WeebProject Fallback
+<h1 align="center">WeebProject Fallback</h1>
 
 ```
 #include <std/disclaimer.h>
@@ -16,11 +16,11 @@
 /**
 ```
 
-Fallback for [WeebProject](https://github.com/BianSepang/WeebProject) Userbot
+<p align="center">Fallback for <a href="https://github.com/masbentoooredoo/WeebProject">WeebProject</a> Userbot</p>
 
-## Host
-Click this button below to Deploy to Heroku
-<p align="center"><a href="https://heroku.com/deploy?template=https://github.com/BianSepang/WeebProject/tree/fallback"> <img src="https://www.herokucdn.com/deploy/button.png" alt="Deploy to Heroku"/></a></p>
+<h2 align="center">Host</h2>
+<p align="center">Click this button below to Deploy to Heroku</p>
+<p align="center"><a href="https://heroku.com/deploy?template=https://github.com/masbentoooredoo/WeebProject/tree/fallback"> <img src="https://www.herokucdn.com/deploy/button.png" alt="Deploy to Heroku"/></a></p>
 
-## License
-Licensed under [Raphielscape Public License](https://github.com/BianSepang/WeebProject/blob/master/LICENSE) - Version 1.d, February 2020
+<h2 align="center">License</h2>
+<h4 align="center"><a href"=https://github.com/masbentoooredoo/WeebProject/blob/master/LICENSE">Raphielscape Public License</a> - Version 1.d, February 2020</h4>

@@ -36,7 +36,7 @@ RUN pip3 install heroku3 telethon gitpython && rm -r /root/.cache
 #
 # Clone repo and prepare working directory
 #
-RUN git clone -b fallback https://github.com/BianSepang/WeebProject /home/weebproject/
+RUN git clone -b fallback https://github.com/masbentoooredoo/WeebProject /home/weebproject/
 WORKDIR /home/weebproject/
 
 #
