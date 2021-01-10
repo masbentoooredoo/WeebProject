@@ -163,7 +163,7 @@ async def dyno_manage(dyno):
             path = "/accounts/" + aydi + "/actions/get-quota"
             r = requests.get(heroku_api + path, headers=headers)
             if r.status_code != 200:
-                msg += f"`tidak bisa mendapatkan informasi {aydi}...`\n\n"
+                msg += f"`Tidak bisa mendapatkan informasi {aydi}...`\n\n"
                 continue
             result = r.json()
             quota = result["account_quota"]
@@ -199,7 +199,7 @@ async def dyno_manage(dyno):
                     )
             else:
                 for App in Apps:
-                    AppName = '__~~Deleted or transferred app~~__'
+                    AppName = "__~~Deleted or transferred app~~__"
                     ID = App.get("app_uuid")
 
                     AppQuota = App.get("quota_used")
@@ -248,7 +248,7 @@ async def dyno_manage(dyno):
             )
             return
         await dyno.edit(
-            "`[HEROKU - UTAMA]"\n'
+            "`[HEROKU - UTAMA]`\n"
             "`Deploy userbot dalam proses, tunggu sebentar...`"
         )
         os.chdir("deploy")
@@ -320,7 +320,7 @@ async def dyno_manage(dyno):
                              json={"content": data}) .json() .get("result") .get("key"))
         url = f"https://nekobin.com/raw/{key}"
         await dyno.edit(f"`Di sini log heroku dicatat :`\n\nDitempel ke : [Nekobin]({url})")
-        os.remove('logs.txt')
+        os.remove("logs.txt")
         return True
     elif exe == "help":
         await dyno.edit(
@@ -355,6 +355,7 @@ async def dyno_manage(dyno):
             "`Q` : Apa bedanya  `.updatef now`  dan   `.updatef deploy`?\n"
             "`A` : `.updatef now`  untuk memperbarui fallback Anda tanpa menerapkan, "
             "tetapi bot akan kembali ke status terakhir yang berhasil diterapkan jika fallback dimulai ulang.\n"
-            "`.updatef deploy`  sama seperti  `.updatef now`  tetapi jika fallback dimulai ulang, bot tidak akan kembali dan tetap di status terakhir/terbaru."
+            "`.updatef deploy`  sama seperti  `.updatef now`  tetapi jika fallback dimulai ulang, "
+            "bot tidak akan kembali dan tetap di status terakhir/terbaru."
         )
         return True
