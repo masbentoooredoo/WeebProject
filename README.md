@@ -23,4 +23,4 @@
 <p align="center"><a href="https://heroku.com/deploy?template=https://github.com/masbentoooredoo/WeebProject/tree/fallback"> <img src="https://www.herokucdn.com/deploy/button.png" alt="Deploy to Heroku"/></a></p>
 
 <h2 align="center">License</h2>
-<h4 align="center"><a href"=https://github.com/masbentoooredoo/WeebProject/blob/master/LICENSE">Raphielscape Public License</a> - Version 1.d, February 2020</h4>
+<h4 align="center"><a href="https://github.com/masbentoooredoo/WeebProject/blob/master/LICENSE">Raphielscape Public License</a> - Version 1.d, February 2020</h4>
