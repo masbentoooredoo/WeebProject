@@ -1,11 +1,11 @@
 <h1 align="center">WeebProject Userbot</h1>
 <p align="center">
-    <a href="https://app.codacy.com/gh/BianSepang/WeebProject/dashboard"> <img src="https://img.shields.io/codacy/grade/a723cb464d5a4d25be3152b5d71de82d?color=blue&logo=codacy&style=flat-square" alt="Codacy" /></a><br>
-    <a href="https://github.com/BianSepang/WeebProject/stargazers"> <img src="https://img.shields.io/github/stars/BianSepang/WeebProject?logo=github&style=flat-square" alt="Stars" /></a>
-    <a href="https://github.com/BianSepang/WeebProject/network/members"> <img src="https://img.shields.io/github/forks/BianSepang/WeebProject?logo=github&style=flat-square" alt="Forks" /></a>
-    <a href="https://github.com/BianSepang/WeebProject/watchers"> <img src="https://img.shields.io/github/watchers/BianSepang/WeebProject?logo=github&style=flat-square" alt="Watch" /></a><br>
-    <a href="https://github.com/BianSepang/WeebProject/graphs/contributors"> <img src="https://img.shields.io/github/contributors/BianSepang/WeebProject?color=blue&style=flat-square" alt="Contributors" /></a>
-    <a href="https://pypi.org/project/Telethon/"> <img src="https://img.shields.io/pypi/v/telethon?label=telethon&logo=pypi&logoColor=white&style=flat-square" /></a>
+    <a href="https://app.codacy.com/gh/masbentoooredoo/WeebProject/dashboard"> <img src="https://img.shields.io/codacy/grade/a723cb464d5a4d25be3152b5d71de82d?color=soft-green&logo=codacy&style=flat" alt="Codacy" /></a><br>
+    <a href="https://github.com/masbentoooredoo/WeebProject/stargazers"> <img src="https://img.shields.io/github/stars/masbentoooredoo/WeebProject?color=yellow&logo=github&style=flat" alt="Stars" /></a>
+    <a href="https://github.com/masbentoooredoo/WeebProject/network/members"> <img src="https://img.shields.io/github/forks/masbentoooredoo/WeebProject?color=yellow&logo=github&style=flat" alt="Forks" /></a>
+    <a href="https://github.com/masbentoooredoo/WeebProject/watchers"> <img src="https://img.shields.io/github/watchers/masbentoooredoo/WeebProject?color=yellow&logo=github&style=flat" alt="Watch" /></a><br>
+    <a href="https://github.com/masbentoooredoo/WeebProject/graphs/contributors"> <img src="https://img.shields.io/github/contributors/masbentoooredoo/WeebProject?color=blue&style=flat" alt="Contributors" /></a>
+    <a href="https://pypi.org/project/Telethon/"> <img src="https://img.shields.io/pypi/v/telethon?label=telethon&logo=pypi&logoColor=white&style=flat" /></a>
 </p>
 
 ```
