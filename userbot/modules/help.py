@@ -24,22 +24,22 @@ async def help(event):
             await event.delete()
     else:
         head = "Harap tentukan modul mana yang Anda inginkan untuk bantuan!"
-        head2 = f"Modul yang dimuat : `{len(CMD_HELP)}`"
+        head2 = f"Modul yang dimuat : `{len(CMD_HELP)} modul`"
         head3 = "Gunakan : `.help [nama modul]`"
-        head4 = "Daftar untuk semua perintah tersedia di bawah ini: "
+        head4 = "Daftar untuk semua perintah tersedia di bawah ini : "
         string = ""
-        sep1 = "`=======================================================`"
+        sep1 = "`-------------------------------------------------------`"
         for i in sorted(CMD_HELP):
             string += "`" + str(i)
-            string += "`  |  "
+            string += "`  ||  "
         await event.edit(
             f"{head}\
               \n{head2}\
               \n{head3}\
               \n{head4}\
-              \n{sep1}\
-              \n\n{string}\
-              \n\n{sep1}"
+              \n\n{sep1}\
+              \n{string}\
+              \n{sep1}"
         )
     await asyncio.sleep(45)
     await event.delete()
