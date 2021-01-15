@@ -26,8 +26,8 @@ from userbot.events import register
 KANGING_STR = [
     "Ini stiker aku ambil yaa...",
     "Boleh juga nih stiker, ambil ahh...",
-    "Dua tiga helikopter, empat lima ambil stiker",
-    "Permisi kisanak, mau ambil stiker",
+    "Ambil stiker lagi yee kan 😆...",
+    "Maap yee gan stikernya ane ambil lagi...",
 ]
 
 
@@ -74,7 +74,7 @@ async def kang(args):
         else:
             return await args.edit("`File tidak didukung!`")
     else:
-        return await args.edit("`Tukang maling ketangkep polisi...`")
+        return await args.edit("`Tidak bisa mencuri stiker...`")
 
     if photo:
         splat = args.text.split()
@@ -356,7 +356,7 @@ CMD_HELP.update(
         "atau pilih emoji yang Anda inginkan."
         "\n\n`.stkrinfo`"
         "\n➥  Mendapatkan info tentang paket stiker."
-        "\n\n➥`.getsticker`"
+        "\n\n`.getsticker`"
         "\n➥  Balas stiker untuk mendapatkan file stiker PNG."
     }
 )
