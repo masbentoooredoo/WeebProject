@@ -346,7 +346,9 @@ CMD_HELP.update(
     {
         "download": "`.dl [tautan|nama file] atau balas media`"
         "\n➥  Untuk mengunduh file ke server."
-        "\n\n`.up [jalur di server]`"
+        "\n\n`.up [jalur file di server]`"
         "\n➥  Mengunggah yang tersimpan secara lokal ke obrolan."
+        "\n\n`.updir [jalur folder di server]`"
+        "\n➥  Mengunggah folder / direktori dari server."
     }
 )
