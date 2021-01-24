@@ -25,13 +25,13 @@ from userbot.events import register
 
 # ========================= CONSTANTS ============================
 DEF_UNAPPROVED_MSG = (
-    "`Hai... Ini adalah pesan balasan otomatis.`\n\n"
-    "`Maaf, saya belum menyetujui Anda untuk PM.`\n"
-    "`Mohon tunggu sampai saya melihat pesan Anda.`\n"
-    "`Sampai saat itu, tolong jangan spam pesan ke saya.`\n"
-    "`Jika Anda tetap melakukannya...`\n"
-    "`Anda akan dilaporkan dan diblokir.`\n\n"
-    "`TERIMA KASIH.`\n"
+    "Hai... Ini adalah pesan balasan otomatis.\n\n"
+    "Maaf, saya belum menyetujui Anda untuk PM.\n"
+    "Mohon tunggu sampai saya melihat pesan Anda.\n"
+    "Sampai saat itu, tolong jangan spam pesan ke saya.\n"
+    "Jika Anda tetap melakukannya...\n"
+    "Anda akan dilaporkan dan diblokir.\n\n"
+    "TERIMA KASIH.\n"
 )
 # ================================================================
 
@@ -384,7 +384,7 @@ async def add_pmsg(cust_msg):
         else:
             await cust_msg.edit(
                 "Anda belum menyetel pesan yg belum diizinkan.\n"
-                f"Menggunakan pesan default :\n\n{DEF_UNAPPROVED_MSG}"
+                f"Menggunakan pesan default :\n\n`{DEF_UNAPPROVED_MSG}`"
             )
 
 
@@ -408,8 +408,8 @@ CMD_HELP.update(
         "\n➥  Lihat pesan Anda yang belum disetujui untuk PM."
         "\n\n`.reset pm_msg`"
         "\n➥  Menyetel ulang pesan Anda yang belum setujui untuk PM."
-        "\n\nPesan kustom yang belum disetujui untuk PM DAPAT disetel"
-        " dengan teks yang diformat seperti cetak  **tebal**, __miring__, ~~coret~~, dan `monospace`."
-        "\nPesan default dicetak dalam teks `monospace`."
+        "\n\nPesan kustom yang belum disetujui untuk PM  **TIDAK DAPAT**  disetel"
+        " dengan teks yang diformat seperti cetak tebal, miring,  garis bawah, coret, tautan, dll."
+        "\nPesan hanya akan dikirim dalam monospace."
     }
 )
