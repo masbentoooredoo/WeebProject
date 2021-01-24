@@ -25,13 +25,13 @@ from userbot.events import register
 
 # ========================= CONSTANTS ============================
 DEF_UNAPPROVED_MSG = (
-    "Hai... Ini adalah pesan balasan otomatis.\n\n"
-    "Maaf, saya belum menyetujui Anda untuk PM.\n"
-    "Mohon tunggu sampai saya melihat pesan Anda.\n"
-    "Sampai saat itu, tolong jangan spam pesan ke saya.\n"
-    "Jika Anda tetap melakukannya, Anda akan dilaporkan\n"
-    "dan diblokir.\n\n"
-    "TERIMA KASIH.\n"
+    "`Hai... Ini adalah pesan balasan otomatis.`\n\n"
+    "`Maaf, saya belum menyetujui Anda untuk PM.`\n"
+    "`Mohon tunggu sampai saya melihat pesan Anda.`\n"
+    "`Sampai saat itu, tolong jangan spam pesan ke saya.`\n"
+    "`Jika Anda tetap melakukannya...`\n"
+    "`Anda akan dilaporkan dan diblokir.`\n\n"
+    "`TERIMA KASIH.`\n"
 )
 # ================================================================
 
@@ -285,7 +285,7 @@ async def blockpm(block):
         await block.edit("**Anda telah diblokir!**")
         uid = replied_user.id
     elif block.is_group and not block.reply_to_msg_id:
-    	return await block.edit("`Harap balas pengguna yang ingin Anda blokir`")
+    	return await block.edit("**Harap balas pengguna yang ingin Anda blokir.**")
     else:
         await block.client(BlockRequest(block.chat_id))
         aname = await block.client.get_entity(block.chat_id)
@@ -323,7 +323,7 @@ async def unblockpm(unblock):
                 f"#TIDAK DIBLOKIR\n" + "**Pengguna :** " + f"[{name0}](tg://user?id={uid})",
             )
     elif unblock.is_group and not unblock.reply_to_msg_id:
-        return await unblock.edit("`Harap balas pengguna yang ingin Anda buka blokirnya`")
+        return await unblock.edit("**Harap balas pengguna yang ingin Anda buka blokirnya.**")
     else:
         await unblock.edit(f"[{name0}](tg://user?id={uid}) sudah tidak diblokir.")
 
@@ -383,8 +383,8 @@ async def add_pmsg(cust_msg):
             )
         else:
             await cust_msg.edit(
-                "Anda belum menyetel pesan yg belum diizinkan\n"
-                f"Menggunakan pesan default :\n\n`{DEF_UNAPPROVED_MSG}`"
+                "Anda belum menyetel pesan yg belum diizinkan.\n"
+                f"Menggunakan pesan default :\n\n{DEF_UNAPPROVED_MSG}"
             )
 
 
@@ -408,8 +408,8 @@ CMD_HELP.update(
         "\n➥  Lihat pesan Anda yang belum disetujui untuk PM."
         "\n\n`.reset pm_msg`"
         "\n➥  Menyetel ulang pesan Anda yang belum setujui untuk PM."
-        "\n\nPesan kustom yang belum disetujui untuk PM tidak dapat disetel"
-        " dengan teks yang diformat seperti cetak tebal, garis bawah, tautan, dll."
-        "\nPesan hanya akan dikirim dalam monospace."
+        "\n\nPesan kustom yang belum disetujui untuk PM DAPAT disetel"
+        " dengan teks yang diformat seperti cetak  **tebal**, __miring__, ~~coret~~, dan `monospace`."
+        "\nPesan default dicetak dalam teks `monospace`."
     }
 )
