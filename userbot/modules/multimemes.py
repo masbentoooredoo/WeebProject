@@ -6,16 +6,20 @@
 # Multifunction memes
 #
 # Based code + improve from AdekMaulana and aidilaryanto
+#
+# Memify ported from Userge and Refactored by KenHV
 
 import asyncio
 import io
 import os
 import random
 import re
+import shlex
 import textwrap
 import time
 from asyncio.exceptions import TimeoutError
 from random import randint, uniform
+from typing import Optional, Tuple
 
 from glitch_this import ImageGlitcher
 from hachoir.metadata import extractMetadata
@@ -57,9 +61,9 @@ async def glitch(event):
         return
     reply_message = await event.get_reply_message()
     if not reply_message.media:
-        await event.edit("`Balas gambar/stiker`")
+        await event.edit("`Balas gambar/stiker!`")
         return
-    await event.edit("`Mengunduh media...`")
+    await event.edit("`Mengunduh media..`")
     if reply_message.photo:
         glitch_file = await bot.download_media(
             reply_message,
@@ -109,7 +113,7 @@ async def glitch(event):
         duration=DURATION,
         loop=LOOP,
     )
-    await event.edit("`Mengunggah media yang bermasalah...`")
+    await event.edit("`Mengunggah media yang dikacaukan...`")
     c_time = time.time()
     nosave = await event.client.send_file(
         event.chat_id,
@@ -136,166 +140,141 @@ async def glitch(event):
     os.system("rm *.tgs *.mp4")
 
 
-@register(outgoing=True, pattern=r"^\.mmf(?: |$)(.*)")
-async def mim(event):
-    if not event.reply_to_msg_id:
-        await event.edit(
-            "`Sintaksis : membalas gambar dengan .mmf “texttop” ; “textbottom” `"
-        )
-        return
-    reply_message = await event.get_reply_message()
-    if not reply_message.media:
-        await event.edit("`Balas gambar/stiker/gif.`")
-        return
-    await event.edit("`Mengunduh media...`")
-    if reply_message.photo:
-        dls_loc = await bot.download_media(
-            reply_message,
-            "meme.png",
-        )
-    elif (
-        DocumentAttributeFilename(file_name="AnimatedSticker.tgs")
-        in reply_message.media.document.attributes
-    ):
-        await bot.download_media(
-            reply_message,
-            "meme.tgs",
-        )
-        os.system("lottie_convert.py meme.tgs meme.png")
-        dls_loc = "meme.png"
-    elif reply_message.video:
-        video = await bot.download_media(
-            reply_message,
-            "meme.mp4",
-        )
-        extractMetadata(createParser(video))
-        os.system("ffmpeg -i meme.mp4 -vframes 1 -an -s 480x360 -ss 1 meme.png")
-        dls_loc = "meme.png"
-    else:
-        dls_loc = await bot.download_media(
-            reply_message,
-            "meme.png",
-        )
-    await event.edit(
-        "`Waktunya Transfigurasi! Mwahaha Mengingat gambar ini! (」ﾟﾛﾟ)｣ `"
-    )
-    await asyncio.sleep(5)
-    text = event.pattern_match.group(1)
-    webp_file = await draw_meme_text(dls_loc, text)
+@register(outgoing=True, pattern=r"^\.mmf (.*)")
+async def memify(event):
+    reply_msg = await event.get_reply_message()
+    input_str = event.pattern_match.group(1)
+    await event.edit("`Sedang memproses...`")
+
+    if not reply_msg:
+        return await event.edit("`Balas pesan yang berisi media!`")
+
+    if not reply_msg.media:
+        return await event.edit("`Balas gambar/stiker/gif/video!`")
+
+    if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
+        os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
+
+    input_file = await event.client.download_media(reply_msg, TEMP_DOWNLOAD_DIRECTORY)
+    input_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, os.path.basename(input_file))
+
+    if input_file.endswith(".tgs"):
+        await event.edit("`Mengekstrak bingkai pertama...`")
+        converted_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "meme.webp")
+        cmd = f"lottie_convert.py --frame 0 {input_file} {converted_file}"
+        await runcmd(cmd)
+        os.remove(input_file)
+        if not os.path.lexists(converted_file):
+            return await event.edit("`Tidak dapat mengurai stiker beranimasi ini.`")
+        input_file = converted_file
+
+    elif input_file.endswith(".mp4"):
+        await event.edit("`Mengekstrak bingkai pertama...`")
+        converted_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "meme.png")
+        await take_screen_shot(input_file, 0, converted_file)
+        os.remove(input_file)
+        if not os.path.lexists(converted_file):
+            return await event.edit("`Tidak dapat mengurai video ini.`")
+        input_file = converted_file
+
+    await event.edit("`Menambahkan teks...`")
+    try:
+        final_image = await add_text_img(input_file, input_str)
+    except Exception as e:
+        return await event.edit(f"**Terjadi kesalahan :**\n`{e}`")
     await event.client.send_file(
-        event.chat_id, webp_file, reply_to=event.reply_to_msg_id
+        entity=event.chat_id, file=final_image, reply_to=reply_msg
     )
     await event.delete()
-    os.system("rm *.tgs *.mp4 *.png")
-    os.remove(webp_file)
+    os.remove(final_image)
+    os.remove(input_file)
 
 
-async def draw_meme_text(image_path, text):
-    img = Image.open(image_path)
-    os.remove(image_path)
-    i_width, i_height = img.size
-    m_font = ImageFont.truetype(
-        "resources/MutantAcademyStyle.ttf", int((70 / 640) * i_width)
-    )
+async def add_text_img(image_path, text):
+    font_size = 12
+    stroke_width = 2
+
     if ";" in text:
         upper_text, lower_text = text.split(";")
     else:
         upper_text = text
         lower_text = ""
+
+    img = Image.open(image_path).convert("RGBA")
+    img_info = img.info
+    image_width, image_height = img.size
+    font = ImageFont.truetype(
+        font="resources/MutantAcademyStyle.ttf",
+        size=int(image_height * font_size) // 100,
+    )
     draw = ImageDraw.Draw(img)
-    current_h, pad = 10, 5
-    if upper_text:
-        for u_text in textwrap.wrap(upper_text, width=15):
-            u_width, u_height = draw.textsize(u_text, font=m_font)
 
-            draw.text(
-                xy=(((i_width - u_width) / 2) - 1, int((current_h / 640) * i_width)),
-                text=u_text,
-                font=m_font,
-                fill=(0, 0, 0),
-            )
-            draw.text(
-                xy=(((i_width - u_width) / 2) + 1, int((current_h / 640) * i_width)),
-                text=u_text,
-                font=m_font,
-                fill=(0, 0, 0),
-            )
-            draw.text(
-                xy=((i_width - u_width) / 2, int(((current_h / 640) * i_width)) - 1),
-                text=u_text,
-                font=m_font,
-                fill=(0, 0, 0),
-            )
-            draw.text(
-                xy=(((i_width - u_width) / 2), int(((current_h / 640) * i_width)) + 1),
-                text=u_text,
-                font=m_font,
-                fill=(0, 0, 0),
-            )
+    char_width, char_height = font.getsize("A")
+    chars_per_line = image_width // char_width
+    top_lines = textwrap.wrap(upper_text, width=chars_per_line)
+    bottom_lines = textwrap.wrap(lower_text, width=chars_per_line)
 
+    if top_lines:
+        y = 10
+        for line in top_lines:
+            line_width, line_height = font.getsize(line)
+            x = (image_width - line_width) / 2
             draw.text(
-                xy=((i_width - u_width) / 2, int((current_h / 640) * i_width)),
-                text=u_text,
-                font=m_font,
-                fill=(255, 255, 255),
+                (x, y),
+                line,
+                fill="white",
+                font=font,
+                stroke_width=stroke_width,
+                stroke_fill="black",
             )
-            current_h += u_height + pad
-    if lower_text:
-        for l_text in textwrap.wrap(lower_text, width=15):
-            u_width, u_height = draw.textsize(l_text, font=m_font)
+            y += line_height
 
+    if bottom_lines:
+        y = image_height - char_height * len(bottom_lines) - 15
+        for line in bottom_lines:
+            line_width, line_height = font.getsize(line)
+            x = (image_width - line_width) / 2
             draw.text(
-                xy=(
-                    ((i_width - u_width) / 2) - 1,
-                    i_height - u_height - int((20 / 640) * i_width),
-                ),
-                text=l_text,
-                font=m_font,
-                fill=(0, 0, 0),
+                (x, y),
+                line,
+                fill="white",
+                font=font,
+                stroke_width=stroke_width,
+                stroke_fill="black",
             )
-            draw.text(
-                xy=(
-                    ((i_width - u_width) / 2) + 1,
-                    i_height - u_height - int((20 / 640) * i_width),
-                ),
-                text=l_text,
-                font=m_font,
-                fill=(0, 0, 0),
-            )
-            draw.text(
-                xy=(
-                    (i_width - u_width) / 2,
-                    (i_height - u_height - int((20 / 640) * i_width)) - 1,
-                ),
-                text=l_text,
-                font=m_font,
-                fill=(0, 0, 0),
-            )
-            draw.text(
-                xy=(
-                    (i_width - u_width) / 2,
-                    (i_height - u_height - int((20 / 640) * i_width)) + 1,
-                ),
-                text=l_text,
-                font=m_font,
-                fill=(0, 0, 0),
-            )
+            y += line_height
 
-            draw.text(
-                xy=(
-                    (i_width - u_width) / 2,
-                    i_height - u_height - int((20 / 640) * i_width),
-                ),
-                text=l_text,
-                font=m_font,
-                fill=(255, 255, 255),
-            )
-            current_h += u_height + pad
+    final_image = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "memify.webp")
+    img.save(final_image, **img_info)
+    return final_image
 
-    image_name = "memify.webp"
-    webp_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, image_name)
-    img.save(webp_file, "WebP")
-    return webp_file
+
+async def runcmd(cmd: str) -> Tuple[str, str, int, int]:
+    """ run command in terminal """
+    args = shlex.split(cmd)
+    process = await asyncio.create_subprocess_exec(
+        *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
+    stdout, stderr = await process.communicate()
+    return (
+        stdout.decode("utf-8", "replace").strip(),
+        stderr.decode("utf-8", "replace").strip(),
+        process.returncode,
+        process.pid,
+    )
+
+
+async def take_screen_shot(
+    video_file: str, duration: int, path: str = ""
+) -> Optional[str]:
+    """ take a screenshot """
+    ttl = duration // 2
+    thumb_image_path = path or os.path.join(
+        TEMP_DOWNLOAD_DIRECTORY, f"{os.path.basename(video_file)}.png"
+    )
+    command = f'''ffmpeg -ss {ttl} -i "{video_file}" -vframes 1 "{thumb_image_path}"'''
+    err = (await runcmd(command))[1]
+    return thumb_image_path if os.path.exists(thumb_image_path) else err
 
 
 @register(outgoing=True, pattern=r"^\.q(?: |$)(.*)")
@@ -303,16 +282,16 @@ async def quotess(qotli):
     if qotli.fwd_from:
         return
     if not qotli.reply_to_msg_id:
-        await qotli.edit("`Balas pesan pengguna mana pun.`")
+        await qotli.edit("`Balas pesan pengguna mana pun!`")
         return
     reply_message = await qotli.get_reply_message()
     if not reply_message.text:
-        await qotli.edit("`Balas pesan teks.`")
+        await qotli.edit("`Balas pesan teks!`")
         return
     chat = "@QuotLyBot"
     reply_message.sender
     if reply_message.sender.bot:
-        await qotli.edit("`Balas pesan pengguna sebenarnya.`")
+        await qotli.edit("`Balas pesan pengguna sebenarnya!`")
         return
     try:
         await qotli.edit("`Sedang memproses...`")
@@ -325,7 +304,7 @@ async def quotess(qotli):
                 response = await response
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await qotli.reply("`Harap buka blokir`  **@QuotLyBot**  `dan coba lagi.`")
+                await qotli.reply("`Harap buka blokir`  **@QuotLyBot**  `dan coba lagi!`")
                 return
             if response.text.startswith("Hi!"):
                 await qotli.edit(
@@ -343,7 +322,7 @@ async def quotess(qotli):
                 await qotli.client.delete_messages(conv.chat_id, [msg.id, response.id])
                 os.remove(downloaded_file_name)
     except TimeoutError:
-        await qotli.edit("**@QuotLyBot**  `tidak menanggapi!`")
+        await qotli.edit("**@QuotlyBot**  `tidak menanggapi!`")
         await qotli.client.delete_messages(conv.chat_id, [msg.id])
 
 
@@ -358,13 +337,13 @@ async def hazz(hazmat):
         return
     reply_message = await hazmat.get_reply_message()
     if not reply_message.media:
-        await hazmat.edit("`Kata bisa menghancurkan apapun, Kapten!`")
+        await hazmat.edit("`Kata bisa menghancurkan apapun Kapten!`")
         return
     if reply_message.sender.bot:
-        await hazmat.edit("`Balas ke pengguna sebenarnya...`")
+        await hazmat.edit("`Balas ke pengguna sebenarnya!`")
         return
     chat = "@hazmat_suit_bot"
-    await hazmat.edit("`Siapkan Kapten!, Kami akan membersihkan beberapa virus...`")
+    await hazmat.edit("`Siapkan Kapten! kita akan membersihkan beberapa virus...`")
     message_id_to_reply = hazmat.message.reply_to_msg_id
     msg_reply = None
     async with hazmat.client.conversation(chat) as conv:
@@ -385,7 +364,7 @@ async def hazz(hazmat):
             """don't spam notif"""
             await bot.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            await hazmat.reply("`Harap buka blokir`  **@hazmat_suit_bot**`...`")
+            await hazmat.reply("`Harap buka blokir`  **@hazmat_suit_bot**")
             return
         if response.text.startswith("I can't"):
             await hazmat.edit("`Tidak dapat menangani GIF ini...`")
@@ -421,14 +400,14 @@ async def fryerrr(fry):
     if fry.fwd_from:
         return
     if not fry.reply_to_msg_id:
-        await fry.edit("`Balas pesan foto pengguna mana pun...`")
+        await fry.edit("`Balas pesan gambar pengguna manapun!`")
         return
     reply_message = await fry.get_reply_message()
     if not reply_message.media:
-        await fry.edit("`Tidak ada gambar untuk digoreng...`")
+        await fry.edit("`Tidak ada gambar untuk digoreng`")
         return
     if reply_message.sender.bot:
-        await fry.edit("`Balas ke pengguna sebenarnya...`")
+        await fry.edit("`Balas ke pengguna sebenarnya!`")
         return
     chat = "@image_deepfrybot"
     message_id_to_reply = fry.message.reply_to_msg_id
@@ -443,10 +422,10 @@ async def fryerrr(fry):
                 response = await conv.get_response()
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await fry.reply("`Harap buka blokir`  **@image_deepfrybot**`...`")
+                await fry.reply("`Harap buka blokir`  **@image_deepfrybot**")
                 return
             if response.text.startswith("Forward"):
-                await fry.edit("`Nonaktifkan setelan privasi penerusan Anda...`")
+                await fry.edit("`Nonaktifkan setelan privasi penerusan Anda!`")
             else:
                 downloaded_file_name = await fry.client.download_media(
                     response.media, TEMP_DOWNLOAD_DIRECTORY
@@ -574,14 +553,14 @@ async def lastname(steal):
     if steal.fwd_from:
         return
     if not steal.reply_to_msg_id:
-        await steal.edit("`Balas pesan pengguna mana pun.`")
+        await steal.edit("`Balas pesan pengguna manapun!`")
         return
     message = await steal.get_reply_message()
     chat = "@SangMataInfo_bot"
     user_id = message.sender.id
     id = f"/search_id {user_id}"
     if message.sender.bot:
-        await steal.edit("`Balas pesan pengguna sebenarnya.`")
+        await steal.edit("`Balas pesan pengguna sebenarnya!`")
         return
     await steal.edit("`Tunggu sebentar sementara saya mengambil beberapa data dari NASA.`")
     try:
@@ -591,7 +570,7 @@ async def lastname(steal):
                 r = await conv.get_response()
                 response = await conv.get_response()
             except YouBlockedUserError:
-                await steal.reply("`Harap buka blokir`  **@sangmatainfo_bot**  `dan coba lagi.`")
+                await steal.reply("`Harap buka blokir`  **@sangmatainfo_bot**  `dan coba lagi!`")
                 return
             if r.text.startswith("Name"):
                 respond = await conv.get_response()
@@ -615,13 +594,13 @@ async def lastname(steal):
                 conv.chat_id, [msg.id, r.id, response.id, respond.id]
             )
     except TimeoutError:
-        return await steal.edit("**Kesalahan** : **@SangMataInfo_bot** `tidak menanggapi!`")
+        return await steal.edit("`[KESALAHAN]`\n**@SangMataInfo_bot**  `tidak menanggapi!`")
 
 
 @register(outgoing=True, pattern=r"^\.waifu(?: |$)(.*)")
 async def waifu(animu):
     text = animu.pattern_match.group(1)
-    await animu.edit("`Menemukan waifu Anda...`")
+    await animu.edit("`Menemukan waifu...`")
     if not text:
         if animu.is_reply:
             text = (await animu.get_reply_message()).message
@@ -648,7 +627,7 @@ def deEmojify(inputString: str) -> str:
 CMD_HELP.update(
     {
         "glitch": "`.glitch [1-8]`"
-        "\n➥  Balas stiker/gambar dan kirim dengan cmd(perintah).\nNilainya berkisar 1-8 jika tidak maka akan memberikan nilai default yaitu 2."
+        "\n➥  Balas stiker/gambar dan kirim dengan cmd(perintah).\nNilainya berkisar 1-8, jika tidak maka akan diberikan nilai default yaitu 2."
     }
 )
 
@@ -656,20 +635,23 @@ CMD_HELP.update(
     {
         "memify": "`.mmf texttop ; textbottom`"
         "\n➥  Balas stiker/gambar/gif dan kirim dengan cmd(perintah)."
+        "\nContoh :"
+        "\n•  `.mmf aku`  -> (maka teks “aku” akan berada diatas)"
+        "\n•  `.mmf ; aku`  -> (maka teks “aku” akan berada dibawah)"
     }
 )
 
 CMD_HELP.update(
     {
         "quotly": "`.q`"
-          "\n➥  Sempurnakan teks Anda menjadi stiker."
+        "\n➥  Sempurnakan teks Anda menjadi stiker."
     }
 )
 
 CMD_HELP.update(
     {
         "hazmat": "`.hz / .hz [flip, x2, rotate (degree), background (number), black]`"
-        "\n➥  Balas gambar/stiker yang sesuai!"
+        "\n➥  Balas gambar / stiker sesuai keinginan."
         "\n**@hazmat_suit_bot**"
     }
 )
@@ -677,7 +659,7 @@ CMD_HELP.update(
 CMD_HELP.update(
     {
         "deepfry": "`.df / .df [level(1-8)]`"
-        "\n➥  Goreng gambar/stiker dari balasan."
+        "\n➥  Goreng gambar / stiker dari balasan."
         "\n**@image_deepfrybot**"
         "\n\n`.deepfry`"
         "\n➥  Gambar krispi."
@@ -691,7 +673,7 @@ CMD_HELP.update({"sangmata": "`.sg`" "\n➥  Menampilkan info nama Anda atau ses
 CMD_HELP.update(
     {
         "waifu": "`.waifu`"
-        "\n➥  Tingkatkan teks Anda dengan templat gadis anime cantik."
+        "\n➥  Tingkatkan teks Anda dengan template gadis anime cantik."
         "\n**@StickerizerBot**"
     }
 )

@@ -18,22 +18,25 @@ async def fban(event):
         reply_msg = await event.get_reply_message()
         fban_id = reply_msg.sender_id
         reason = event.pattern_match.group(1)
-        user_link = f"[{fban_id}](tg://user?id={fban_id})"
     else:
         pattern = str(event.pattern_match.group(1)).split()
         fban_id = pattern[0]
         reason = " ".join(pattern[1:])
-        user_link = fban_id
+        
+    try:
+    	fban_id = await event.client.get_peer_id(fban_id)
+    except BaseException:
+    	pass
 
-    self_user = await event.client.get_me()
-
-    if fban_id == self_user.id or fban_id == "@" + self_user.username:
+    if event.sender_id == fban_id:
         return await event.edit(
             "**Kesalahan** : `Tindakan ini telah dicegah oleh protokol pelestarian dari KensurBot.`"
         )
 
     if len((fed_list := get_flist())) == 0:
         return await event.edit("`Anda belum terhubung ke federasi mana pun!`")
+        
+    user_link = f"[{fban_id}](tg://user?id={fban_id})"
 
     await event.edit(f"Fbanning {user_link}`...`")
     failed = []
@@ -86,20 +89,23 @@ async def unfban(event):
         reply_msg = await event.get_reply_message()
         unfban_id = reply_msg.sender_id
         reason = event.pattern_match.group(1)
-        user_link = f"[{unfban_id}](tg://user?id={unfban_id})"
     else:
         pattern = str(event.pattern_match.group(1)).split()
         unfban_id = pattern[0]
         reason = " ".join(pattern[1:])
-        user_link = unfban_id
+        
+    try:
+    	unfban_id = await event.client_get_peer_id(unfban_id)
+    except BaseException:
+    	pass
 
-    self_user = await event.client.get_me()
-
-    if unfban_id == self_user.id or unfban_id == "@" + self_user.username:
+    if event.sender_id == unfban_id:
         return await event.edit("`Tunggu, itu ilegal`")
 
     if len((fed_list := get_flist())) == 0:
         return await event.edit("`Anda belum terhubung ke federasi mana pun!`")
+        
+    user_link = f"[{unfban_id}](tg://user?id={unfban_id})"
 
     await event.edit(f"Un-fbanning {user_link}`...`")
     failed = []
