@@ -87,11 +87,11 @@ async def variable(var):
 
 @register(outgoing=True, pattern=r"^\.set var (\w*) ([\s\S]*)")
 async def set_var(var):
-	if app is None:
-		return await var.edit(
-		    "`[HEROKU]`\nHarap setel  "
-		    "**HEROKU_APP_NAME**  dan  **HEROKU_API_KEY**  Anda."
-		)
+    if app is None:
+        return await var.edit(
+            "`[HEROKU]`\nHarap setel  "
+            "**HEROKU_APP_NAME**  dan  **HEROKU_API_KEY**  Anda."
+        )
     await var.edit("`Mengatur informasi...`")
     variable = var.pattern_match.group(1)
     value = var.pattern_match.group(2)
