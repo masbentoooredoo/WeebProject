@@ -218,15 +218,15 @@ async def approvepm(apprvpm):
         try:
             user = await apprvpm.client.get_entity(inputArgs)
         except BaseException:
-            return await apprvpm.edit("`Nama pengguna/ID tidak valid`")
+            return await apprvpm.edit("**Nama pengguna/ID tidak valid**")
         if not isinstance(user, User):
-            return await apprvpm.edit("`Anda tidak mengacu pada Pengguna`")
+            return await apprvpm.edit("**Anda tidak mengacu pada Pengguna**")
         uid = user.id
         name0 = str(user.first_name)
     else:
         aname = await apprvpm.client.get_entity(apprvpm.chat_id)
         if not isinstance(aname, User):
-            return await apprvpm.edit("`Anda tidak mengacu pada Pengguna`")
+            return await apprvpm.edit("**Anda tidak mengacu pada Pengguna**")
         name0 = str(aname.first_name)
         uid = apprvpm.chat_id
 
@@ -277,9 +277,9 @@ async def disapprovepm(disapprvpm):
         try:
             user = await disapprvpm.client.get_entity(inputArgs)
         except BaseException:
-            return await disapprvpm.edit("`Nama pengguna/ID tidak valid`")
+            return await disapprvpm.edit("**Nama pengguna/ID tidak valid**")
         if not isinstance(user, User):
-            return await disapprvpm.edit("`Ini hanya dapat dilakukan dengan pengguna`")
+            return await disapprvpm.edit("**Ini hanya dapat dilakukan dengan pengguna**")
         uid = user.id
         dissprove(uid)
         name0 = str(user.first_name)
@@ -287,7 +287,7 @@ async def disapprovepm(disapprvpm):
         dissprove(disapprvpm.chat_id)
         aname = await disapprvpm.client.get_entity(disapprvpm.chat_id)
         if not isinstance(aname, User):
-            return await disapprvpm.edit("`Anda tidak mengacu pada Pengguna`")
+            return await disapprvpm.edit("**Anda tidak mengacu pada Pengguna**")
         name0 = str(aname.first_name)
         uid = disapprvpm.chat_id
 
@@ -315,7 +315,7 @@ async def blockpm(block):
         await block.client(BlockRequest(block.chat_id))
         aname = await block.client.get_entity(block.chat_id)
         if not isinstance(aname, User):
-            return await block.edit("`You're not referring to a User`")
+            return await block.edit("**Anda tidak mengacu pada Pengguna**")
         await block.edit("**Anda telah diblokir!**")
         name0 = str(aname.first_name)
         uid = block.chat_id
