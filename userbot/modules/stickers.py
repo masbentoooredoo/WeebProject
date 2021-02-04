@@ -79,7 +79,7 @@ async def kang(args):
     if photo:
         splat = args.text.split()
         if not emojibypass:
-            emoji = None
+            emoji = "😶"
         pack = 1
         if len(splat) == 3:
             pack = splat[2]  # User sent both
@@ -352,7 +352,7 @@ CMD_HELP.update(
         "\n➥  Curi stiker atau gambar untuk dimasukkan ke paket userbot Anda "
         "atau tentukan emoji yang Anda inginkan."
         "\n\n`.curi [emoji] [nomor]`"
-        "\n➥  Curi stiker atau gambar untuk paket tertentu "
+        "\n➥  Curi stiker atau gambar untuk paket tertentu tetapi menggunakan 😶 sebagai emoji "
         "atau pilih emoji yang Anda inginkan."
         "\n\n`.stkrinfo`"
         "\n➥  Mendapatkan info tentang paket stiker."
