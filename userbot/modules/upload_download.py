@@ -86,7 +86,7 @@ async def download(target_file):
                 "Berhasil diunduh ke `{}`!".format(downloaded_file_name)
             )
         else:
-            await target_file.edit("URL salah\n{}".format(url))
+            await target_file.edit("**URL salah**\n{}".format(url))
     elif target_file.reply_to_msg_id:
         try:
             replied = await target_file.get_reply_message()
@@ -127,7 +127,7 @@ async def download(target_file):
                     "Berhasil diunduh ke `{}` dalam `{}` detik.".format(result, dl_time)
                 )
     else:
-        await target_file.edit("`Balas pesan untuk diunduh ke server lokal.")
+        await target_file.edit("`Balas pesan untuk diunduh ke server lokal.`")
 
 
 async def get_video_thumb(file, output):
@@ -143,132 +143,31 @@ async def get_video_thumb(file, output):
 
 
 @register(pattern=r"^\.up (.*)", outgoing=True)
-async def upload(u_event):
-    """ For .upload command, allows you to upload a file from the userbot's server """
-    await u_event.edit("`Sedang memproses...`")
-    input_str = u_event.pattern_match.group(1)
-    if input_str in ("userbot.session", "config.env"):
-        return await u_event.edit("`Itu tindakan yang berbahaya!\nTidak diperbolehkan!`")
-    if os.path.exists(input_str):
-        file_name = input_str.split("/")[-1]
-        c_time = time.time()
-        start_time = datetime.now()
-        with open(input_str, "rb") as f:
-            result = await upload_file(
-                client=u_event.client,
-                file=f,
-                name=file_name,
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, u_event, c_time, "[FILE - UNGGAH]", input_str)
-                ),
-            )
-        up_time = (datetime.now() - start_time).seconds
-        if input_str.lower().endswith(("mp4", "mkv", "webm")):
-            thumb = await get_video_thumb(input_str, "thumb_image.jpg")
-            metadata = extractMetadata(createParser(input_str))
-            duration = 0
-            width = 0
-            height = 0
-            if metadata.has("duration"):
-                duration = metadata.get("duration").seconds
-            if metadata.has("width"):
-                width = metadata.get("width")
-            if metadata.has("height"):
-                height = metadata.get("height")
-            await u_event.client.send_file(
-                u_event.chat_id,
-                result,
-                thumb=thumb,
-                caption=file_name,
-                force_document=False,
-                allow_cache=False,
-                reply_to=u_event.message.id,
-                attributes=[
-                    DocumentAttributeVideo(
-                        duration=duration,
-                        w=width,
-                        h=height,
-                        round_message=False,
-                        supports_streaming=True,
-                    )
-                ],
-            )
-            if thumb is not None:
-                os.remove(thumb)
-            await u_event.edit(f"Berhasil diunggah dalam `{up_time}` detik.")
-        elif input_str.lower().endswith(("mp3", "flac", "wav")):
-            metadata = extractMetadata(createParser(files))
-            duration = 0
-            artist = ""
-            title = ""
-            if metadata.has("duration"):
-                duration = metadata.get("duration").seconds
-            if metadata.has("artist"):
-                artist = metadata.get("artist")
-            if metadata.has("title"):
-                title = metadata.get("title")
-            await u_event.client.send_file(
-                u_event.chat_id,
-                result,
-                caption=filename,
-                force_document=False,
-                allow_cache=False,
-                attributes=[
-                    DocumentAttributeAudio(
-                        duration=duration,
-                        title=title,
-                        performer=artist,
-                    )
-                ],
-            )
-            await u_event.edit(f"Berhasil diunggah dalam `{up_time}` detik.")
-        else:
-            await u_event.client.send_file(
-                u_event.chat_id,
-                result,
-                caption=file_name,
-                force_document=False,
-                allow_cache=False,
-                reply_to=u_event.message.id,
-            )
-            await u_event.edit(f"Berhasil diunggah dalam `{up_time}` detik.")
-    else:
-        await u_event.edit("**404** : `File tidak ditemukan`")
-
-
-@register(pattern=r"^\.updir (.*)", outgoing=True)
-async def dir_upload(event):
-    """For .updir command allows you to upload directory/folder to tg."""
-    lst_files = []
+async def upload(event):
+    if event.fwd_from:
+        return
+    await event.edit("`Sedang memproses...`")
     input_str = event.pattern_match.group(1)
-    if os.path.exists(input_str) and os.path.isdir(input_str):
-        await event.edit("`Sedang memproses...`")
-        listfile = [
-            f
-            for f in os.listdir(input_str)
-            if os.path.isfile(os.path.join(input_str, f))
-        ]
-        if not listfile:
-            await event.edit(f"Folder `{input_str}` kosong.")
-            return
-        for file in listfile:
-            lst_files.append(os.path.join(input_str, file))
-            if len(lst_files) == 0:
-                return await event.edit(f"Folder `{input_str}` kosong.")
-        await event.edit(f"Ditemukan `{len(lst_files)}` file.\n`Sedang mengunggah...`")
-        for files in sorted(lst_files, key=str.casefold):
-            filename = os.path.basename(files)
-            msg = await event.reply(f"Mengunggah `{filename}`")
-            with open(files, "rb") as f:
+    if os.path.exists(input_str):
+        if os.path.isfile(input_str):
+            c_time = time.time()
+            start_time = datetime.now()
+            file_name = os.path.basename(input_str)
+            thumb = None
+            attributes = []
+            with open(input_str, "rb") as f:
                 result = await upload_file(
-                    event.client,
-                    f,
-                    filename,
+                    client=event.client,
+                    file=f,
+                    name=file_name,
+                    progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                        progress(d, t, event, c_time, "[FILE - UNGGAH]", input_str)
+                    ),
                 )
-            if filename.lower().endswith((".mp4", ".mkv", ".webm")):
-                thumb = await get_video_thumb(files, "thumb_image.png")
-                await asyncio.sleep(1)
-                metadata = extractMetadata(createParser(files))
+            up_time = (datetime.now() - start_time).seconds
+            if input_str.lower().endswith(("mp4", "mkv", "webm")):
+                thumb = await get_video_thumb(input_str, "thumb_image.jpg")
+                metadata = extractMetadata(createParser(input_str))
                 duration = 0
                 width = 0
                 height = 0
@@ -278,77 +177,133 @@ async def dir_upload(event):
                     width = metadata.get("width")
                 if metadata.has("height"):
                     height = metadata.get("height")
-                await event.client.send_file(
-                    event.chat_id,
-                    result,
-                    thumb=thumb,
-                    caption=filename,
-                    force_document=False,
-                    allow_cache=False,
-                    attributes=[
-                        DocumentAttributeVideo(
-                            duration=duration,
-                            w=width,
-                            h=height,
-                            supports_streaming=True,
-                        )
-                    ],
-                )
-                if thumb is not None:
-                    os.remove(thumb)
-                await msg.delete()
-            elif filename.lower().endswith(("mp3", "flac", "wav")):
-                metadata = extractMetadata(createParser(files))
+                attributes = [
+                    DocumentAttributeVideo(
+                        duration=duration,
+                        w=width,
+                        h=height,
+                        round_message=False,
+                        supports_streaming=True,
+                    )
+                ]
+            elif input_str.lower().endswith(("mp3", "flac", "wav")):
+                metadata = extractMetadata(createParser(input_str))
                 duration = 0
                 artist = ""
                 title = ""
                 if metadata.has("duration"):
                     duration = metadata.get("duration").seconds
-                if metadata.has("artist"):
-                    artist = metadata.get("artist")
                 if metadata.has("title"):
                     title = metadata.get("title")
-                await event.client.send_file(
-                    event.chat_id,
-                    result,
-                    caption=filename,
-                    force_document=False,
-                    allow_cache=False,
-                    attributes=[
+                if metadata.has("artist"):
+                    artist = metadata.get("artist")
+                attributes = [
+                    DocumentAttributeAudio(
+                        duration=duration,
+                        title=title,
+                        performer=artist,
+                    )
+                ]
+            await event.client.send_file(
+                event.chat_id,
+                result,
+                thumb=thumb,
+                caption=file_name,
+                force_document=False,
+                allow_cache=False,
+                reply_to=event.message.id,
+                attributes=attributes,
+            )
+            if thumb is not None:
+                os.remove(thumb)
+            await event.edit(f"Berhasil diunggah dalam `{up_time}` detik.")
+        elif os.path.isdir(input_str):
+            start_time = datetime.now()
+            lst_files = []
+            for root, dirs, files in os.walk(input_str):
+                for file in files:
+                    lst_files.append(os.path.join(root, file))
+            if len(lst_files) == 0:
+                return await event.edit(f"`{input_str}` kosong.")
+            await event.edit(f"Ditemukan `{len(lst_files)}` file.\n`Sedang mengunggah...`")
+            for files in sorted(lst_files):
+                file_name = os.path.basename(files)
+                thumb = None
+                attributes = []
+                msg = await event.reply(f"Mengunggah `{files}`")
+                with open(files, "rb") as f:
+                    result = await upload_file(
+                        client=event.client,
+                        file=f,
+                        name=file_name,
+                    )
+                if file_name.lower().endswith(("mp4", "mkv", "webm")):
+                    thumb = await get_video_thumb(files, "thumb_image.jpg")
+                    metadata = extractMetadata(createParser(files))
+                    duration = 0
+                    width = 0
+                    height = 0
+                    if metadata.has("duration"):
+                        duration = metadata.get("duration").seconds
+                    if metadata.has("width"):
+                        width = metadata.get("width")
+                    if metadata.has("height"):
+                        height = metadata.get("height")
+                    attributes = [
+                        DocumentAttributeVideo(
+                            duration=duration,
+                            w=width,
+                            h=height,
+                            round_message=False,
+                            supports_streaming=True,
+                        )
+                    ]
+                elif file_name.lower().endswith(("mp3", "flac", "wav")):
+                    metadata = extractMetadata(createParser(files))
+                    duration = 0
+                    title = ""
+                    artist = ""
+                    if metadata.has("duration"):
+                        duration = metadata.get("duration").seconds
+                    if metadata.has("title"):
+                        title = metadata.get("title")
+                    if metadata.has("artist"):
+                        artist = metadata.get("artist")
+                    attributes = [
                         DocumentAttributeAudio(
                             duration=duration,
                             title=title,
                             performer=artist,
                         )
-                    ],
-                )
-                await msg.delete()
-            else:
+                    ]
                 await event.client.send_file(
                     event.chat_id,
                     result,
+                    thumb=thumb,
+                    caption=file_name,
                     force_document=False,
                     allow_cache=False,
+                    attributes=attributes,
                 )
                 await msg.delete()
-        await event.delete()
-        await event.respond(
-            f"Berhasil mengunggah `{len(lst_files)}` file dalam folder `{input_str}`."
-        )
-    elif os.path.isfile(input_str):
-        await event.edit("`Harap gunakan “.up [nama file]” untuk file tunggal`")
-        return
+                if thumb is not None:
+                    os.remove(thumb)
+
+            await event.delete()
+            up_time = (datetime.now() - start_time).seconds
+            await event.respond(
+                f"Mengunggah `{len(lst_files)}` file ke folder `{input_str}` "
+                f"dalam `{up_time}` detik."
+            )
     else:
-        await event.edit("**404** : `Folder tidak ditemukan`")
+        await event.edit("**404** : File/Folder tidak ditemukan.")
 
 
 CMD_HELP.update(
     {
         "download": "`.dl [tautan|nama file] atau balas media`"
         "\n➥  Untuk mengunduh file ke server."
-        "\n\n`.up [jalur file di server]`"
-        "\n➥  Mengunggah yang tersimpan secara lokal ke obrolan."
-        "\n\n`.updir [jalur folder di server]`"
-        "\n➥  Mengunggah folder / direktori dari server."
+        "\n\n`.up [jalur file/folder di server]`"
+        "\n➥  Mengunggah file/folder yang disimpan secara lokal ke obrolan."
     }
 )
