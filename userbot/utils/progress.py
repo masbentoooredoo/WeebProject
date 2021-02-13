@@ -18,6 +18,8 @@
 import time
 import math
 
+from telethon.errors.rpcerrorlist import MessageNotModifiedError
+
 from .tools import humanbytes, time_formatter
 from .exceptions import CancelProcess
 
@@ -42,7 +44,7 @@ async def progress(
             status = 'Downloading'
         else:
             status = 'Unknown'
-        progress_str = "**{0}** | [{1}{2}] `{3}%`".format(
+        progress_str = "`{0}` | [{1}{2}] `{3}%`".format(
             status,
             ''.join(["■" for i in range(
                     math.floor(percentage / 10))]),
@@ -51,10 +53,13 @@ async def progress(
             round(percentage, 2))
         tmp = (
             f"{progress_str}\n"
-            f"`{humanbytes(current)} of {humanbytes(total)}"
+            f"`{humanbytes(current)} dari {humanbytes(total)}"
             f" @ {humanbytes(speed)}`\n"
-            f"`ETA` -> {time_formatter(eta)}\n"
-            f"`Duration` -> {time_formatter(elapsed_time)}"
+            f"**Perkiraan** -> {time_formatter(eta)}\n"
+            f"**Durasi** -> {time_formatter(elapsed_time)}"
         )
-        await event.edit(f"`{prog_type}`\n\n"
-                         f"`Status`\n{tmp}")
+        try:
+            await event.edit(f"`{prog_type}`\n\n"
+                             f"`Status`\n{tmp}")
+        except MessageNotModifiedError:
+            pass
