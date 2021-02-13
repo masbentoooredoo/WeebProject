@@ -151,7 +151,7 @@ async def ParseSauce(googleurl):
     for best_guess in soup.findAll("div", attrs={"class": "r5a77d"}):
         results["best_guess"] = best_guess.get_text()
 
-    results["best_guess"] = results["best_guess"][12:] id
+    results["best_guess"] = results["best_guess"][12:]
     return results
 
 
