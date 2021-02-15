@@ -55,8 +55,8 @@ async def progress(
             f"{progress_str}\n"
             f"`{humanbytes(current)} dari {humanbytes(total)}"
             f" @ {humanbytes(speed)}`\n"
-            f"**Perkiraan** -> {time_formatter(eta)}\n"
-            f"**Durasi** -> {time_formatter(elapsed_time)}"
+            f"`Perkiraan` -> {time_formatter(eta)}\n"
+            f"`Durasi` -> {time_formatter(elapsed_time)}"
         )
         try:
             await event.edit(f"`{prog_type}`\n\n"
