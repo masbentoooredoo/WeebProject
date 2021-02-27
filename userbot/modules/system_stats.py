@@ -172,7 +172,7 @@ async def amireallyalive(alive):
         f"**⌯  Versi Python** : `{python_version()}`\n"
         f"**⌯  Versi Telethon** : `{version.__version__}`\n"
         f"**⌯  Berjalan di** : `{repo.active_branch.name}`\n"
-        f"**⌯  Modul dimuat** : `{len(CMD_HELP)}`\n"
+        f"**⌯  Modul dimuat** : `{len(CMD_HELP)} modul`\n"
         f"**⌯  Bot aktif sejak** : `{uptime}`\n"
     )
     if ALIVE_LOGO:
