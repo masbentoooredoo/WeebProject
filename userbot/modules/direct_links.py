@@ -9,6 +9,7 @@
 
 import asyncio
 import json
+import math
 import re
 import urllib.parse
 from asyncio import create_subprocess_shell as asyncSubprocess
@@ -24,17 +25,6 @@ from userbot import CMD_HELP, USR_TOKEN
 from userbot.events import register
 from userbot.utils import time_formatter
 
-_REGEX_LINK = r"https://www(\d{1,3}).zippyshare.com/v/(\w{8})/file.html"
-_REGEX_RESULT = (
-    r'document.getElementById\(\'dlbutton\'\).href = "/d/[a-zA-Z\d]{8}/" '
-    r'\+ \((\d+) % (\d+) \+ (\d+) % (\d+)\) \+ "\/(.+)";'
-)
-_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome"
-    "/75.0.3770.100 Safari/537.36"
-}
-
 
 async def subprocess_run(cmd):
     reply = ""
@@ -43,7 +33,7 @@ async def subprocess_run(cmd):
     exitCode = subproc.returncode
     if exitCode != 0:
         reply += (
-            "**Kesalahan terdeteksi saat menjalankan subproses**\n"
+            "**Kesalahan terdeteksi saat menjalankan subproses.**\n"
             f"exitCode : `{exitCode}`\n"
             f"stdout : `{result[0].decode().strip()}`\n"
             f"stderr : `{result[1].decode().strip()}`"
@@ -91,31 +81,44 @@ async def direct_link_generator(request):
             await uptobox(request, link)
             return None
         else:
-            reply += re.findall(r"\bhttps?://(.*?[^/]+)", link)[0] + " tidak didukung!"
+            reply += re.findall(r"\bhttps?://(.*?[^/]+)", link)[0] + " tidak didukung"
     await request.edit(reply)
 
 
 async def zippy_share(url: str) -> str:
+    regex_link = r"https://www(\d{1,3}).zippyshare.com/v/(\w{8})/file.html"
+    regex_result = (
+        r"var a = (\d{6});\s+var b = (\d{6});\s+document\.getElementById"
+        r'\(\'dlbutton\'\).omg = "f";\s+if \(document.getElementById\(\''
+        r"dlbutton\'\).omg != \'f\'\) {\s+a = Math.ceil\(a/3\);\s+} else"
+        r" {\s+a = Math.floor\(a/3\);\s+}\s+document.getElementById\(\'d"
+        r'lbutton\'\).href = "/d/[a-zA-Z\d]{8}/\"\+\(a \+ \d{6}%b\)\+"/('
+        r'[\w%-.]+)";'
+    )
+    _headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome"
+        "/75.0.3770.100 Safari/537.36"
+    }
     reply = ""
     try:
         session = requests.Session()
-        session.headers.update(_HEADERS)
+        session.headers.update(_headers)
         with session as ses:
-            match = re.match(_REGEX_LINK, url)
+            match = re.match(regex_link, url)
             if not match:
-                raise ValueError("**URL tidak valid** : " + str(url))
+                raise ValueError("URL tidak valid : " + str(url))
             server, id_ = match.group(1), match.group(2)
             res = ses.get(url)
             res.raise_for_status()
-            match = re.search(_REGEX_RESULT, res.text)
+            match = re.search(regex_result, res.text)
             if not match:
-                raise ValueError("`Respon tidak valid!`")
+                raise ValueError("Respon tidak valid!")
             val_1 = int(match.group(1))
-            val_2 = int(match.group(2))
-            val_3 = int(match.group(3))
-            val_4 = int(match.group(4))
-            val = val_1 % val_2 + val_3 % val_4
-            name = match.group(5)
+            val_2 = math.floor(val_1 / 3)
+            val_3 = int(match.group(2))
+            val = val_1 + val_2 % val_3
+            name = match.group(3)
             d_l = "https://www{}.zippyshare.com/d/{}/{}/{}".format(
                 server, id_, val, name
             )
@@ -133,7 +136,7 @@ async def yandex_disk(url: str) -> str:
     try:
         link = re.findall(r"\bhttps?://.*yadi\.sk\S+", url)[0]
     except IndexError:
-        reply = "`Tautan Yandex.Disk tidak ditemukan`\n"
+        reply = "`Tautan Yandex.Disk tidak ditemukan!`\n"
         return reply
     api = "https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key={}"
     try:
@@ -141,7 +144,7 @@ async def yandex_disk(url: str) -> str:
         name = dl_url.split("filename=")[1].split("&disposition")[0]
         reply += f"[{name}]({dl_url})\n"
     except KeyError:
-        reply += "**Kesalahan** : `File tidak ditemukan / batas unduhan telah tercapai.`\n"
+        reply += "`Kesalahan : File tidak ditemukan / batas unduhan telah tercapai.`\n"
         return reply
     return reply
 
@@ -153,7 +156,7 @@ async def cm_ru(url: str) -> str:
     try:
         link = re.findall(r"\bhttps?://.*cloud\.mail\.ru\S+", url)[0]
     except IndexError:
-        reply = "`Tautan cloud.mail.ru tidak ditemukan`\n"
+        reply = "`Tautan cloud.mail.ru tidak ditemukan!`\n"
         return reply
     cmd = f"bin/cmrudl -s {link}"
     result = subprocess_run(cmd)
@@ -161,7 +164,7 @@ async def cm_ru(url: str) -> str:
         result = result[0].splitlines()[-1]
         data = json.loads(result)
     except json.decoder.JSONDecodeError:
-        reply += "**Kesalahan** : `Tidak dapat mengekstrak tautan`\n"
+        reply += "`Kesalahan : Tidak dapat mengekstrak tautan`\n"
         return reply
     except IndexError:
         return reply
@@ -177,7 +180,7 @@ async def mediafire(url: str) -> str:
     try:
         link = re.findall(r"\bhttps?://.*mediafire\.com\S+", url)[0]
     except IndexError:
-        reply = "`Tautan MediaFire tidak ditemukan`\n"
+        reply = "`Tautan MediaFire tidak ditemukan!`\n"
         return reply
     reply = ""
     page = BeautifulSoup(requests.get(link).content, "lxml")
@@ -194,7 +197,7 @@ async def sourceforge(url: str) -> str:
     try:
         link = re.findall(r"\bhttps?://.*sourceforge\.net\S+", url)[0]
     except IndexError:
-        reply = "`Tautan SourceForge tidak ditemukan`\n"
+        reply = "`Tautan SourceForge tidak ditemukan!`\n"
         return reply
     file_path = re.findall(r"files(.*)/download", link)[0]
     reply = f"Mirror untuk __{file_path.split('/')[-1]}__\n"
@@ -220,7 +223,7 @@ async def osdn(url: str) -> str:
     try:
         link = re.findall(r"\bhttps?://.*osdn\.net\S+", url)[0]
     except IndexError:
-        reply = "`Tautan OSDN tidak ditemukan`\n"
+        reply = "`Tautan OSDN tidak ditemukan!`\n"
         return reply
     page = BeautifulSoup(requests.get(link, allow_redirects=True).content, "lxml")
     info = page.find("a", {"class": "mirror_link"})
@@ -240,7 +243,7 @@ async def github(url: str) -> str:
     try:
         link = re.findall(r"\bhttps?://.*github\.com.*releases\S+", url)[0]
     except IndexError:
-        reply = "`Tautan Rilis GitHub tidak ditemukan`\n"
+        reply = "`Tautan Rilis GitHub tidak ditemukan!`\n"
         return reply
     reply = ""
     dl_url = ""
@@ -248,7 +251,7 @@ async def github(url: str) -> str:
     try:
         dl_url = download.headers["location"]
     except KeyError:
-        reply += "**Kesalahan** : `Tidak dapat mengekstrak tautan`\n"
+        reply += "`Kesalahan : Tidak dapat mengekstrak tautan`\n"
     name = link.split("/")[-1]
     reply += f"[{name}]({dl_url}) "
     return reply
@@ -281,7 +284,7 @@ async def androidfilehost(url: str) -> str:
     data = {"submit": "submit", "action": "getdownloadmirrors", "fid": f"{fid}"}
     mirrors = None
     reply = ""
-    error = "**Kesalahan** : `Tidak dapat menemukan tautan untuk Mirror`\n"
+    error = "`Kesalahan : Tidak dapat menemukan tautan untuk Mirror`\n"
     try:
         req = session.post(
             "https://androidfilehost.com/libs/otf/mirrors.otf.php",
@@ -307,10 +310,10 @@ async def uptobox(request, url: str) -> str:
     try:
         link = re.findall(r"\bhttps?://.*uptobox\.com\S+", url)[0]
     except IndexError:
-        await request.edit("`Tautan Uptobox tidak ditemukan`")
+        await request.edit("`Tautan Uptobox tidak ditemukan!`")
         return
     if USR_TOKEN is None:
-        await request.edit("`Setel dahulu`  **USR_TOKEN_UPTOBOX!**")
+        await request.edit("`Atur dahulu`  **USR_TOKEN_UPTOBOX**")
         return
     if link.endswith("/"):
         index = -2
@@ -328,8 +331,8 @@ async def uptobox(request, url: str) -> str:
             if "error" in data:
                 await request.edit(
                     "`[KESALAHAN]`\n"
-                    f"`statusCode :` **{data.get('error').get('code')}**\n"
-                    f"`alasan :` **{data.get('error').get('message')}**"
+                    f"`statusCode`: **{data.get('error').get('code')}**\n"
+                    f"`alasan`: **{data.get('error').get('message')}**"
                 )
                 return
             file_name = data.get("file_name")
@@ -340,10 +343,10 @@ async def uptobox(request, url: str) -> str:
         async with session.get(uri) as response:
             result = json.loads(await response.text())
             status = result.get("message")
-            if status == "Menunggu dibutuhkan":
+            if status == "Waiting needed":
                 wait = result.get("data").get("waiting")
                 waitingToken = result.get("data").get("waitingToken")
-                await request.edit(f"`Menunggu tentang {time_formatter(wait)}.`")
+                await request.edit(f"`Menunggu {time_formatter(wait)}.`")
                 # for some reason it doesn't go as i planned
                 # so make it 1 minute just to be save enough
                 await asyncio.sleep(wait + 60)
@@ -352,28 +355,28 @@ async def uptobox(request, url: str) -> str:
                     await request.edit("`Menghasilkan tautan unduhan langsung...`")
                     result = json.loads(await response.text())
                     status = result.get("message")
-                    if status == "Berhasil":
+                    if status == "Success":
                         webLink = result.get("data").get("dlLink")
                         await request.edit(f"[{file_name} ({file_size})]({webLink})")
                         return
                     else:
                         await request.edit(
                             "`[KESALAHAN]`\n"
-                            f"`statusCode :` **{result.get('statusCode')}**\n"
-                            f"`alasan :` **{result.get('data')}**\n"
-                            f"`status :` **{status}**"
+                            f"`statusCode`: **{result.get('statusCode')}**\n"
+                            f"`alasan`: **{result.get('data')}**\n"
+                            f"`status`: **{status}**"
                         )
                         return
-            elif status == "Berhasil":
+            elif status == "Success":
                 webLink = result.get("data").get("dlLink")
                 await request.edit(f"[{file_name} ({file_size})]({webLink})")
                 return
             else:
                 await request.edit(
                     "`[KESALAHAN]`\n"
-                    f"`statusCode :` **{result.get('statusCode')}**\n"
-                    f"`alasan :` **{result.get('data')}**\n"
-                    f"`status :` **{status}**"
+                    f"`statusCode`: **{result.get('statusCode')}**\n"
+                    f"`alasan`: **{result.get('data')}**\n"
+                    f"`status`: **{status}**"
                 )
                 return
 
