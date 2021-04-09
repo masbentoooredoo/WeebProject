@@ -136,7 +136,7 @@ LASTFM_PASSWORD_PLAIN = os.environ.get("LASTFM_PASSWORD", None)
 LASTFM_PASS = md5(LASTFM_PASSWORD_PLAIN)
 
 lastfm = none
-if LASTFM_API and LASTFM_SECRET and LASTFM_USERNAME and LASTFM_PASS
+if LASTFM_API and LASTFM_SECRET and LASTFM_USERNAME and LASTFM_PASS:
     try:
         lastfm = LastFMNetwork(
             api_key=LASTFM_API,
