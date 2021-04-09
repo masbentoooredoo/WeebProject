@@ -10,10 +10,11 @@ import io
 import re
 import sys
 import traceback
+from getpass import getuser
 from os import remove
 from sys import executable
 
-from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TERM_ALIAS
+from userbot import CMD_HELP, TERM_ALIAS
 from userbot.events import register
 
 
@@ -56,7 +57,7 @@ async def _(event):
 
     if len(final_output) >= 4096:
         with io.BytesIO(str.encode(final_output)) as out_file:
-            out_file.name = "eval.text"
+            out_file.name = "eval.txt"
             await s_m_.reply(cmd, file=out_file)
             await event.delete()
     else:
@@ -132,16 +133,11 @@ async def run(run_q):
             "**Kueri :**\n`" f"{codepre}" "`\n**Hasil :**\n`Tidak ada hasil yang dikembalikan/salah.`"
         )
 
-    if BOTLOG:
-        await run_q.client.send_message(
-            BOTLOG_CHATID, "Kueri eksekusi " + codepre + " berhasil dieksekusi."
-        )
-
 
 @register(outgoing=True, pattern=r"^\.term(?: |$|\n)(.*)")
 async def terminal_runner(term):
     """ For .term command, runs bash commands and scripts on your server. """
-    curruser = TERM_ALIAS
+    curruser = TERM_ALIAS if TERM_ALIAS else getuser()
     command = term.pattern_match.group(1)
     try:
         from os import geteuid
@@ -185,15 +181,9 @@ async def terminal_runner(term):
         return
 
     if uid == 0:
-        await term.edit("`" f"{curruser}:~# {command}" f"\n{result}" "`")
+        await term.edit(f"`{curruser} :~# {command}\n{result}`")
     else:
-        await term.edit("`" f"{curruser}:~$ {command}" f"\n{result}" "`")
-
-    if BOTLOG:
-        await term.client.send_message(
-            BOTLOG_CHATID,
-            "Perintah terminal " + command + " berhasil dieksekusi.",
-        )
+        await term.edit(f"`{curruser} :~$ {command}\n{result}`")
 
 
 CMD_HELP.update(

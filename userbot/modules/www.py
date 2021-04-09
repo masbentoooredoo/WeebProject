@@ -13,47 +13,42 @@ from telethon import functions
 
 from userbot import CMD_HELP
 from userbot.events import register
+from userbot.utils import humanbytes
 
 
-@register(outgoing=True, pattern=r"^\.speed$")
+@register(outgoing=True, pattern=r"^\.speedtest$")
 async def speedtst(spd):
     """ For .speed command, use SpeedTest to check server speeds. """
     await spd.edit("`Tes kecepatan. . .`")
+    
     test = Speedtest()
-
     test.get_best_server()
     test.download()
     test.upload()
     test.results.share()
     result = test.results.dict()
 
-    await spd.edit(
-        ""
-        "**Dimulai pada** :  "
-        f"`{result['timestamp']}` \n\n"
-        "**Unduh** :  "
-        f"`{speed_convert(result['download'])}` \n"
-        "**Unggah** :  "
-        f"`{speed_convert(result['upload'])}` \n"
-        "**Ping** :  "
-        f"`{result['ping']}` \n"
-        "**ISP** :  "
-        f"`{result['client']['isp']}`"
-        ""
+    msg = (
+        f"**Dimulai pada {result['timestamp']}** \n\n"
+        "**Klien**\n"
+        f"**ISP :** `{result['client']['isp'])}`\n"
+        f"**Negara :** `{result['client']['country']}`\n\n"
+        "**Server**\n"
+        f"**Nama :** `{result['server']['name']}`\n"
+        f"**Negara :** `{result['server']['country']}`\n"
+        f"**Sponsor :** `{result['server']['sponsor']}`\n"
+        f"**Ping :** `{result['ping']}`\n"
+        f"**Unggah :** `{humanbytes(result['upload'])}/s`\n"
+        f"**Unduh :** `{humanbytes(result['download'])}/s`\n"
     )
-
-
-def speed_convert(size):
-    """
-    Hi human, you can't read bytes?
-    """
-    power = 2 ** 10
-    zero = 0
-    units = {0: "", 1: "Kb/s", 2: "Mb/s", 3: "Gb/s", 4: "Tb/s"}
-    while size > power:
-        size /= power
-        zero += 1
-    return f"{round(size, 2)} {units[zero]}"
+    
+    await spd.delete()
+    await spd.client.send_file(
+        spd.chat_id,
+        result["share"],
+        caption=msg,
+        force_document=False,
+    )
 
 
 @register(outgoing=True, pattern=r"^\.dc$")
@@ -79,7 +74,7 @@ async def pingme(pong):
 
 CMD_HELP.update(
     {
-        "speed": "`.speed`" "\n➥  Melakukan tes kecepatan dan menunjukkan hasilnya.",
+        "speedtest": "`.speedtest`" "\n➥  Melakukan tes kecepatan dan menunjukkan hasilnya.",
         "dc": "`.dc`" "\n➥  Menemukan pusat data terdekat dari server Anda.",
         "ping": "`.ping`" "\n➥  Menunjukkan berapa lama waktu yang dibutuhkan untuk melakukan ping bot Anda.",
     }

@@ -27,8 +27,9 @@ from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeVideo
 from urbandict import define
 from wikipedia import summary
 from wikipedia.exceptions import DisambiguationError, PageError
-from youtube_dl import YoutubeDL
-from youtube_dl.utils import (
+from youtube_search import YoutubeSearch
+from yt_dlp import YoutubeDL
+from yt_dlp.utils import (
     ContentTooShortError,
     DownloadError,
     ExtractorError,
@@ -38,7 +39,6 @@ from youtube_dl.utils import (
     UnavailableVideoError,
     XAttrMetadataError,
 )
-from youtube_search import YoutubeSearch
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
@@ -142,9 +142,7 @@ async def moni(event):
             number = float(input_sgra[0])
             currency_from = input_sgra[1].upper()
             currency_to = input_sgra[2].upper()
-            request_url = "https://api.exchangeratesapi.io/latest?base={}".format(
-                currency_from
-            )
+            request_url = f"https://api.ratesapi.io/api/latest?base={currency_from}"
             current_response = get(request_url).json()
             if currency_to in current_response["rates"]:
                 current_rate = float(current_response["rates"][currency_to])
@@ -173,18 +171,21 @@ async def gsearch(q_event):
         match = match.replace("page=" + page[0], "")
     except IndexError:
         page = 1
-    search_args = (str(match), int(page))
-    gsearch = GoogleSearch()
-    gresults = await gsearch.async_search(*search_args)
-    msg = ""
-    for i in range(5):
-        try:
-            title = gresults["titles"][i]
-            link = gresults["links"][i]
-            desc = gresults["descriptions"][i]
-            msg += f"[{title}]({link})\n`{desc}`\n\n"
-        except IndexError:
-            break
+    try:
+        search_args = (str(match), int(page))
+        gsearch = GoogleSearch()
+        gresults = await gsearch.async_search(*search_args)
+        msg = ""
+        for i in range(5):
+            try:
+                title = gresults["titles"][i]
+                link = gresults["links"][i]
+                desc = gresults["descriptions"][i]
+                msg += f"[{title}]({link})\n`{desc}`\n\n"
+            except IndexError:
+                break
+    except BaseException as g_e:
+    	return await q_event.edit(f"**Kesalahan :** `{g_e}`")
     await q_event.edit(
         "**Kueri Pencarian** :\n`" + match + "`\n\n**Hasil** :\n" + msg, link_preview=False
     )
@@ -581,6 +582,7 @@ async def download_video(v_url):
             "outtmpl": "%(id)s.mp3",
             "quiet": True,
             "logtostderr": False,
+            "external_downloader": "aria2c",
         }
         video = False
         song = True
@@ -599,6 +601,7 @@ async def download_video(v_url):
             "outtmpl": "%(id)s.mp4",
             "logtostderr": False,
             "quiet": True,
+            "external_downloader": "aria2c",
         }
         song = False
         video = True

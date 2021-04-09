@@ -6,10 +6,9 @@
 # You can find misc modules, which dont fit in anything xD
 """ Userbot module for other small commands. """
 
-import asyncio
 import io
 import sys
-from os import execl
+from os import environ, execle
 from random import randint
 from time import sleep
 
@@ -41,7 +40,7 @@ async def sleepybot(time):
         str_counter = time_formatter(counter)
         await time.client.send_message(
             BOTLOG_CHATID,
-            f"Anda meletakkan bot untuk tidur {str_counter}.",
+            f"#SLEEP\nAnda meletakkan bot untuk tidur {str_counter}.",
         )
     sleep(counter)
     await time.edit("`Oke, saya sudah bangun sekarang.`")
@@ -60,12 +59,12 @@ async def killthebot(event):
 async def killdabot(event):
     await event.edit("`Mulai ulang bot!\nSaya akan kembali sebentar lagi`")
     if BOTLOG:
-        await event.client.send_message(BOTLOG_CHATID, "#RESTART \n" "Bot dimulai ulang")
-    await bot.disconnect()
+        await event.client.send_message(
+            BOTLOG_CHATID, "#RESTART \n" "Bot dimulai ulang"
+        )
     # Spin a new instance of bot
-    execl(sys.executable, sys.executable, *sys.argv)
-    # Shut the existing one down
-    exit()
+    args = [sys.exexutable, "-m", "userbot"]
+    execle(sys.executable, *args, environ)
 
 
 @register(outgoing=True, pattern=r"^\.readme$")
