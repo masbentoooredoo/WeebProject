@@ -141,11 +141,11 @@ if LASTFM_API and LASTFM_SECRET and LASTFM_USERNAME and LASTFM_PASS
         lastfm = LastFMNetwork(
             api_key=LASTFM_API,
             api_secret=LASTFM_SECRET,
-            username=LASTFM_USERNAME
+            username=LASTFM_USERNAME,
             password_hash=LASTFM_PASS,
         )
     except Exception:
-    	pass
+        pass
 
 # Google Drive Module
 G_DRIVE_DATA = os.environ.get("G_DRIVE_DATA", None)
