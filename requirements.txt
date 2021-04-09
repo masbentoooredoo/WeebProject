@@ -60,4 +60,4 @@ vcsi
 wikipedia
 wordcloud
 youtube_search
-yt-dlp
+yt_dlp
