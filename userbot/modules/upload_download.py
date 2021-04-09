@@ -40,7 +40,7 @@ async def download(target_file):
         url = input_str
         file_name = unquote_plus(os.path.basename(url))
         if "|" in input_str:
-        	url, file_name = input_str.split("|")
+            url, file_name = input_str.split("|")
             url = url.strip()
             # https://stackoverflow.com/a/761825/4723940
             file_name = file_name.strip()
