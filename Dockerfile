@@ -1,13 +1,15 @@
-# Using Groovy
-FROM biansepang/weebproject:groovy
-
+# Using Python Slim-Buster
+FROM biansepang/weebproject:buster
 # Clone repo and prepare working directory
-RUN git clone -b master https://github.com/masbentoooredoo/WeebProject /home/weebproject/
-RUN mkdir /home/weebproject/bin/
-WORKDIR /home/weebproject/
+RUN git clone -b master https://github.com/masbentoooredoo/WeebProject /home/weebproject/ \
+    && chmod 777 /home/weebproject \
+    && mkdir /home/weebproject/bin/
 
-# Make open port TCP
-EXPOSE 80 443
+# Copies config.env (if exists)
+COPY ./sample_config.env ./config.env* /home/weebproject/
+
+# Setup Working Directory
+WORKDIR /home/weebproject/
 
 # Finalization
 CMD ["python3","-m","userbot"]
