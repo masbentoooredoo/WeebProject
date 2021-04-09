@@ -325,7 +325,7 @@ async def download(gdrive, service, uri=None):
             else:
                 folder_size = await count_dir_size(service, parent_Id)
                 reply += f"**GDrive Unggah**\n\n📁 [{file_name}]({webViewURL})"
-                if G_DRIVE_INDEX_URL :
+                if G_DRIVE_INDEX_URL:
                 	index_url = (
                         G_DRIVE_INDEX_URL.rstrip("/") + "/" + quote(file_name) + "/"
                     )
