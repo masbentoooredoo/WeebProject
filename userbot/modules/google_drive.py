@@ -117,7 +117,7 @@ logger.setLevel(logging.ERROR)
 @register(pattern=r"^\.gdauth(?: |$)", outgoing=True)
 async def generate_credentials(gdrive):
     """ - Only generate once for long run - """
-    if helper.get_credentials(str(gdrive.from_id)) is not None:
+    if helper.get_credentials(str(gdrive.sender_id)) is not None:
         await gdrive.edit("`Anda sudah mengautentikasi token...`")
         await asyncio.sleep(1.5)
         await gdrive.delete()
