@@ -91,7 +91,7 @@ async def download(target_file):
             await target_file.edit("**URL salah**\n{}".format(url))
     elif replied:
     	if not replied.media:
-    	    return await target_file.edit("`Balas file atau media`")
+            return await target_file.edit("`Balas file atau media`")
         try:
             media = replied.media
             if hasattr(media, "document"):
