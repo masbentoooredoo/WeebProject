@@ -31,7 +31,7 @@ async def speedtst(spd):
     msg = (
         f"**Dimulai pada {result['timestamp']}** \n\n"
         "**Klien**\n"
-        f"**ISP :** `{result['client']['isp'])}`\n"
+        f"**ISP :** `{result['client']['isp']}`\n"
         f"**Negara :** `{result['client']['country']}`\n\n"
         "**Server**\n"
         f"**Nama :** `{result['server']['name']}`\n"
