@@ -70,7 +70,7 @@ async def download(target_file):
             estimated_total_time = downloader.get_eta(human=True)
             try:
                 current_message = (
-                    f"`Nama` : `{file_name}`\n"
+                    f"`Name` : `{file_name}`\n"
                     "Status"
                     f"\n**{status}**... | {progress_str}"
                     f"\n{humanbytes(downloaded)} dari {humanbytes(total_length)}"
@@ -78,7 +78,7 @@ async def download(target_file):
                     f"\n`Perkiraan` -> {estimated_total_time}"
                 )
 
-                if round(diff % 10.00) == 0 and current_message != display_message:
+                if round(diff % 15.00) == 0 and current_message != display_message:
                     await target_file.edit(current_message)
                     display_message = current_message
             except Exception as e:
@@ -104,7 +104,7 @@ async def download(target_file):
                             "audio_" + datetime.now().isoformat("_", "seconds") + ".ogg"
                         )
                     elif "video" in mime_type:
-                    	filename = (
+                        filename = (
                             "video_" + datetime.now().isoformat("_", "seconds") + ".mp4"
                         )
                 outdir = TEMP_DOWNLOAD_DIRECTORY + filename
@@ -137,7 +137,7 @@ async def download(target_file):
                     "Berhasil diunduh ke `{}` dalam `{}` detik.".format(result, dl_time)
                 )
     else:
-        await target_file.edit("`Balas pesan untuk diunduh ke server lokal.`")
+        await target_file.edit("Lihat `“.help download”` untuk info lebih lanjut.")
 
 
 async def get_video_thumb(file, output):
@@ -311,10 +311,10 @@ async def upload(event):
 
 CMD_HELP.update(
     {
-        "download": "`.dl [tautan|nama file] (opsional)`"
-        "\n➥  Untuk mengunduh file dari url ke server."
+        "download": "`.dl [tautan] | [nama file] (opsional)`"
+        "\n➥  Untuk mengunduh file dari URL ke server."
         "\n\n`.dl [balas file]`"
-        "\n➥  Mengunduh file dari file / media yang dibalas."
+        "\n➥  Mengunduh file dari file/media yang dibalas."
         "\n\n`.up [jalur file/folder di server]`"
         "\n➥  Mengunggah file/folder yang disimpan secara lokal ke obrolan."
     }

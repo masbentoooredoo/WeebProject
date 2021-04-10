@@ -59,7 +59,7 @@ async def setlang(prog):
 @register(outgoing=True, pattern=r"^\.carbon")
 async def carbon_api(e):
     """ A Wrapper for carbon.now.sh """
-    await e.edit("`Sedang memproses...`")
+    await e.edit("**Sedang memproses...**")
     CARBON = "https://carbon.now.sh/?l={lang}&code={code}"
     global CARBONLANG
     textx = await e.get_reply_message()
@@ -69,26 +69,26 @@ async def carbon_api(e):
     elif textx:
         pcode = str(textx.message)  # Importing message to module
     code = quote_plus(pcode)  # Converting to urlencoded
-    await e.edit("`Memproses...\n25%`")
+    await e.edit("**Memproses...\n25%**")
     file_path = TEMP_DOWNLOAD_DIRECTORY + "carbon.png"
     if os.path.isfile(file_path):
         os.remove(file_path)
     url = CARBON.format(code=code, lang=CARBONLANG)
     driver = await chrome()
     driver.get(url)
-    await e.edit("`Memproses...\n50%`")
+    await e.edit("**Memproses...\n50%**")
     driver.find_element_by_css_selector('[data-cy="quick-export-button"]').click()
-    await e.edit("`Memproses...\n75%`")
+    await e.edit("**Memproses...\n75%**")
     # Waiting for downloading
     while not os.path.isfile(file_path):
         await sleep(0.5)
-    await e.edit("`Memproses...\n100%`")
-    await e.edit("`Mengunggah...`")
+    await e.edit("**Memproses...\n100%**")
+    await e.edit("**Mengunggah...**")
     await e.client.send_file(
         e.chat_id,
         file_path,
         caption=(
-            "Dibuat menggunakan [Carbon](https://carbon.now.sh/about/)"
+            "Dibuat menggunakan [Carbon](https://carbon.now.sh/about/),"
             "\nsebuah proyek oleh [Dawn Labs](https://dawnlabs.io/)"
         ),
         force_document=True,
@@ -176,7 +176,7 @@ async def gsearch(q_event):
         gsearch = GoogleSearch()
         gresults = await gsearch.async_search(*search_args)
         msg = ""
-        for i in range(5):
+        for i in range(7):
             try:
                 title = gresults["titles"][i]
                 link = gresults["links"][i]
@@ -185,9 +185,9 @@ async def gsearch(q_event):
             except IndexError:
                 break
     except BaseException as g_e:
-    	return await q_event.edit(f"**Kesalahan :** `{g_e}`")
+        return await q_event.edit(f"**Kesalahan :** `{g_e}`")
     await q_event.edit(
-        "**Kueri Pencarian** :\n`" + match + "`\n\n**Hasil** :\n" + msg, link_preview=False
+        "**Kueri Pencarian :**\n`" + match + "`\n\n**Hasil :**\n" + msg, link_preview=False
     )
 
     if BOTLOG:
@@ -216,11 +216,11 @@ async def wiki(wiki_q):
             wiki_q.chat_id,
             "output.txt",
             reply_to=wiki_q.id,
-            caption="`Output terlalu besar, dikirim sebagai file.`",
+            caption="`Output terlalu besar, dikirim sebagai file`",
         )
         if os.path.exists("output.txt"):
             return os.remove("output.txt")
-    await wiki_q.edit("**Pencarian** :\n`" + match + "`\n\n**Hasil** :\n" + result)
+    await wiki_q.edit("**Pencarian :**\n`" + match + "`\n\n**Hasil :**\n" + result)
     if BOTLOG:
         await wiki_q.client.send_message(
             BOTLOG_CHATID, f"Kueri pencarian Wiki `{match}` berhasil dilakukan."
@@ -235,7 +235,7 @@ async def urban_dict(ud_e):
     try:
         define(query)
     except HTTPError:
-        return await ud_e.edit(f"Maaf, Tidak dapat menemukan hasil apa pun untuk : **{query}**")
+        return await ud_e.edit(f"Maaf, tidak dapat menemukan hasil apa pun untuk : **{query}**")
     mean = define(query)
     deflen = sum(len(i) for i in mean[0]["def"])
     exalen = sum(len(i) for i in mean[0]["example"])
@@ -312,7 +312,7 @@ async def text_to_speech(query):
             "Tidak ada yang tersisa untuk dibicarakan setelah pra-pemrosesan, tokenisasi, dan pembersihan."
         )
     except ValueError:
-        return await query.edit("`Bahasa tidak didukung!`")
+        return await query.edit("`Bahasa tidak didukung.`")
     except RuntimeError:
         return await query.edit("`Terjadi kesalahan saat memuat kamus bahasa.`")
     tts = gTTS(message, lang=target_lang)
@@ -454,11 +454,11 @@ async def translateme(trans):
     try:
         reply_text = translator.translate(deEmojify(message), dest=target_lang)
     except ValueError:
-        return await trans.edit("`Bahasa tujuan tidak valid!`")
+        return await trans.edit("Invalid destination language.")
 
     source_lan = LANGUAGES[f"{reply_text.src.lower()}"]
     transl_lan = LANGUAGES[f"{reply_text.dest.lower()}"]
-    reply_text = f"Dari  **{source_lan.title()}**\nKe  **{transl_lan.title()}** :\n\n{reply_text.text}"
+    reply_text = f"Dari  **{source_lan.title()}**\nKe  **{transl_lan.title()} :**\n\n{reply_text.text}"
 
     await trans.edit(reply_text)
     if BOTLOG:
@@ -484,7 +484,7 @@ async def lang(value):
 
         if arg not in LANGUAGES:
             return await value.edit(
-                f"`Kode bahasa tidak valid!`\n`Kode bahasa yang tersedia untuk TRT` :\n\n`“{LANGUAGES}” `"
+                f"**Kode bahasa tidak valid!**\n**Kode bahasa yang tersedia untuk TRT :**\n\n`“{LANGUAGES}”`"
             )
 
         if gvarstatus("trt_lang"):
@@ -498,7 +498,7 @@ async def lang(value):
 
         if arg not in tts_langs():
             return await value.edit(
-                f"`Kode bahasa tidak valid!`\n`Kode bahasa yang tersedia untuk TTS` :\n\n`“{tts_langs()}” `"
+                f"**Kode bahasa tidak valid!**\n**Kode bahasa yang tersedia untuk TTS :**\n\n`“{tts_langs()}”`"
             )
 
         if gvarstatus("tts_lang"):
@@ -506,10 +506,10 @@ async def lang(value):
         addgvar("tts_lang", arg)
         LANG = tts_langs()[arg]
 
-    await value.edit(f"`Bahasa untuk {scraper} diubah menjadi {LANG.title()}.`")
+    await value.edit(f"**Bahasa untuk {scraper} diubah menjadi {LANG.title()}.**")
     if BOTLOG:
         await value.client.send_message(
-            BOTLOG_CHATID, f"`Bahasa untuk {scraper} diubah menjadi {LANG.title()}.`"
+            BOTLOG_CHATID, f"Bahasa untuk  **{scraper}**  diubah menjadi {LANG.title()}."
         )
 
 
@@ -529,17 +529,17 @@ async def yt_search(event):
     query = event.pattern_match.group(2)
 
     if not query:
-        return await event.edit("`Masukkan kueri untuk dicari!`")
+        return await event.edit("`Masukkan kueri untuk dicari!.`")
     await event.edit("`Sedang memproses...`")
 
     try:
         results = json.loads(YoutubeSearch(query, max_results=counter).to_json())
     except KeyError:
         return await event.edit(
-            "`Pencarian Youtube menjadi lambat.\nTidak dapat menelusuri kueri ini!`"
+            "`Pencarian YouTube menjadi lambat.\nTidak dapat menelusuri kueri ini!`"
         )
 
-    output = f"**Kueri Pencarian** :\n`{query}`\n\n**Hasil** :\n"
+    output = f"**Kueri Pencarian :**\n`{query}`\n\n**Hasil :**\n"
 
     for i in results["videos"]:
         try:
@@ -548,7 +548,7 @@ async def yt_search(event):
             channel = i["channel"]
             duration = i["duration"]
             views = i["views"]
-            output += f"[{title}]({link})\nSaluran : `{channel}`\nDurasi : {duration} | {views}\n\n"
+            output += f"[{title}]({link})\n**Saluran :** `{channel}`\n**Durasi :** {duration} | {views}\n\n"
         except IndexError:
             break
 
@@ -607,7 +607,7 @@ async def download_video(v_url):
         video = True
 
     try:
-        await v_url.edit("`Mengambil data, tunggu sebentar...`")
+        await v_url.edit("`Mengambil data.\nTunggu sebentar...`")
         with YoutubeDL(opts) as rip:
             rip_data = rip.extract_info(url)
     except DownloadError as DE:
@@ -714,28 +714,28 @@ def deEmojify(inputString):
 
 CMD_HELP.update(
     {
-        "img": "`.img [permintaan pencarian]`"
+        "img": "`.img [kueri pencarian]`"
         "\n➥  Melakukan pencarian gambar di Google dan menampilkan 5 gambar.",
         "currency": "`.currency [jumlah] [dari] [untuk]`"
-        "\n➥  Mengonversi berbagai mata uang untuk Anda.",
+        "\n➥  Mengkonversi berbagai mata uang.",
         "carbon": "`.carbon [teks/balas pesan]`"
-        "\n➥  Percantik kode Anda menggunakan **carbon.now.sh**"
-        "\nGunakan `.crblang [teks]` untuk mengatur bahasa kode Anda.",
-        "google": "`.google [pertanyaan]`" "\n➥  Melakukan pencarian di Google.",
-        "wiki": "`.wiki [pertanyaan]`" "\n➥  Melakukan pencarian di Wikipedia.",
-        "ud": "`.ud [pertanyaan]`" "\n➥  Melakukan pencarian di Kamus Urban.",
+        "\n➥  Percantik kode Anda menggunakan  **carbon.now.sh**\n"
+        "Gunakan perintah `.crblang [teks]` untuk mengatur kode bahasa Anda.",
+        "google": "`.google [kueri]`" "\n➥  Melakukan pencarian di Google.",
+        "wiki": "`.wiki [kueri]`" "\n➥  Melakukan pencarian di Wikipedia.",
+        "ud": "`.ud [kueri]`" "\n➥  Melakukan pencarian di Kamus Urban.",
         "tts": "`.tts [teks/balas pesan]`"
         "\n➥  Menerjemahkan teks ucapan untuk bahasa yang diatur."
-        "\nGunakan `.lang tts [kode bahasa]` untuk mengatur bahasa untuk tts. (Default-nya bahasa Indonesia.)",
+        "\nGunakan perintah `.lang tts [kode bahasa]` untuk mengatur bahasa untuk TTS. (Default-nya bahasa Inggris)",
         "trt": "`.trt [teks/balas pesan]`"
         "\n➥  Menerjemahkan teks ke bahasa yang diatur."
-        "\nGunakan `.lang trt [kode bahasa]` untuk mengatur bahasa untuk trt. (Default-nya bahasa Indonesia.)",
+        "\nGunakan perintah `.lang trt [kode bahasa]` untuk mengatur bahasa untuk TRT. (Default-nya bahasa Inggris )",
         "yt": "`.yt [jumlah] [kueri]`"
-        "\n➥  Melakukan pencarian Youtube."
-        "\nJuga dapat menentukan jumlah hasil (default-nya 3).",
+        "\n➥  Melakukan pencarian YouTube."
+        "\nJuga dapat menentukan jumlah hasil (default-nya 3 dan maksimal 10).",
         "imdb": "`.imdb [nama film]`" "\n➥  Menampilkan info film dan hal lainnya.",
         "rip": "`.ripaudio / .ripvideo [url]`"
-        "\n➥  Unduh video dan lagu dari Youtube "
+        "\n➥  Unduh video dan lagu dari YouTube "
         "(dan [banyak situs lainnya](https://ytdl-org.github.io/youtube-dl/supportedsites.html)).",
     }
 )
