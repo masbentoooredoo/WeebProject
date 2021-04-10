@@ -88,7 +88,7 @@ async def carbon_api(e):
         e.chat_id,
         file_path,
         caption=(
-            "Dibuat menggunakan [Carbon](https://carbon.now.sh/about/),"
+            "Dibuat menggunakan [Carbon](https://carbon.now.sh/about/)"
             "\nsebuah proyek oleh [Dawn Labs](https://dawnlabs.io/)"
         ),
         force_document=True,
@@ -454,7 +454,7 @@ async def translateme(trans):
     try:
         reply_text = translator.translate(deEmojify(message), dest=target_lang)
     except ValueError:
-        return await trans.edit("Invalid destination language.")
+        return await trans.edit("Bahasa tujuan tidak valid.")
 
     source_lan = LANGUAGES[f"{reply_text.src.lower()}"]
     transl_lan = LANGUAGES[f"{reply_text.dest.lower()}"]
@@ -484,7 +484,7 @@ async def lang(value):
 
         if arg not in LANGUAGES:
             return await value.edit(
-                f"**Kode bahasa tidak valid!**\n**Kode bahasa yang tersedia untuk TRT :**\n\n`“{LANGUAGES}”`"
+                f"**Kode bahasa tidak valid!**\n**Kode bahasa yang tersedia untuk TRT :**\n\n`“{LANGUAGES}”  `"
             )
 
         if gvarstatus("trt_lang"):
@@ -498,7 +498,7 @@ async def lang(value):
 
         if arg not in tts_langs():
             return await value.edit(
-                f"**Kode bahasa tidak valid!**\n**Kode bahasa yang tersedia untuk TTS :**\n\n`“{tts_langs()}”`"
+                f"**Kode bahasa tidak valid!**\n**Kode bahasa yang tersedia untuk TTS :**\n\n`“{tts_langs()}”  `"
             )
 
         if gvarstatus("tts_lang"):
@@ -529,7 +529,7 @@ async def yt_search(event):
     query = event.pattern_match.group(2)
 
     if not query:
-        return await event.edit("`Masukkan kueri untuk dicari!.`")
+        return await event.edit("`Masukkan kueri untuk dicari!`")
     await event.edit("`Sedang memproses...`")
 
     try:
