@@ -659,7 +659,7 @@ async def download_video(v_url):
         metadata = extractMetadata(createParser(f_name))
         duration = 0
         if metadata.has("duration"):
-        	duration = metadata.get("duration").seconds
+            duration = metadata.get("duration").seconds
         await v_url.client.send_file(
             v_url.chat_id,
             result,
