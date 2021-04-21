@@ -614,7 +614,7 @@ async def download_video(url):
         video = True
 
     try:
-        await url.edit("`Mengambil data.\nTunggu sebentar...`")
+        await url.edit("`Mengambil data...\nTunggu sebentar...`")
         with YoutubeDL(opts) as rip:
             rip_data = rip.extract_info(url)
     except DownloadError as DE:
@@ -763,7 +763,7 @@ CMD_HELP.update(
         "imdb": "`.imdb [nama film]`" "\n➥  Menampilkan info film dan hal lainnya.",
         "rip": "`.ripaudio [url]`"
         "\n➥  Unduh video dari YouTube dan ubah menjadi audio "
-        "\n`.ripvideo [kualitas] [url] (kualitas opsional)`"
+        "\n\n`.ripvideo [kualitas] [url] (kualitas opsional)`"
         "\n**Contoh Kualitas :** `144` `240` `360` `480` `720` `1080` `2160`"
         "\n➥  Unduh video dari YouTube "
         "dan [banyak situs lainnya](https://ytdl-org.github.io/youtube-dl/supportedsites.html)",
