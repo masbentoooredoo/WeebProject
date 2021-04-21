@@ -558,14 +558,14 @@ async def yt_search(event):
 
 
 @register(outgoing=True, pattern=r".rip(audio|video( \d{0,4})?) (.*)")
-async def download_video(url):
+async def download_video(v_url):
     """ For .rip command, download media from YouTube and many other sites. """
-    dl_type = url.pattern_match.group(1).lower()
-    reso = url.pattern_match.group(2)
+    dl_type = v_url.pattern_match.group(1).lower()
+    reso = v_url.pattern_match.group(2)
     reso = reso.strip() if reso else None
-    url = url.pattern_match.group(3)
+    url = v_url.pattern_match.group(3)
 
-    await url.edit("`Bersiap untuk mengunduh...`")
+    await v_url.edit("`Bersiap untuk mengunduh...`")
     s_time = time.time()
     video = False
     audio = False
@@ -614,45 +614,45 @@ async def download_video(url):
         video = True
 
     try:
-        await url.edit("`Mengambil data...\nTunggu sebentar...`")
+        await v_url.edit("`Mengambil data.\nTunggu sebentar...`")
         with YoutubeDL(opts) as rip:
             rip_data = rip.extract_info(url)
     except DownloadError as DE:
-        return await url.edit(f"`{str(DE)}`")
+        return await v_url.edit(f"`{str(DE)}`")
     except ContentTooShortError:
-        return await url.edit("`Konten unduhan terlalu pendek.`")
+        return await v_url.edit("`Konten unduhan terlalu pendek.`")
     except GeoRestrictedError:
-        return await url.edit(
+        return await v_url.edit(
             "`Video tidak tersedia dari lokasi geografis Anda "
             "karena batasan geografis yang diberlakukan oleh situs web.`"
         )
     except MaxDownloadsReached:
-        return await url.edit("`Batas unduhan maksimal telah tercapai.`")
+        return await v_url.edit("`Batas unduhan maksimal telah tercapai.`")
     except PostProcessingError:
-        return await url.edit("`Ada kesalahan selama pemrosesan posting.`")
+        return await v_url.edit("`Ada kesalahan selama pemrosesan posting.`")
     except UnavailableVideoError:
-        return await url.edit("`Media tidak tersedia dalam format yang diminta.`")
+        return await v_url.edit("`Media tidak tersedia dalam format yang diminta.`")
     except XAttrMetadataError as XAME:
-        return await url.edit(f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`")
+        return await v_url.edit(f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`")
     except ExtractorError:
-        return await url.edit("`Terjadi kesalahan selama mengekstrak info.`")
+        return await v_url.edit("`Terjadi kesalahan selama mengekstrak info.`")
     except Exception as e:
-        return await url.edit(f"{str(type(e)): {str(e)}}")
+        return await v_url.edit(f"{str(type(e)): {str(e)}}")
     c_time = time.time()
     if audio:
-        await url.edit(
+        await v_url.edit(
             f"`Bersiap mengunggah lagu :`\n**{rip_data.get('title')}**"
             f"\noleh **{rip_data.get('uploader')}**"
         )
         f_name = rip_data.get("id") + ".mp3"
         with open(f_name, "rb") as f:
             result = await upload_file(
-                client=url.client,
+                client=v_url.client,
                 file=f,
                 name=f_name,
                 progress_callback=lambda d, t: get_event_loop().create_task(
                     progress(
-                        d, t, url, c_time, "Uploading...", f"{rip_data['title']}.mp3"
+                        d, t, v_url, c_time, "Uploading...", f"{rip_data['title']}.mp3"
                     )
                 ),
             )
@@ -667,8 +667,8 @@ async def download_video(url):
         duration = 0
         if metadata.has("duration"):
             duration = metadata.get("duration").seconds
-        await url.client.send_file(
-            url.chat_id,
+        await v_url.client.send_file(
+            v_url.chat_id,
             result,
             supports_streaming=True,
             attributes=[
@@ -682,9 +682,9 @@ async def download_video(url):
         )
         os.remove(thumb_image)
         os.remove(f_name)
-        await url.delete()
+        await v_url.delete()
     elif video:
-        await url.edit(
+        await v_url.edit(
             f"`Bersiap mengunggah video :`\n**{rip_data.get('title')}**"
             f"\noleh **{rip_data.get('uploader')}**"
         )
@@ -697,11 +697,11 @@ async def download_video(url):
         f_name = os.path.basename(f_path)
         with open(f_path, "rb") as f:
             result = await upload_file(
-                client=url.client,
+                client=v_url.client,
                 file=f,
                 name=f_name,
                 progress_callback=lambda d, t: get_event_loop().create_task(
-                    progress(d, t, url, c_time, "Uploading...", f_name)
+                    progress(d, t, v_url, c_time, "Uploading...", f_name)
                 ),
             )
         thumb_image = await get_video_thumb(f_path, "thumb.png")
@@ -715,8 +715,8 @@ async def download_video(url):
             width = metadata.get("width")
         if metadata.has("height"):
             height = metadata.get("height")
-        await url.client.send_file(
-            url.chat_id,
+        await v_url.client.send_file(
+            v_url.chat_id,
             result,
             thumb=thumb_image,
             attributes=[
@@ -731,7 +731,7 @@ async def download_video(url):
         )
         shutil.rmtree(os.path.join(TEMP_DOWNLOAD_DIRECTORY, str(s_time)))
         os.remove(thumb_image)
-        await url.delete()
+        await v_url.delete()
 
 
 def deEmojify(inputString):
@@ -764,7 +764,7 @@ CMD_HELP.update(
         "rip": "`.ripaudio [url]`"
         "\n➥  Unduh video dari YouTube dan ubah menjadi audio "
         "\n\n`.ripvideo [kualitas] [url] (kualitas opsional)`"
-        "\n**Contoh Kualitas :** `144` `240` `360` `480` `720` `1080` `2160`"
+        "\n**Contoh Kualitas :** `144,`  `240,`  `360,`  `480,`  `720,`  `1080,`  `2160`"
         "\n➥  Unduh video dari YouTube "
         "dan [banyak situs lainnya](https://ytdl-org.github.io/youtube-dl/supportedsites.html)",
     }
