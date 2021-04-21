@@ -5,8 +5,6 @@
 #
 """Userbot help command"""
 
-import asyncio
-
 from userbot import CMD_HELP
 from userbot.events import register
 
@@ -17,11 +15,9 @@ async def help(event):
     args = event.pattern_match.group(1).lower()
     if args:
         if args in CMD_HELP:
-            msg = await event.edit(str(CMD_HELP[args]))
+            await event.edit(str(CMD_HELP[args]))
         else:
-            msg = await event.edit("`Harap tentukan nama modul yang valid!`")
-            await asyncio.sleep(10)
-            await event.delete()
+            await event.edit("`Harap tentukan nama modul yang valid!`")
     else:
         head = "Harap tentukan modul mana yang Anda inginkan untuk bantuan!"
         head2 = f"Modul yang dimuat : `{len(CMD_HELP)} modul`"
@@ -31,7 +27,7 @@ async def help(event):
         sep1 = "`-------------------------------------------------------`"
         for i in sorted(CMD_HELP):
             string += "`" + str(i)
-            string += "`  ❖  "
+            string += "`  ••  "
         await event.edit(
             f"{head}\
               \n{head2}\
@@ -41,9 +37,3 @@ async def help(event):
               \n{string}\
               \n{sep1}"
         )
-    await asyncio.sleep(45)
-    await event.delete()
-    try:
-        await msg.delete()
-    except BaseException:
-        return  # just in case if msg deleted first
