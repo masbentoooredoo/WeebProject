@@ -6,6 +6,7 @@
 # You can find misc modules, which dont fit in anything xD
 """ Userbot module for other small commands. """
 
+import asyncio
 import io
 import sys
 from os import environ, execle
@@ -99,7 +100,7 @@ async def repeat(rep):
 async def repo_is_here(wannasee):
     """ For .repo command, just returns the repo URL. """
     await wannasee.edit("Klik [disini](https://github.com/BianSepang/WeebProject) untuk melihat Repo yang saya gunakan atau Klik [disini](https://github.com/masbentoooredoo/WeebProject) untuk melihat fork Repo saya.")
-    await asyncio.sleep(30)
+    await asyncio.sleep(60)
     await wannasee.delete()
 
 
