@@ -593,7 +593,7 @@ async def download_video(v_url):
         audio = True
 
     elif "video" in dl_type:
-    	quality = (
+        quality = (
             f"bestvideo[height<={reso}]+bestaudio/best[height<={reso}]"
             if reso
             else "bestvideo+bestaudio/best"
@@ -666,7 +666,7 @@ async def download_video(v_url):
         metadata = extractMetadata(createParser(f_name))
         duration = 0
         if metadata.has("duration"):
-        	duration = metadata.get("duration").seconds
+            duration = metadata.get("duration").seconds
         await v_url.client.send_file(
             v_url.chat_id,
             result,
@@ -691,7 +691,7 @@ async def download_video(v_url):
         f_path = glob(os.path.join(TEMP_DOWNLOAD_DIRECTORY, str(s_time), "*"))[0]
         # Noob way to convert from .mkv to .mp4
         if f_path.endswith(".mkv"):
-        	base = os.path.splitext(f_path)[0]
+            base = os.path.splitext(f_path)[0]
             os.rename(f_path, base + ".mp4")
             f_path = glob(os.path.join(TEMP_DOWNLOAD_DIRECTORY, str(s_time), "*"))[0]
         f_name = os.path.basename(f_path)
@@ -704,8 +704,8 @@ async def download_video(v_url):
                     progress(d, t, v_url, c_time, "Uploading...", f_name)
                 ),
             )
-        thumb_image = await get_video_thumb(f_name, "thumb.png")
-        metadata = extractMetadata(createParser(f_name))
+        thumb_image = await get_video_thumb(f_path, "thumb.png")
+        metadata = extractMetadata(createParser(f_path))
         duration = 0
         width = 0
         height = 0
