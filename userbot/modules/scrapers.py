@@ -614,7 +614,7 @@ async def download_video(v_url):
         video = True
 
     try:
-        await v_url.edit("`Mengambil data.\nTunggu sebentar...`")
+        await v_url.edit("`Mengambil data...\nTunggu sebentar...`")
         with YoutubeDL(opts) as rip:
             rip_data = rip.extract_info(url)
     except DownloadError as DE:
@@ -652,7 +652,7 @@ async def download_video(v_url):
                 name=f_name,
                 progress_callback=lambda d, t: get_event_loop().create_task(
                     progress(
-                        d, t, v_url, c_time, "Uploading...", f"{rip_data['title']}.mp3"
+                        d, t, v_url, c_time, "Mengunggah...", f"{rip_data['title']}.mp3"
                     )
                 ),
             )
@@ -701,7 +701,7 @@ async def download_video(v_url):
                 file=f,
                 name=f_name,
                 progress_callback=lambda d, t: get_event_loop().create_task(
-                    progress(d, t, v_url, c_time, "Uploading...", f_name)
+                    progress(d, t, v_url, c_time, "Mengunggah...", f_name)
                 ),
             )
         thumb_image = await get_video_thumb(f_path, "thumb.png")
@@ -727,7 +727,7 @@ async def download_video(v_url):
                     supports_streaming=True,
                 )
             ],
-            caption=f"[{rip.data.get('title')}]({url})",
+            caption=f"[{rip_data.get('title')}]({url})",
         )
         shutil.rmtree(os.path.join(TEMP_DOWNLOAD_DIRECTORY, str(s_time)))
         os.remove(thumb_image)
