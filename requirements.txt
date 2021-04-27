@@ -1,3 +1,4 @@
+aiofile
 aiohttp[speedups]
 appdirs
 aria2p
@@ -26,11 +27,11 @@ html_telegraph_poster
 httplib2
 humanize
 jikanpy
+js2py
 lottie
 lxml
 lyricsgenius
 natsort
-nekos.py
 oauth2client
 pendulum
 Pillow
