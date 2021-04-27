@@ -6,7 +6,8 @@
 """Userbot module containing commands for interacting with dogbin(https://del.dog)."""
 import os
 
-from requests import exceptions, get, post
+import aiohttp
+from aiofile import async_open
 
 from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
@@ -35,56 +36,58 @@ async def paste(pstl):
                 TEMP_DOWNLOAD_DIRECTORY,
             )
             f_ext = os.path.splitext(downloaded_file_name)[-1]
-            with open(downloaded_file_name) as fd:
+            async with async_open(downloaded_file_name, "r") as fd:
                 try:
-                    m_list = fd.readlines()
+                    message = await fd.read()
                 except UnicodeDecodeError:
                     return await pstl.edit("`Tidak dapat menempelkan file ini.`")
-            message = ""
-            for m in m_list:
-                message += m
             os.remove(downloaded_file_name)
         else:
             message = replied.message
 
-    if not url_type:
-        await pstl.edit("`Menempelkan ke Nekobin...`")
-        resp = post(NEKOBIN_URL + "api/documents", json={"content": message})
-        if resp.status_code == 201:
-            response = resp.json()
-            key = response["result"]["key"]
-            nekobin_final_url = NEKOBIN_URL + key + f_ext
-            reply_text = (
-                "`Berhasil ditempel!`\n\n"
-                f"[URL Nekobin]({nekobin_final_url})\n"
-                f"[Lihat RAW]({NEKOBIN_URL}raw/{key})"
-            )
+    async with aiohttp.ClientSession() as ses:
+        if not url_type:
+            await pstl.edit("`Menempelkan ke Nekobin...`")
+            async with ses.post(
+                NEKOBIN_URL + "api/documents", json={"content": message}
+            ) as resp:
+                if resp.status == 201:
+                    response = await resp.json()
+                    key = response["result"]["key"]
+                    nekobin_final_url = NEKOBIN_URL + key + f_ext
+                    reply_text = (
+                        "`Berhasil ditempel!`\n\n"
+                        f"[URL Nekobin]({nekobin_final_url})\n"
+                        f"[Lihat RAW]({NEKOBIN_URL}raw/{key})"
+                    )
+                else:
+                    reply_text = "`Gagal mencapai Nekobin.`"
         else:
-            reply_text = "`Gagal mencapai Nekobin.`"
-    else:
-        await pstl.edit("`Menempelkan ke Dogbin...`")
-        resp = post(DOGBIN_URL + "documents", data=message.encode("utf-8"))
-        if resp.status_code == 200:
-            response = resp.json()
-            key = response["key"]
-            dogbin_final_url = DOGBIN_URL + key + f_ext
+            await pstl.edit("`Menempelkan ke Dogbin...`")
+            async with ses.post(
+                DOGBIN_URL + "documents", data=message.encode("utf-8")
+            ) as resp:
+                if resp.status == 200:
+                    response = await resp.json()
+                    key = response["key"]
+                    dogbin_final_url = DOGBIN_URL + key + f_ext
 
-            if response["isUrl"]:
-                reply_text = (
-                    "`Berhasil ditempel!`\n\n"
-                    f"[URL dipersingkat]({dogbin_final_url})\n\n"
-                    "`URL Asli`\n"
-                    f"[URL Dogbin]({DOGBIN_URL}v/{key})\n"
-                    f"[Lihat RAW]({DOGBIN_URL}raw/{key})"
-                )
-            else:
-                reply_text = (
-                    "`Berhasil ditempel!`\n\n"
-                    f"[URL Dogbin]({dogbin_final_url})\n"
-                    f"[Lihat RAW]({DOGBIN_URL}raw/{key})"
-                )
-        else:
-            reply_text = "`Gagal mencapai Dogbin.`"
+                    if response["isUrl"]:
+                        reply_text = (
+                            "`Berhasil ditempel!`\n\n"
+                            f"[URL dipersingkat]({dogbin_final_url})\n\n"
+                            "`URL Asli`\n"
+                            f"[URL Dogbin]({DOGBIN_URL}v/{key})\n"
+                            f"[Lihat RAW]({DOGBIN_URL}raw/{key})"
+                        )
+                    else:
+                        reply_text = (
+                            "`Berhasil ditempel!`\n\n"
+                            f"[URL Dogbin]({dogbin_final_url})\n"
+                            f"[Lihat RAW]({DOGBIN_URL}raw/{key})"
+                        )
+                else:
+                    reply_text = "`Gagal mencapai Dogbin.`"
 
     await pstl.edit(reply_text)
 
@@ -111,35 +114,30 @@ async def get_dogbin_content(dog_url):
     else:
         return await dog_url.edit("`Apakah itu URL Dogbin?`")
 
-    resp = get(f"{DOGBIN_URL}raw/{message}")
-
-    try:
-        resp.raise_for_status()
-    except exceptions.HTTPError as HTTPErr:
-        await dog_url.edit(
-            "Permintaan mengembalikan kode status tidak berhasil.\n\n" + str(HTTPErr)
+    async with aiohttp.ClientSession(raise_for_status=True) as ses:
+        try:
+            async with ses.get(f"{DOGBIN_URL}raw/{message}") as resp:
+                paste_content = await resp.text()
+        except aiohttp.ClientResponseError as err:
+            return await dog_url.edit(
+                f"`Permintaan mengembalikan kode status tidak berhasil.`\n\n`{str(err)}`"
+            )
+        except aiohttp.ServerTimeoutError as err:
+            return await dog_url.edit(f"`Permintaan waktu habis.`\n\n`{str(err)}`")
+        except aiohttp.TooManyRedirects as err:
+            return await dog_url.edit(
+                f"`Pemintaan melebihi jumlah pengalihan maksimum yang dikonfigurasikan.`\n\n`{str(err)}`"
+            )
+        reply_text = (
+            f"`Berhasil mengambil konten Dogbin!`\n\n`Konten :`\n`{paste_content}`"
         )
-        return
-    except exceptions.Timeout as TimeoutErr:
-        await dog_url.edit("Permintaan waktu habis." + str(TimeoutErr))
-        return
-    except exceptions.TooManyRedirects as RedirectsErr:
-        await dog_url.edit(
-            "Permintaan melebihi jumlah pengalihan maksimum yang dikonfigurasi."
-            + str(RedirectsErr)
-        )
-        return
-
-    reply_text = (
-        "`Berhasil mengambil konten URL!`" "\n\n`Konten :` " + resp.text
-    )
 
     await dog_url.edit(reply_text)
 
 
 CMD_HELP.update(
     {
-        "paste": "`.paste / .paste d [teks/balas]`"
+        "paste": "`.paste` / `.paste d [teks/balas]`"
         "\n➥  Menempelkan teks ke Nekobin atau Dogbin."
         "\n\n`.getpaste`"
         "\n➥  Mendapatkan konten teks atau url yang dipersingkat dari Dogbin (https://del.dog/)"
