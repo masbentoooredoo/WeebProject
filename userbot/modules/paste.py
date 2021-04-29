@@ -137,7 +137,7 @@ async def get_dogbin_content(dog_url):
 
 CMD_HELP.update(
     {
-        "paste": "`.paste` / `.paste d [teks/balas]`"
+        "paste": "`.paste / .paste d [teks/balas]`"
         "\n➥  Menempelkan teks ke Nekobin atau Dogbin."
         "\n\n`.getpaste`"
         "\n➥  Mendapatkan konten teks atau url yang dipersingkat dari Dogbin (https://del.dog/)"
