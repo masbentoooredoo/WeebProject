@@ -1452,7 +1452,7 @@ async def gdrive_clone(event):
     drive_link = f"{_icon} [{_name}]({_link})"
     msg += f"**GDrive Clone**\n\n**{drive_link}**"
     if G_DRIVE_INDEX_URL:
-        index_url = G_DRIVE_INDEX_URL.rstrip("/") + "/" quote(_name)
+        index_url = G_DRIVE_INDEX_URL.rstrip("/") + "/" + quote(_name)
         if _drive_meta.get("mimeType") == G_DRIVE_DIR_MIME_TYPE:
             index_url += "/"
         msg += f"\n👤 **[Index URL]({index_url})**"
