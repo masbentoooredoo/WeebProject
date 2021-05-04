@@ -368,8 +368,8 @@ async def _(event):
             # https://lonamiwebs.github.io/Telethon/methods/messages/add_chat_user.html
             for user_id in to_add_users.split():
                 try:
-                	if user_id.isdigit():
-                	    user_id = int(user_id)
+                    if user_id.isdigit():
+                        user_id = int(user_id)
                     await event.client(
                         functions.messages.AddChatUserRequest(
                             chat_id=event.chat_id, user_id=user_id, fwd_limit=1000000
@@ -384,8 +384,8 @@ async def _(event):
             # https://lonamiwebs.github.io/Telethon/methods/channels/invite_to_channel.html
             for user_id in to_add_users.split():
                 try:
-                	if user_id.isdigit():
-                	    user_id = int(user_id)
+                    if user_id.isdigit():
+                        user_id = int(user_id)
                     await event.client(
                         functions.channels.InviteToChannelRequest(
                             channel=event.chat_id, users=[user_id]
