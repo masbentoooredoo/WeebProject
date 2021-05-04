@@ -6,7 +6,7 @@
 
 import re
 
-from hentai import Hentai
+from hentai import Hentai, Utils
 from natsort import natsorted
 
 from userbot import CMD_HELP
@@ -18,19 +18,21 @@ from userbot.modules.anime import post_to_telegraph
 async def _(event):
     if event.fwd_from:
         return
+    await event.edit("`Mencari doujin...`")
     input_str = event.pattern_match.group(1)
     code = input_str
     if "nhentai" in input_str:
-        link_regex = r"(https?://)?(www\.)?nhentai\.net/g/(\d+)"
+        link_regex = r"(?:https?://)?(?:www\.)?nhentai\.net/g/(\d+)"
         match = re.match(link_regex, input_str)
-        code = match.group(3)
-    await event.edit("`Mencari doujin...`")
+        code = match.group(1)
+    if input_str == "random":
+        code = Utils.get_random_id()
     try:
         doujin = Hentai(code)
     except BaseException as n_e:
         if "404" in str(n_e):
-            return await event.edit(f"`{code}`  tidak ditemukan!")
-        return await event.edit(f"**Kesalahan : **`{n_e}`")
+            return await event.edit(f"Doujin tidak ditemukan untuk `{code}`")
+        return await event.edit(f"**Kesalahan :** `{n_e}`")
     msg = ""
     imgs = ""
     for url in doujin.image_urls:
@@ -81,5 +83,8 @@ async def _(event):
 
 
 CMD_HELP.update(
-    {"nhentai": "`.nhentai [tautan / kode]`" "\n➥  Lihat nhentai di telegra.ph\n"}
+    {
+        "nhentai": "`.nhentai [kode / tautan / acak]`"
+        "\n➥  Cari kode atau tautan nhentai dan lihat di telegra.ph"
+    }
 )
