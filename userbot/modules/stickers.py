@@ -33,7 +33,7 @@ KANGING_STR = [
 
 @register(outgoing=True, pattern=r"^\.curi")
 async def kang(args):
-    """ For .kang command, kangs stickers or creates new ones. """
+    """For .kang command, kangs stickers or creates new ones."""
     user = await bot.get_me()
     if not user.username:
         user.username = user.first_name
@@ -79,7 +79,7 @@ async def kang(args):
     if photo:
         splat = args.text.split()
         if not emojibypass:
-            emoji = "😶"
+            emoji = " 🤔 "
         pack = 1
         if len(splat) == 3:
             pack = splat[2]  # User sent both
@@ -249,7 +249,7 @@ async def kang(args):
 
 
 async def resize_photo(photo):
-    """ Resize the given photo to 512x512 """
+    """Resize the given photo to 512x512"""
     image = Image.open(photo)
     maxsize = (512, 512)
     if (image.width and image.height) < 512:
@@ -352,7 +352,7 @@ CMD_HELP.update(
         "\n➥  Curi stiker atau gambar untuk dimasukkan ke paket userbot Anda "
         "atau tentukan emoji yang Anda inginkan."
         "\n\n`.curi [emoji] [nomor]`"
-        "\n➥  Curi stiker atau gambar untuk paket tertentu tetapi menggunakan 😶 sebagai emoji "
+        "\n➥  Curi stiker atau gambar untuk paket tertentu tetapi menggunakan 🤔 sebagai emoji "
         "atau pilih emoji yang Anda inginkan."
         "\n\n`.stkrinfo`"
         "\n➥  Mendapatkan info tentang paket stiker."

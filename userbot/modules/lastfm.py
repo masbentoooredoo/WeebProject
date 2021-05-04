@@ -57,7 +57,7 @@ LastLog = False
 
 @register(outgoing=True, pattern=r"^\.lastfm$")
 async def last_fm(lastFM):
-    """ For .lastfm command, fetch scrobble data from last.fm. """
+    """For .lastfm command, fetch scrobble data from last.fm."""
     await lastFM.edit("`Sedang memproses...`")
     preview = None
     playing = User(LASTFM_USERNAME, lastfm).get_now_playing()

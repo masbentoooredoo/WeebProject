@@ -59,7 +59,7 @@ async def get_readable_time(seconds: int) -> str:
 
 @register(outgoing=True, pattern=r"^\.sysd$")
 async def sysdetails(sysd):
-    """ For .sysd command, get system info using neofetch. """
+    """For .sysd command, get system info using neofetch."""
     if not sysd.text[0].isalpha() and sysd.text[0] not in ("/", "#", "@", "!"):
         try:
             fetch = await asyncrunapp(
@@ -79,7 +79,7 @@ async def sysdetails(sysd):
 
 @register(outgoing=True, pattern=r"^\.botver$")
 async def bot_ver(event):
-    """ For .botver command, get the bot version. """
+    """For .botver command, get the bot version."""
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if which("git") is not None:
             ver = await asyncrunapp(
@@ -115,7 +115,7 @@ async def bot_ver(event):
 
 @register(outgoing=True, pattern=r"^\.pip(?: |$)(.*)")
 async def pipcheck(pip):
-    """ For .pip command, do a pip search. """
+    """For .pip command, do a pip search."""
     if not pip.text[0].isalpha() and pip.text[0] not in ("/", "#", "@", "!"):
         pipmodule = pip.pattern_match.group(1)
         if pipmodule:
@@ -172,7 +172,7 @@ async def amireallyalive(alive):
         f"**⌯  Versi Python** : `{python_version()}`\n"
         f"**⌯  Versi Telethon** : `{version.__version__}`\n"
         f"**⌯  Berjalan di** : `{repo.active_branch.name}`\n"
-        f"**⌯  Modul dimuat** : `{len(CMD_HELP)} modul`\n"
+        f"**⌯  Modul dimuat** : `{len(CMD_HELP)}`\n"
         f"**⌯  Bot aktif sejak** : `{uptime}`\n"
     )
     if ALIVE_LOGO:
@@ -191,7 +191,7 @@ async def amireallyalive(alive):
 
 @register(outgoing=True, pattern=r"^\.aliveu")
 async def amireallyaliveuser(username):
-    """ For .aliveu command, change the username in the .alive command. """
+    """For .aliveu command, change the username in the .alive command."""
     message = username.text
     output = ".aliveu [pengguna baru tanpa tanda kurung] juga tidak bisa kosong"
     if not (message == ".aliveu" or message[7:8] != " "):
@@ -204,7 +204,7 @@ async def amireallyaliveuser(username):
 
 @register(outgoing=True, pattern=r"^\.resetalive$")
 async def amireallyalivereset(ureset):
-    """ For .resetalive command, reset the username in the .alive command. """
+    """For .resetalive command, reset the username in the .alive command."""
     global DEFAULTUSER
     DEFAULTUSER = str(ALIVE_NAME) if ALIVE_NAME else uname().node
     await ureset.edit("`Berhasil menyetel ulang pengguna untuk “.alive”`")
@@ -221,7 +221,7 @@ CMD_HELP.update(
         "alive": "`.alive`"
         "\n➥  Melihat apakah bot Anda berfungsi atau tidak."
         "\n\n`.aliveu [teks]`"
-        "\n➥  Mengubah “Pengguna” di  `.alive`  menjadi teks yang Anda inginkan."
+        "\n➥  Mengubah “Pengguna” di `.alive` menjadi teks yang Anda inginkan."
         "\n\n`.resetalive`"
         "\n➥  Menyetel ulang “Pengguna” ke default.",
     }
