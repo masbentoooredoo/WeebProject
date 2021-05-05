@@ -6,7 +6,7 @@
 
 import re
 
-from hentai import Hentai
+from hentai import Hentai, Utils
 from natsort import natsorted
 
 from userbot import CMD_HELP
