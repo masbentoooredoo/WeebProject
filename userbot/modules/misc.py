@@ -64,7 +64,7 @@ async def killdabot(event):
             BOTLOG_CHATID, "#RESTART \n" "Bot dimulai ulang"
         )
     # Spin a new instance of bot
-    args = [sys.exexutable, "-m", "userbot"]
+    args = [sys.executable, "-m", "userbot"]
     execle(sys.executable, *args, environ)
 
 
