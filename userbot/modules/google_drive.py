@@ -1461,7 +1461,7 @@ CMD_HELP.update(
     {
         "gdrive": "`.gdauth`"
         "\n➥  Buat token untuk mengaktifkan semua layanan cmd google drive. "
-        "\Ini hanya perlu dijalankan sekali seumur hidup."
+        "Ini hanya perlu dijalankan sekali seumur hidup."
         "\n\n`.gdreset`"
         "\n➥  Setel ulang token Anda jika terjadi sesuatu yang buruk atau mengubah akun drive."
         "\n\n`.gd`"
