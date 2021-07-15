@@ -277,7 +277,7 @@ async def fetch_info(chat, event):
         caption += f"Pencipta: {creator_username}\n"
     elif creator_valid:
         caption += (
-            f"Pencipta: <a href="tg://user?id={creator_id}">{creator_firstname}</a>\n"
+            f'Pencipta: <a href="tg://user?id={creator_id}">{creator_firstname}</a>\n'
         )
     if created is not None:
         caption += f"Dibuat: <code>{created.date().strftime('%b %d, %Y')} - {created.time()}</code>\n"
