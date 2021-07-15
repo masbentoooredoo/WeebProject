@@ -306,7 +306,7 @@ async def fetch_info(chat, event):
     if banned_users is not None:
         caption += f"Pengguna dilarang: <code>{banned_users}</code>\n"
     if group_stickers is not None:
-        caption += f"Stiker {chat_type}: <a href="t.me/addstickers/{chat.full_chat.stickerset.short_name}">{group_stickers}</a>\n"
+        caption += f'Stiker {chat_type}: <a href="t.me/addstickers/{chat.full_chat.stickerset.short_name}">{group_stickers}</a>\n'
     caption += "\n"
     if not broadcast:
         caption += f"Mode lambat: {slowmode}"
