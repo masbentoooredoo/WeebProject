@@ -6,16 +6,17 @@
 """ Userbot start point """
 
 from importlib import import_module
-from sys import argv
 
 from telethon.errors.rpcerrorlist import PhoneNumberInvalidError
+
 from userbot import LOGS, bot
 from userbot.modules import ALL_MODULES
 
-
-INVALID_PH = '\nKESALAHAN : Nomor telepon yang dimasukkan TIDAK VALID' \
-             '\n Tip : Gunakan kode negara bersama dengan nomor.' \
-             '\n atau periksa nomor telepon Anda dan coba lagi!'
+INVALID_PH = (
+    "\nKESALAHAN: Nomor telepon yang dimasukkan TIDAK VALID"
+    "\n Tip: Gunakan kode negara bersama dengan nomor"
+    "\n atau periksa nomor telepon Anda dan coba lagi!"
+)
 
 try:
     bot.start()
@@ -28,7 +29,4 @@ for module_name in ALL_MODULES:
 
 LOGS.info("Anda menjalankan WeebProject Userbot")
 
-if len(argv) not in (1, 3, 4):
-    bot.disconnect()
-else:
-    bot.run_until_disconnected()
+bot.run_until_disconnected()

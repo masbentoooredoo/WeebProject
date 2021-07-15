@@ -5,7 +5,6 @@
 #
 """Userbot module for managing events. One of the main components of the userbot."""
 
-import codecs
 import sys
 from asyncio import create_subprocess_shell as asyncsubshell
 from asyncio import subprocess as asyncsub
@@ -13,47 +12,47 @@ from os import remove
 from time import gmtime, strftime
 from traceback import format_exc
 
-import requests
+from aiohttp import ClientSession
 from telethon import events
 
-from userbot import bot, BOTLOG_CHATID, LOGSPAMMER
+from userbot import BOTLOG_CHATID, LOGSPAMMER, bot
 
 
 def register(**args):
     """Register a new event."""
-    pattern = args.get('pattern', None)
-    disable_edited = args.get('disable_edited', False)
-    ignore_unsafe = args.get('ignore_unsafe', False)
-    unsafe_pattern = r'^[^/!#@\$A-Za-z]'
-    groups_only = args.get('groups_only', False)
-    trigger_on_fwd = args.get('trigger_on_fwd', False)
-    disable_errors = args.get('disable_errors', False)
-    insecure = args.get('insecure', False)
+    pattern = args.get("pattern", None)
+    disable_edited = args.get("disable_edited", False)
+    ignore_unsafe = args.get("ignore_unsafe", False)
+    unsafe_pattern = r"^[^/!#@\$A-Za-z]"
+    groups_only = args.get("groups_only", False)
+    trigger_on_fwd = args.get("trigger_on_fwd", False)
+    disable_errors = args.get("disable_errors", False)
+    insecure = args.get("insecure", False)
 
-    if pattern is not None and not pattern.startswith('(?i)'):
-        args['pattern'] = '(?i)' + pattern
+    if pattern is not None and not pattern.startswith("(?i)"):
+        args["pattern"] = "(?i)" + pattern
 
     if "disable_edited" in args:
-        del args['disable_edited']
+        del args["disable_edited"]
 
     if "ignore_unsafe" in args:
-        del args['ignore_unsafe']
+        del args["ignore_unsafe"]
 
     if "groups_only" in args:
-        del args['groups_only']
+        del args["groups_only"]
 
     if "disable_errors" in args:
-        del args['disable_errors']
+        del args["disable_errors"]
 
     if "trigger_on_fwd" in args:
-        del args['trigger_on_fwd']
+        del args["trigger_on_fwd"]
 
     if "insecure" in args:
-        del args['insecure']
+        del args["insecure"]
 
     if pattern:
         if not ignore_unsafe:
-            args['pattern'] = pattern.replace('^.', unsafe_pattern, 1)
+            args["pattern"] = pattern.replace("^.", unsafe_pattern, 1)
 
     def decorator(func):
         async def wrapper(check):
@@ -72,6 +71,15 @@ def register(**args):
             if groups_only and not check.is_group:
                 await check.respond("`Saya tidak yakin ini adalah grup.`")
                 return
+
+            try:
+                from userbot.modules.sql_helper.blacklist_sql import get_blacklist
+
+                for blacklisted in get_blacklist():
+                    if str(check.chat_id) == blacklisted.chat_id:
+                        return
+            except Exception:
+                pass
 
             if check.via_bot_id and not insecure and check.out:
                 return
@@ -99,37 +107,36 @@ def register(**args):
                     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
                     text = "**LAPORAN KESALAHAN USERBOT**\n"
-                    text += "Tidak ada yang dicatat kecuali fakta kesalahan dan tanggal\n\n"
+                    text += "Tidak ada yang dicatat kecuali fakta kesalahan dan tanggal."
 
-                    ftext = "=================  PENOLAKAN  ================="
+                    ftext = "========== PENOLAKAN =========="
                     ftext += "\nFile ini HANYA diunggah di sini,"
                     ftext += "\nkami hanya mencatat fakta kesalahan dan tanggal,"
                     ftext += "\nkami menghormati privasi Anda,"
-                    ftext += "\nAnda tidak dapat melaporkan kesalahan ini jika Anda punya"
-                    ftext += "\ndata rahasia apa pun di sini, tidak ada yang akan melihat data Anda\n"
-                    ftext += "===============================================\n\n"
-                    ftext += "========== MULAI MELACAK LOG USERBOT ==========\n"
-                    ftext += "\nTanggal : " + date
-                    ftext += "\nID Obrolan : " + str(check.chat_id)
-                    ftext += "\nID Pengirim : " + str(check.sender_id)
-                    ftext += "\n\nPemicu Peristiwa :\n"
+                    ftext += "\nAnda tidak boleh melaporkan kesalahan ini jika Anda"
+                    ftext += "\nmemiliki data rahasia di sini, tidak ada yang akan melihat data Anda\n"
+                    ftext += "================================\n\n"
+                    ftext += "--------MULAI PENELUSURAN LOG USERBOT--------\n"
+                    ftext += "\nTanggal: " + date
+                    ftext += "\nID Obrolan: " + str(check.chat_id)
+                    ftext += "\nID Pengirim: " + str(check.sender_id)
+                    ftext += "\n\nPemicu Peristiwa:\n"
                     ftext += str(check.text)
-                    ftext += "\n\nInfo Pelacakan :\n"
+                    ftext += "\n\nInfo Penelusuran:\n"
                     ftext += str(format_exc())
-                    ftext += "\n\nTeks Kesalahan :\n"
+                    ftext += "\n\nTeks Kesalahan:\n"
                     ftext += str(sys.exc_info()[1])
-                    ftext += "\n\n========== AKHIR MELACAK LOG USERBOT =========="
+                    ftext += "\n\n--------AKHIR PENELUSURAN LOG USERBOT--------"
 
-                    command = "git log --pretty=format:\"%an: %s\" -10"
+                    command = 'git log --pretty=format:"%an: %s" -10'
 
-                    ftext += "\n\n\n10 komit terakhir : \n"
+                    ftext += "\n\n\n10 komit terakhir:\n"
 
-                    process = await asyncsubshell(command,
-                                                  stdout=asyncsub.PIPE,
-                                                  stderr=asyncsub.PIPE)
+                    process = await asyncsubshell(
+                        command, stdout=asyncsub.PIPE, stderr=asyncsub.PIPE
+                    )
                     stdout, stderr = await process.communicate()
-                    result = str(stdout.decode().strip()) \
-                        + str(stderr.decode().strip())
+                    result = str(stdout.decode().strip()) + str(stderr.decode().strip())
 
                     ftext += result
 
@@ -138,27 +145,19 @@ def register(**args):
 
                     if LOGSPAMMER:
                         await check.respond(
-                            "`Maaf, bot saya ngadat.`\n"
-                            "`Kesalahan disimpan dalam obrolan log Userbot.`"
+                            "`Maaf, bot saya ngadat."
+                            "\nKesalahan disimpan dalam obrolan log Userbot.`"
                         )
 
-                        log = codecs.open("error.txt", "r", encoding="utf-8")
-                        data = log.read()
-                        key = (
-                            requests.post(
-                                "https://nekobin.com/api/documents",
-                                json={"content": data},
+                        async with ClientSession() as ses, ses.post(
+                            "https://api.katb.in/api/paste", json={"content": ftext}
+                        ) as resp:
+                            url = (
+                                f"https://katb.in/{(await resp.json()).get('paste_id')}"
                             )
-                            .json()
-                            .get("result")
-                            .get("key")
-                        )
-                        url = f"https://nekobin.com/raw/{key}"
-                        anu = f"{text}Ditempel ke : [Nekobin]({url})"
+                        text += f"\n\nDitempel ke : [Katb.in]({url})"
 
-                        await check.client.send_file(send_to,
-                                                     "error.txt",
-                                                     caption=anu)
+                        await check.client.send_file(send_to, "error.txt", caption=text)
                         remove("error.txt")
             else:
                 pass
