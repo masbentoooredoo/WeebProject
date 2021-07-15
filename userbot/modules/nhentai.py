@@ -11,7 +11,7 @@ from natsort import natsorted
 
 from userbot import CMD_HELP
 from userbot.events import register
-from userbot.modules.anime import post_to_telegraph
+from userbot.utils import post_to_telegraph
 
 
 @register(outgoing=True, pattern=r"^\.nhentai(?: |$)(.*)")
@@ -84,7 +84,7 @@ async def _(event):
 
 CMD_HELP.update(
     {
-        "nhentai": "`.nhentai [kode / tautan / acak]`"
+        "nhentai": "`.nhentai [kode/tautan/acak]`"
         "\n➥  Cari kode atau tautan nhentai dan lihat di telegra.ph"
     }
 )
