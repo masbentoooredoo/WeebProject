@@ -750,7 +750,7 @@ async def lists(gdrive):
                 query = f"'{parents}' in parents and (name contains '{name}')"
             else:
                 name = checker
-                query = f"terkait nama  **“{name}”**"
+                query = f"name contains '{name}'"
     else:
         query = ""
     service = await create_app(gdrive)
