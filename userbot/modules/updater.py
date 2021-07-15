@@ -38,7 +38,7 @@ async def gen_chlog(repo, diff):
 
 async def print_changelogs(event, ac_br, changelog):
     changelog_str = (
-        f"**PEMBARUAN**  baru tersedia untuk  **{ac_br}** :\n\n**PERUBAHAN** :\n`{changelog}`"
+        f"**PEMBARUAN**  baru tersedia untuk  **[{ac_br}]** :\n\n**PERUBAHAN** :\n`{changelog}`"
     )
     if len(changelog_str) > 4096:
         await event.edit("`Perubahan terlalu besar, lihat berkas untuk melihatnya.`")
@@ -84,6 +84,13 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
             )
             return repo.__del__()
         await event.edit("`Deploy userbot dalam proses, tunggu sebentar...`")
+        try:
+            from userbot.modules.sql_helper.globals import addgvar, delgvar
+
+            delgvar("restartstatus")
+            addgvar("restartstatus", f"{event.chat_id}\n{event.id}")
+        except AttributeError:
+            pass
         ups_rem.fetch(ac_br)
         repo.git.reset("--hard", "FETCH_HEAD")
         heroku_git_url = heroku_app.git_url.replace(
@@ -99,7 +106,7 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         except Exception as error:
             await event.edit(f"{txt}\n`Ini log kesalahannya :\n{error}`")
             return repo.__del__()
-        build = app.builds(order_by="created_at", sort="desc")[0]
+        build = heroku_app.builds(order_by="created_at", sort="desc")[0]
         if build.status == "failed":
             await event.edit(
                 "`Pembuatan gagal!\n" "Dibatalkan atau ada beberapa kesalahan...`"
@@ -121,6 +128,15 @@ async def update(event, repo, ups_rem, ac_br):
     await event.edit(
         "`Berhasil diperbarui!\n" "Mulai ulang bot... tunggu sebentar!`"
     )
+
+    try:
+        from userbot.modules.sql_helper.globals import addgvar, delgvar
+
+        delgvar("restartstatus")
+        addgvar("restartstatus", f"{event.chat_id}\n{event.id}")
+    except AttributeError:
+        pass
+
     # Spin a new instance of bot
     args = [sys.executable, "-m", "userbot"]
     execle(sys.executable, *args, environ)
@@ -134,11 +150,11 @@ async def upstream(event):
     off_repo = UPSTREAM_REPO_URL
     force_update = False
     try:
-        txt = "`Oops.. Pembaruan tidak bisa dilanjutkan "
-        txt += "terjadi beberapa masalah`\n\n**JEJAK LOG** :\n"
+        txt = "`Oops... Pembaruan tidak bisa dilanjutkan "
+        txt += "terjadi beberapa masalah.`\n\n**JEJAK LOG** :\n"
         repo = Repo()
     except NoSuchPathError as error:
-        await event.edit(f"{txt}\n`direktori {error} tidak ditemukan`")
+        await event.edit(f"{txt}\n`direktori {error} tidak ditemukan.`")
         return repo.__del__()
     except GitCommandError as error:
         await event.edit(f"{txt}\n`Kegagalan awal! {error}`")
@@ -148,8 +164,8 @@ async def upstream(event):
             return await event.edit(
                 f"`Sayangnya, direktori {error} tersebut "
                 "tampaknya bukan repositori git."
-                "\nTapi kita bisa memperbaikinya dengan memperbarui "
-                "paksa userbot menggunakan “.update now.”`"
+                "\nTapi kita bisa memperbaikinya dengan memperbarui paksa userbot "
+                "menggunakan “.update now.”`"
             )
         repo = Repo.init()
         origin = repo.create_remote("upstream", off_repo)
@@ -164,9 +180,9 @@ async def upstream(event):
         await event.edit(
             "**[PEMBARUAN]** :\n"
             f"`Sepertinya Anda menggunakan kustom branch ({ac_br}) Anda sendiri. "
-            "dalam hal ini, Pembaruan tidak dapat mengidentifikasi "
+            "Dalam hal ini, pembaruan tidak dapat mengidentifikasi "
             "branch mana yang akan digabungkan. "
-            "Silahkan periksa branch resmi`"
+            "Silahkan periksa branch resmi.`"
         )
         return repo.__del__()
     try:
@@ -190,7 +206,7 @@ async def upstream(event):
             f"**{UPSTREAM_REPO_BRANCH}**\n"
         )
         return repo.__del__()
-        
+
     if conf == "" and force_update is False:
         await print_changelogs(event, ac_br, changelog)
         await event.delete()

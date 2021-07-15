@@ -10,21 +10,21 @@ from userbot.events import register
 
 
 @register(outgoing=True, pattern=r"^\.help(?: |$)(.*)")
-async def help(event):
+async def help_handler(event):
     """For .help command."""
     args = event.pattern_match.group(1).lower()
     if args:
         if args in CMD_HELP:
             await event.edit(str(CMD_HELP[args]))
         else:
-            await event.edit("`Harap tentukan nama modul yang valid!`")
+            await event.edit(f"**“{args}”**  bukan nama modul yang valid.")
     else:
         head = "Harap tentukan modul mana yang Anda inginkan untuk bantuan!"
         head2 = f"Modul yang dimuat : `{len(CMD_HELP)} modul`"
         head3 = "Gunakan : `.help [nama modul]`"
-        head4 = "Daftar untuk semua perintah tersedia di bawah ini : "
+        head4 = "Daftar untuk semua perintah tersedia dibawah ini : "
         string = ""
-        sep1 = "`-------------------------------------------------------`"
+        sep1 = "`---------------------------------------------------`"
         for i in sorted(CMD_HELP):
             string += "`" + str(i)
             string += "`  ❖  "

@@ -18,14 +18,14 @@ async def notes_active(svd):
         from userbot.modules.sql_helper.notes_sql import get_notes
     except AttributeError:
         return await svd.edit("`Berjalan di mode Non-SQL!`")
-    message = "`Tidak ada catatan yang disimpan dalam obrolan ini`"
+    message = "`Tidak ada catatan yang disimpan dalam obrolan ini.`"
     notes = get_notes(svd.chat_id)
     for note in notes:
         if message == "`Tidak ada catatan yang disimpan dalam obrolan ini`":
-            message = "**Catatan yang disimpan dalam obrolan ini** \n"
-            message += "`#{}`\n".format(note.keyword)
+            message = "**Catatan yang disimpan dalam obrolan ini** :\n"
+            message += f"`#{note.keyword}`\n"
         else:
-            message += "`#{}`\n".format(note.keyword)
+            message += f"`#{note.keyword}`\n"
     await svd.edit(message)
 
 
@@ -38,9 +38,9 @@ async def remove_notes(clr):
         return await clr.edit("`Berjalan di mode Non-SQL!`")
     notename = clr.pattern_match.group(1)
     if rm_note(clr.chat_id, notename) is False:
-        return await clr.edit("`Tidak ditemukan catatan :` **{}**".format(notename))
+        return await clr.edit(f"`Catatan`  **{notename}**  `tidak ditemukan.`")
     else:
-        return await clr.edit("`Berhasil menghapus catatan :` **{}**".format(notename))
+        return await clr.edit(f"`Catatan`  **{notename}**  `berhasil dihapus.`")
 
 
 @register(outgoing=True, pattern=r"^\.save (\w*)")
@@ -58,7 +58,7 @@ async def add_note(fltr):
         if BOTLOG_CHATID:
             await fltr.client.send_message(
                 BOTLOG_CHATID,
-                f"#CATATAN\n**ID Obrolan** : {fltr.chat_id}\n**Kata Kunci** : {keyword}"
+                f"#NOTE\nID OBROLAN : {fltr.chat_id}\nKata Kunci : {keyword}"
                 "\n\nPesan berikut disimpan sebagai data catatan untuk obrolan.\n**Tolong jangan dihapus!**",
             )
             msg_o = await fltr.client.forward_messages(
@@ -113,8 +113,8 @@ async def incom_note(getnt):
 
 @register(outgoing=True, pattern=r"^\.rmbotnotes (.*)")
 async def kick_marie_notes(kick):
-    """For .rmbotnotes command, allows you to kick all \
-        Marie(or her clones) notes from a chat."""
+    """ For .rmbotnotes command, allows you to kick all \
+        Marie(or her clones) notes from a chat. """
     bot_type = kick.pattern_match.group(1).lower()
     if bot_type not in ["marie", "rose"]:
         return await kick.edit("`Bot itu belum didukung!`")
@@ -129,7 +129,7 @@ async def kick_marie_notes(kick):
             i = i.replace("`", "")
             await kick.reply("/clear %s" % (i.strip()))
         await sleep(0.3)
-    await kick.respond("`Berhasil membersihkan catatan bot.")
+    await kick.respond("`Berhasil membersihkan catatan bot.`")
     if BOTLOG:
         await kick.client.send_message(
             BOTLOG_CHATID, "Saya membersihkan semua catatan " + str(kick.chat_id)
@@ -142,13 +142,13 @@ CMD_HELP.update(
         "\n➥  Mendapatkan catatan tertentu."
         "\n\n`.save [nama catatan] [data catatan]` `atau balas sebuah pesan dengan`\n`.save [nama catatan]`"
         "\n➥  Menyimpan pesan yang dibalas sebagai catatan dengan nama catatan. "
-        "(Dapat digunakan dengan foto, dokumen, dan stiker juga!)"
+        "(Dapat juga digunakan dengan foto, dokumen, dan stiker!)"
         "\n\n`.notes`"
         "\n➥  Menampilkan semua catatan yang disimpan dalam obrolan."
         "\n\n`.clear [nama catatan]`"
         "\n➥  Menghapus catatan tertentu."
         "\n\n`.rmbotnotes [marie/rose]`"
         "\n➥  Menghapus semua catatan bot admin dalam obrolan."
-        "\n**Saat ini didukung :** Marie, Rose dan klon mereka."
+        "\nSaat ini didukung : Marie, Rose dan klon mereka."
     }
 )

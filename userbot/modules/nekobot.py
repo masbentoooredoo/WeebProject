@@ -46,9 +46,9 @@ async def trumptweet(text):
     return "gpx.webp"
 
 
-async def phss(uplded, input, name):
+async def phss(uplded, user_input, name):
     web = requests.get(
-        f"https://nekobot.xyz/api/imagegen?type=phcomment&image={uplded}&text={input}&username={name}"
+        f"https://nekobot.xyz/api/imagegen?type=phcomment&image={uplded}&text={user_input}&username={name}"
     ).json()
     alf = web.get("message")
     uri = url(alf)
@@ -159,7 +159,7 @@ async def trump(event):
 @register(outgoing=True, pattern=r"^\.ph(?: |$)(.*)")
 async def phcomment(event):
     try:
-        await event.edit("`Sedang memproses...`")
+        await event.edit("`Memproses...`")
         text = event.pattern_match.group(1)
         reply = await event.get_reply_message()
         if reply:
@@ -192,7 +192,7 @@ async def phcomment(event):
             uplded = "https://telegra.ph/file/7d110cd944d54f72bcc84.jpg"
     except BaseException as e:
         await purge()
-        return await event.edit(f"**Kesalahan** : `{e}`")
+        return await event.edit(f"**Kesalahan :** {e}`")
     img = await phss(uplded, text, name)
     try:
         await event.client.send_file(
@@ -260,7 +260,7 @@ async def kanna(event):
         if event.is_reply and not reply_to_id.media:
             text = reply_to_id.message
         else:
-            await event.edit("`Apa yang harus`  **kanna**  `tulis?`\n`Berikan teks!`")
+            await event.edit("`Apa yang harus “Kanna” tulis?\nBerikan teks!`")
             return
     await event.edit("`Kanna sedang menulis teks...`")
     text = deEmojify(text)
@@ -282,15 +282,15 @@ async def tweet(event):
             if not reply_to_id.media:
                 text = reply_to_id.message
             else:
-                await event.edit("`Apa yang harus saya tweet?`\n`Berikan nama pengguna dan tweet Anda!`")
+                await event.edit("`Apa yang harus saya tweet?\nBerikan nama pengguna dan tweet Anda!`")
                 return
         else:
-            await event.edit("`Apa yang harus saya tweet?`\n`Berikan nama pengguna dan tweet Anda!`")
+            await event.edit("Apa yang harus saya tweet?\nBerikan nama pengguna dan tweet Anda!`")
             return
     if "." in text:
         username, text = text.split(".")
     else:
-        await event.edit("`Apa yang harus saya tweet?`\n`Berikan nama pengguna dan tweet Anda!`")
+        await event.edit("`Apa yang harus saya tweet?\nBerikan nama pengguna dan tweet Anda!`")
     await event.edit(f"`Meminta {username} untuk menge-tweet...`")
     text = deEmojify(text)
     img = await tweets(text, username)
@@ -306,7 +306,7 @@ CMD_HELP.update(
         "\n\n`.trump [tweet]`"
         "\n➥  Buat tweet untuk Donald Trump."
         "\n\n`.qg [tweet]`"
-        "\n➥  Buat tweet untuk **@QoryGore**."
+        "\n➥  Buat tweet untuk “@QoryGore”."
         "\n\n`.cmm [teks]`"
         "\n➥  Buat spanduk untuk “Change My Mind”."
         "\n\n`.kanna [teks]`"

@@ -1,7 +1,7 @@
 # Ported by Aidil Aryanto
 
 import os
-from asyncio.exceptions import TimeoutError
+from asyncio.exceptions import TimeoutError as TOError
 
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 
@@ -16,7 +16,7 @@ async def _(event):
     input_str = event.pattern_match.group(1).strip()
     chat = "@SpotifyNowBot"
     now = f"/now"
-    await event.edit("`Sedang memproses...`")
+    await event.edit("`Memproses...`")
     try:
         async with event.client.conversation(chat) as conv:
             try:
@@ -29,7 +29,7 @@ async def _(event):
                 return
             if response.text.startswith("You're"):
                 await event.edit(
-                    "`Anda tidak mendengarkan apapun di Spotify saat ini`"
+                    "`Anda tidak mendengarkan apapun di Spotify saat ini.`"
                 )
                 await event.client.delete_messages(conv.chat_id, [msg.id, response.id])
                 return
@@ -66,8 +66,8 @@ async def _(event):
                 await event.client.delete_messages(conv.chat_id, [msg.id, response.id])
         await event.delete()
         return os.remove(downloaded_file_name)
-    except TimeoutError:
-        return await event.edit("**Kesalahan** :\n**@SpotifyNowBot**  `tidak menanggapi!`")
+    except TOError:
+        return await event.edit("**Kesalahan :**\n**@SpotifyNowBot**  `tidak menanggapi!`")
 
 
 CMD_HELP.update(
@@ -75,7 +75,7 @@ CMD_HELP.update(
         "spotifynow": "`.spotnow`"
         "\n➥  Menampilkan apa yang Anda dengarkan di Spotify."
         "\n\n`.spotnow s`"
-        "\n➥  Sama seperti `.spotnow`, tetapi dikirim sebagai stiker."
+        "\n➥  Sama seperti “.spotnow”, tetapi dikirim sebagai stiker."
         "\n**@SpotifyNowBot**"
     }
 )

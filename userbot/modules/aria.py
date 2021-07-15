@@ -65,7 +65,7 @@ async def magnet_download(event):
         download = aria2.add_magnet(magnet_uri)
     except Exception as e:
         LOGS.info(str(e))
-        return await event.edit("**Kesalahan** :\n`" + str(e) + "`")
+        return await event.edit("Kesalahan :\n`" + str(e) + "`")
     gid = download.gid
     await check_progress_for_dl(gid=gid, event=event, previous=None)
     await sleep(5)
@@ -94,7 +94,7 @@ async def aurl_download(event):
         download = aria2.add_uris(uri, options=None, position=None)
     except Exception as e:
         LOGS.info(str(e))
-        return await event.edit("**Kesalahan** :\n`{}`".format(str(e)))
+        return await event.edit(f"Kesalahan :\n`{str(e)}`")
     gid = download.gid
     await check_progress_for_dl(gid=gid, event=event, previous=None)
     file = aria2.get_download(gid)
@@ -112,7 +112,7 @@ async def remove_all(event):
         pass
     if not removed:  # If API returns False Try to Remove Through System Call.
         subprocess_run("aria2p remove-all")
-    await event.edit("`Menghapus unduhan yang sedang berjalan...`")
+    await event.edit("`Menghapus unduhan yang sedang berjalan... `")
     await sleep(2.5)
     await event.edit("`Berhasil menghapus semua unduhan.`")
     await sleep(2.5)
@@ -146,22 +146,22 @@ async def show_all(event):
     for download in downloads:
         msg = (
             msg
-            + "**File** : "
+            + "File: `"
             + str(download.name)
-            + "\n**Kecepatan** : "
+            + "`\nKecepatan: "
             + str(download.download_speed_string())
-            + "\n**Kemajuan** : "
+            + "\nKemajuan: "
             + str(download.progress_string())
-            + "\n**Ukuran Total** : "
+            + "\nUkuran Total: "
             + str(download.total_length_string())
-            + "\n**Status** : "
+            + "\nStatus: "
             + str(download.status)
-            + "\n**Perkiraan** : "
+            + "\nPerkiraan:  "
             + str(download.eta_string())
             + "\n\n"
         )
     if len(msg) <= 4096:
-        await event.edit("`Unduhan yang sedang berlangsung :`\n" + msg)
+        await event.edit("`Unduhan yang sedang berlangsung: `\n" + msg)
         await sleep(5)
         await event.delete()
     else:
@@ -196,13 +196,13 @@ async def check_progress_for_dl(gid, event, previous):
             if not complete and not file.error_message:
                 percentage = int(file.progress)
                 downloaded = percentage * int(file.total_length) / 100
-                prog_str = "**Mengunduh** | [{0}{1}] `{2}`".format(
+                prog_str = "**Mengunduh** | [{}{}] `{}`".format(
                     "".join(["■" for i in range(math.floor(percentage / 10))]),
                     "".join(["▨" for i in range(10 - math.floor(percentage / 10))]),
                     file.progress_string(),
                 )
                 msg = (
-                    f"`Nama` : `{file.name}`\n"
+                    f"`Nama`: `{file.name}`\n"
                     f"`Status` -> **{file.status.capitalize()}**\n"
                     f"{prog_str}\n"
                     f"`{humanbytes(downloaded)} dari {file.total_length_string()}"
@@ -220,20 +220,20 @@ async def check_progress_for_dl(gid, event, previous):
             complete = file.is_complete
             if complete:
                 return await event.edit(
-                    f"`Nama   :` `{file.name}`\n"
-                    f"`Ukuran :` `{file.total_length_string()}`\n"
-                    f"`Jalur  :` `{TEMP_DOWNLOAD_DIRECTORY + file.name}`\n"
-                    "`Respon :` **OK** - Berhasil diunduh."
+                    f"`Namq  :` `{file.name}`\n"
+                    f"`Ukuran:` `{file.total_length_string()}`\n"
+                    f"`Jalur :` `{TEMP_DOWNLOAD_DIRECTORY + file.name}`\n"
+                    "`Respon:` **OK** - Berhasil diunduh."
                 )
         except Exception as e:
             if " not found" in str(e) or "'file'" in str(e):
-                await event.edit("`Unduhan dibatalkan :`\n`{}`".format(file.name))
+                await event.edit(f"Unduhan dibatalkan :\n`{file.name}`")
                 await sleep(2.5)
                 return await event.delete()
             elif " depth exceeded" in str(e):
                 file.remove(force=True)
                 await event.edit(
-                    "Unduh otomatis dibatalkan :\n`{}`\nTorrent/Link Anda mati.".format(
+                    "Unduhan otomatis dibatalkan :\n`{}`\nTorrent/Tautan Anda mati.".format(
                         file.name
                     )
                 )
@@ -241,7 +241,7 @@ async def check_progress_for_dl(gid, event, previous):
 
 CMD_HELP.update(
     {
-        "aria": "`.aurl [URL]`\n`.amag [Magnet Link]`\n`.ator [jalur ke file torrent]`"
+        "aria": "`.aurl [URL]` / `.amag [Magnet Link]` / `.ator [path to torrent file]`"
         "\n➥  Unduh file ke penyimpanan server userbot Anda."
         "\n\n`.apause` / `.aresume`"
         "\n➥  Menjeda/melanjutkan unduhan yang sedang berlangsung."

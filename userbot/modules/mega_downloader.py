@@ -45,7 +45,7 @@ async def subprocess_run(megadl, cmd):
     exitCode = subproc.returncode
     if exitCode != 0:
         await megadl.edit(
-            "**Kesalahan terdeteksi saat menjalankan subproses.**\n"
+            "**Kesalahan terdeteksi saat menjalankan subprocess.**\n"
             f"exitCode : `{exitCode}`\n"
             f"stdout : `{stdout.decode().strip()}`\n"
             f"stderr : `{stderr.decode().strip()}`"
@@ -67,7 +67,7 @@ async def mega_downloader(megadl):
         link = msg_link.text
         link_msg_id = msg_link.id
     else:
-        return await megadl.edit("`Gunakan .mega`  **[tautan MEGA.nz]**")
+        return await megadl.edit("`Gunakan .mega [tautan MEGA.nz]`")
     try:
         link = re.findall(r"\bhttps?://.*mega.*\.nz\S+", link)[0]
         """ - Mega changed their URL again - """
@@ -84,7 +84,7 @@ async def mega_downloader(megadl):
     try:
         data = json.loads(result[0])
     except json.JSONDecodeError:
-        await megadl.edit("**JSONDecodeError** : `gagal mengekstrak tautan...`")
+        await megadl.edit("**JSONDecodeError**: `gagal mengekstrak tautan...`")
         return None
     except (IndexError, TypeError):
         return
@@ -110,7 +110,7 @@ async def mega_downloader(megadl):
     try:
         downloader.start(blocking=False)
     except HTTPError as e:
-        await megadl.edit(f"**HTTPError** : `{str(e)}`")
+        await megadl.edit(f"**HTTPError**: `{str(e)}`")
         return None
     start = time.time()
     while not downloader.isFinished():
@@ -120,7 +120,7 @@ async def mega_downloader(megadl):
         percentage = int(downloader.get_progress() * 100)
         speed = downloader.get_speed(human=True)
         estimated_total_time = round(downloader.get_eta())
-        progress_str = "**{0}** | [{1}{2}] `{3}%`".format(
+        progress_str = "`{}` | [{}{}] `{}%`".format(
             status,
             "".join(["■" for i in range(math.floor(percentage / 10))]),
             "".join(["▨" for i in range(10 - math.floor(percentage / 10))]),
@@ -130,7 +130,7 @@ async def mega_downloader(megadl):
         try:
             current_message = (
                 f"`{file_name}`\n\n"
-                "`Status`\n"
+                "Status\n"
                 f"{progress_str}\n"
                 f"`{humanbytes(downloaded)} dari {humanbytes(total_length)}"
                 f" @ {speed}`\n"
@@ -146,7 +146,7 @@ async def mega_downloader(megadl):
         except Exception:
             pass
         finally:
-            if status == "Combining":
+            if status == "Menggabungkan":
                 wait = round(downloader.get_eta())
                 await asyncio.sleep(wait)
     if downloader.isSuccessful():
@@ -166,8 +166,8 @@ async def mega_downloader(megadl):
         else:
             await megadl.edit(
                 f"`{file_name}`\n\n"
-                f"Berhasil diunduh di: '`{file_path}`'.\n"
-                f"Mengambil unduhan  : {time_formatter(download_time)}.",
+                f"Berhasil diunduh ke : '`{file_path}`'.\n"
+                f"Mengambil unduhan : {time_formatter(download_time)}.",
             )
 
         try:
@@ -205,7 +205,7 @@ async def mega_downloader(megadl):
             pass
     else:
         await megadl.edit(
-            "`Gagal mengunduh!`\n`Periksa Log heroku untuk lebih jelasnya.`"
+            "`Gagal mengunduh!\nPeriksa log Heroku untuk lebih jelasnya.`"
         )
         for e in downloader.get_errors():
             LOGS.info(str(e))
@@ -225,8 +225,8 @@ async def decrypt_file(megadl, file_path, temp_file_path, hex_key, hex_raw_key):
 
 CMD_HELP.update(
     {
-        "mega": "`.mega [tautan MEGA.nz]`"
-        "\n➥  Balas tautan Mega.nz atau tempel tautan Mega.nz Anda, untuk "
-        "mengunduh file ke server userbot Anda."
+        "mega": "`.mega [Tautan MEGA.nz]`"
+        "\n➥  Balas tautan MEGA.nz atau tempel tautan MEGA.nz Anda, "
+        "untuk mengunduh file ke server useebot Anda."
     }
 )

@@ -43,7 +43,7 @@ async def _(event):
     sys.stdout = old_stdout
     sys.stderr = old_stderr
 
-    evaluation = "No Output"
+    evaluation = "Tidak ada output"
     if exc:
         evaluation = exc
     elif stderr:
@@ -51,9 +51,9 @@ async def _(event):
     elif stdout:
         evaluation = stdout
     elif returned:
-    	evaluation = returned
+        evaluation = returned
 
-    final_output = "**EVALUASI :** \n`{}` \n\n**HASIL :** \n`{}` \n".format(cmd, evaluation)
+    final_output = f"**EVALUASI**: \n`{cmd}` \n\n**HASIL**: \n`{evaluation}` \n"
 
     if len(final_output) >= 4096:
         with io.BytesIO(str.encode(final_output)) as out_file:
@@ -82,7 +82,7 @@ async def run(run_q):
     code = run_q.pattern_match.group(1)
 
     if run_q.is_channel and not run_q.is_group:
-        return await run_q.edit("`Eksekusi tidak diizinkan di saluran!`")
+        return await run_q.edit("`Eksekusi tidak di izinkan di saluran!`")
 
     if not code:
         return await run_q.edit(
@@ -121,16 +121,16 @@ async def run(run_q):
                 run_q.chat_id,
                 "output.txt",
                 reply_to=run_q.id,
-                caption="Hasil terlalu besar, dikirim sebagai file.",
+                caption="`Output terlalu besar, dikirim sebagai file.`",
             )
             remove("output.txt")
             return
         await run_q.edit(
-            "**Kueri :**\n`" f"{codepre}" "`\n**Hasil :**\n`" f"{result}" "`"
+            "**Kueri: **\n`" f"{codepre}" "`\n**Hasil: **\n`" f"{result}" "`"
         )
     else:
         await run_q.edit(
-            "**Kueri :**\n`" f"{codepre}" "`\n**Hasil :**\n`Tidak ada hasil yang dikembalikan/salah.`"
+            "**Kueri: **\n`" f"{codepre}" "`\n**Hasil: **\n`Tidak ada hasil yg dikembalikan/salah.`"
         )
 
 
@@ -151,7 +151,7 @@ async def terminal_runner(term):
 
     if not command:
         return await term.edit(
-            "`Berikan perintah atau gunakan “.help exec” sebagai contoh.`"
+            "`Berikan perintah atau gunakan “.help term” sebagai contoh.`"
         )
 
     for i in ("userbot.session", "env"):
@@ -175,21 +175,21 @@ async def terminal_runner(term):
             term.chat_id,
             "output.txt",
             reply_to=term.id,
-            caption="Hasil terlalu besar, dikirim sebagai file.",
+            caption="`Output terlalu besar, dikirim sebagai file.`",
         )
         remove("output.txt")
         return
 
     if uid == 0:
-        await term.edit(f"`{curruser} :~# {command}\n{result}`")
+        await term.edit(f"`{curruser}:~# {command}\n{result}`")
     else:
-        await term.edit(f"`{curruser} :~$ {command}\n{result}`")
+        await term.edit(f"`{curruser}:~$ {command}\n{result}`")
 
 
 CMD_HELP.update(
     {
         "eval": "`.eval print('world')`"
-        "\n➥  Sama seperti eksekusi.",
+        "\n➥  Sama seperti mengeksekusi.",
         "exec": "`.exec print('hello')`"
         "\n➥  Jalankan skrip python kecil.",
         "term": "`.term [cmd]`"

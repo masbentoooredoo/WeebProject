@@ -6,7 +6,6 @@
 """ Userbot module containing commands related to android"""
 
 import asyncio
-import json
 import math
 import os
 import re
@@ -39,10 +38,15 @@ async def magisk(request):
     async with ClientSession() as ses:
         for name, release_url in magisk_dict.items():
             async with ses.get(release_url) as resp:
-                data = json.loads(await resp.text())
+                data = await resp.json(content_type="text/plain")
                 version = data["magisk"]["version"]
+                version_code = data["magisk"]["versionCode"]
+                note = data["magisk"]["note"]
                 url = data["magisk"]["link"]
-                releases += f"{name} : [Magisk v{version}]({url})\n"
+                releases += (
+                    f"**{name}** - __v{version} ({version_code})__ : "
+                    f"[APK]({url}) | [Note]({note})\n"
+                )
     await request.edit(releases)
 
 
@@ -56,7 +60,7 @@ async def device_info(request):
     elif textx:
         device = textx.text
     else:
-        return await request.edit("`Gunakan .device <codename> / <model>`")
+        return await request.edit("`Gunakan .device [nama kode] / [model]`")
     try:
         found = get(DEVICES_DATA).json()[device]
     except KeyError:
@@ -70,8 +74,8 @@ async def device_info(request):
             model = item["model"]
             reply += (
                 f"{brand} {name}\n"
-                f"**Nama Kode** : {codename}\n"
-                f"**Model** : {model}\n\n"
+                f"**Nama Kode**: {codename}\n"
+                f"**Model**: {model}\n\n"
             )
     await request.edit(reply)
 
@@ -88,7 +92,7 @@ async def codename_info(request):
         brand = textx.text.split(" ")[0]
         device = " ".join(textx.text.split(" ")[1:])
     else:
-        return await request.edit("`Gunakan .codename <brand> <device>`")
+        return await request.edit("`Gunakan .codename [merek] [perangkat]`")
     found = [
         i
         for i in get(DEVICES_DATA).json()
@@ -105,8 +109,8 @@ async def codename_info(request):
             model = item["model"]
             reply += (
                 f"{brand} {name}\n"
-                f"**Nama kode** : {codename}\n"
-                f"**Model** : {model}\n\n"
+                f"**Nama Kode**: {codename}\n"
+                f"**Model**: {model}\n\n"
             )
     else:
         reply = f"`Tidak dapat menemukan nama kode {device}!`\n"
@@ -134,7 +138,7 @@ async def download_api(dl):
     error = driver.find_elements_by_class_name("swal2-content")
     if len(error) > 0:
         if error[0].text == "File Not Found.":
-            await dl.edit(f"**Kesalahan** : {URL} tidak ditemukan.")
+            await dl.edit(f"**Kesalahan**: {URL} tidak ditemukan.")
             return
     datas = driver.find_elements_by_class_name("download__meta")
     """ - enumerate data to make sure we download the matched version - """
@@ -166,14 +170,14 @@ async def download_api(dl):
         if os.path.isfile(file_path + ".crdownload"):
             try:
                 downloaded = os.stat(file_path + ".crdownload").st_size
-                status = "Downloading"
+                status = "Mengunduh"
             except OSError:  # Rare case
                 await asyncio.sleep(1)
                 continue
         elif os.path.isfile(file_path):
             downloaded = os.stat(file_path).st_size
             file_size = downloaded
-            status = "Checking"
+            status = "Memeriksa"
         else:
             await asyncio.sleep(0.3)
             continue
@@ -181,7 +185,7 @@ async def download_api(dl):
         percentage = downloaded / file_size * 100
         speed = round(downloaded / diff, 2)
         eta = round((file_size - downloaded) / speed)
-        prog_str = "**{0}** | [{1}{2}] `{3}%`".format(
+        prog_str = "`{}` | [{}{}] `{}%`".format(
             status,
             "".join(["■" for i in range(math.floor(percentage / 10))]),
             "".join(["▨" for i in range(10 - math.floor(percentage / 10))]),
@@ -232,7 +236,7 @@ async def devices_specifications(request):
         brand = textx.text.split(" ")[0]
         device = " ".join(textx.text.split(" ")[1:])
     else:
-        return await request.edit("`Gunakan .specs <brand> <device>`")
+        return await request.edit("`Gunakan .specs [merek] [perangkat]`")
     all_brands = (
         BeautifulSoup(
             get("https://www.devicespecifications.com/en/brand-more").content, "lxml"
@@ -275,7 +279,7 @@ async def devices_specifications(request):
                 .replace("</b>", "")
                 .strip()
             )
-            reply += f"**{title}** : {data}\n"
+            reply += f"**{title}**: {data}\n"
     await request.edit(reply)
 
 
@@ -289,7 +293,7 @@ async def twrp(request):
     elif textx:
         device = textx.text.split(" ")[0]
     else:
-        return await request.edit("`Gunakan .twrp <codename>`")
+        return await request.edit("`Gunakan .twrp [nama kode]`")
     url = get(f"https://dl.twrp.me/{device}/")
     if url.status_code == 404:
         reply = f"`Tidak dapat menemukan unduhan twrp untuk {device}!`\n"
@@ -303,7 +307,7 @@ async def twrp(request):
     reply = (
         f"**TWRP terbaru untuk {device}**\n"
         f"[{dl_file}]({dl_link}) - __{size}__\n"
-        f"**Diperbarui** : __{date}__\n"
+        f"**Diperbarui:** __{date}__\n"
     )
     await request.edit(reply)
 
@@ -320,7 +324,7 @@ CMD_HELP.update(
         "\n➥  Unduh rom Pixel Experience ke server userbot Anda."
         "\n\n`.specs [merek] [perangkat]`"
         "\n➥  Dapatkan info spesifikasi perangkat."
-        "\n\n`.twrp [nama kode]`"
+        "\n\n`.twrp <codename>`"
         "\n➥  Dapatkan unduhan twrp terbaru untuk perangkat android."
     }
 )

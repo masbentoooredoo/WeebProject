@@ -28,7 +28,7 @@ else:
 
 async def get_tz(con):
     """Get time zone of the given country."""
-    """Credits: @aragon12 and @zakaryan2004."""
+    """ Credits: @aragon12 and @zakaryan2004. """
     for c_code in c_n:
         if con == c_n[c_code]:
             return tz(c_tz[c_code][0])
@@ -45,7 +45,7 @@ async def get_weather(weather):
 
     if not OWM_API:
         return await weather.edit(
-            f"Dapatkan kunci API dahulu dari [OpenWeatherMap](https://openweathermap.org/)"
+            "Dapatkan kunci API terlebih dahulu dari [OpenWeatherMap](https://openweathermap.org/)"
         )
 
     APPID = OWM_API
@@ -54,7 +54,7 @@ async def get_weather(weather):
         CITY = DEFCITY
         if not CITY:
             return await weather.edit(
-                "`Harap tentukan kota atau tetapkan sebagai default menggunakan variabel config`  **WEATHER_DEFCITY**."
+                "`Harap tentukan kota atau tetapkan sebagai default menggunakan variabel config`  **WEATHER_DEFCITY**.`"
             )
     else:
         CITY = weather.pattern_match.group(1)
@@ -74,7 +74,7 @@ async def get_weather(weather):
             try:
                 countrycode = timezone_countries[f"{country}"]
             except KeyError:
-                return await weather.edit("`Negara tidak valid.`")
+                return await weather.edit("`Negara tidak valid!`")
             CITY = newcity[0].strip() + "," + countrycode.strip()
 
     url = f"https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={APPID}"
@@ -110,11 +110,11 @@ async def get_weather(weather):
     mph = str(wind * 2.237).split(".")
 
     def fahrenheit(f):
-        temp = str(((f - 273.15) * 9 / 5 + 32)).split(".")
+        temp = str((f - 273.15) * 9 / 5 + 32).split(".")
         return temp[0]
 
     def celsius(c):
-        temp = str((c - 273.15)).split(".")
+        temp = str(c - 273.15).split(".")
         return temp[0]
 
     def sun(unix):

@@ -14,15 +14,28 @@ from userbot.events import register
 
 DOGBIN_URL = "https://del.dog/"
 NEKOBIN_URL = "https://nekobin.com/"
+KATBIN_URL = "https://katb.in/"
 
 
-@register(outgoing=True, pattern=r"^\.paste( d)?([\s\S]*)")
+@register(outgoing=True, pattern=r"^\.paste(?: (k|d)|$)?(?: ([\s\S]+)|$)")
 async def paste(pstl):
     """For .paste command, pastes the text directly to nekobin/dogbin"""
     url_type = pstl.pattern_match.group(1)
-    match = pstl.pattern_match.group(2).strip()
+    url_type = url_type.strip() if url_type else "n"
+    match = pstl.pattern_match.group(2)
+    match = match.strip() if match else ""
     replied = await pstl.get_reply_message()
     f_ext = ".txt"
+
+    use_dogbin = False
+    use_katbin = False
+    use_nekobin = False
+    if "d" in url_type:
+        use_dogbin = True
+    elif "k" in url_type:
+        use_katbin = True
+    elif "n" in url_type:
+        use_nekobin = True
 
     if not match and not pstl.is_reply:
         return await pstl.edit("`Apa yang harus saya tempel?`")
@@ -40,13 +53,14 @@ async def paste(pstl):
                 try:
                     message = await fd.read()
                 except UnicodeDecodeError:
+                    os.remove(downloaded_file_name)
                     return await pstl.edit("`Tidak dapat menempelkan file ini.`")
             os.remove(downloaded_file_name)
         else:
             message = replied.message
 
     async with aiohttp.ClientSession() as ses:
-        if not url_type:
+        if use_nekobin:
             await pstl.edit("`Menempelkan ke Nekobin...`")
             async with ses.post(
                 NEKOBIN_URL + "api/documents", json={"content": message}
@@ -62,7 +76,7 @@ async def paste(pstl):
                     )
                 else:
                     reply_text = "`Gagal mencapai Nekobin.`"
-        else:
+        elif use_dogbin:
             await pstl.edit("`Menempelkan ke Dogbin...`")
             async with ses.post(
                 DOGBIN_URL + "documents", data=message.encode("utf-8")
@@ -88,8 +102,23 @@ async def paste(pstl):
                         )
                 else:
                     reply_text = "`Gagal mencapai Dogbin.`"
+        elif use_katbin:
+            await pstl.edit("`Menempelkan ke Katbin...`")
+            async with ses.post(
+                "https://api.katb.in/api/paste", json={"content": message}
+            ) as resp:
+                if resp.status == 201:
+                    response = await resp.json()
+                    katbin_final_url = KATBIN_URL + response.get("paste_id")
+                    reply_text = (
+                        "`Berhasil ditempel!`\n\n"
+                        f"[URL Katb.in]({katbin_final_url})\n"
+                        f"[Lihat RAW]({katbin_final_url}/raw)"
+                    )
+                else:
+                    reply_text = "`Failed to reach Katb.in.`"
 
-    await pstl.edit(reply_text)
+    await pstl.edit(reply_text, link_preview=False)
 
 
 @register(outgoing=True, pattern=r"^\.getpaste(?: |$)(.*)")
@@ -112,7 +141,7 @@ async def get_dogbin_content(dog_url):
     elif message.startswith("del.dog/"):
         message = message[len("del.dog/") :]
     else:
-        return await dog_url.edit("`Apakah itu URL Dogbin?`")
+        return await dog_url.edit("`Apakah itu url Dogbin?`")
 
     async with aiohttp.ClientSession(raise_for_status=True) as ses:
         try:
@@ -120,16 +149,16 @@ async def get_dogbin_content(dog_url):
                 paste_content = await resp.text()
         except aiohttp.ClientResponseError as err:
             return await dog_url.edit(
-                f"`Permintaan mengembalikan kode status tidak berhasil.`\n\n`{str(err)}`"
+                f"Permintaan mengembalikan kode status tidak berhasil.\n\n`{str(err)}`"
             )
         except aiohttp.ServerTimeoutError as err:
-            return await dog_url.edit(f"`Permintaan waktu habis.`\n\n`{str(err)}`")
+            return await dog_url.edit(f"Permintaan waktu habis.\n\n`{str(err)}`")
         except aiohttp.TooManyRedirects as err:
             return await dog_url.edit(
-                f"`Pemintaan melebihi jumlah pengalihan maksimum yang dikonfigurasikan.`\n\n`{str(err)}`"
+                f"Permintaan melebihi jumlah pengalihan maksimum yang dikonfigurasikan.\n\n`{str(err)}`"
             )
         reply_text = (
-            f"`Berhasil mengambil konten Dogbin!`\n\n`Konten :`\n`{paste_content}`"
+            f"Berhasil mengambil konten Dogbin!\n\n**Konten :**\n`{paste_content}`"
         )
 
     await dog_url.edit(reply_text)
@@ -137,8 +166,8 @@ async def get_dogbin_content(dog_url):
 
 CMD_HELP.update(
     {
-        "paste": "`.paste / .paste d [teks/balas]`"
-        "\n➥  Menempelkan teks ke Nekobin atau Dogbin."
+        "paste": "`.paste / .paste [d/k] [teks/balas]`"
+        "\n➥  Tempel teks Anda ke Nekobin, Dogbin atau Katbin"
         "\n\n`.getpaste`"
         "\n➥  Mendapatkan konten teks atau url yang dipersingkat dari Dogbin (https://del.dog/)"
     }

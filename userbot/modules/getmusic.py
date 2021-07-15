@@ -64,17 +64,17 @@ async def _(event):
     reply = await event.get_reply_message()
     if event.pattern_match.group(1):
         query = event.pattern_match.group(1)
-        await event.edit("`Tunggu...!\nSaya menemukan lagunya...`")
+        await event.edit("`Tunggu...! Saya menemukan lagu Anda...`")
     elif reply.message:
         query = reply.message
-        await event.edit("`Tunggu...!\nSaya menemukan lagunya...`")
+        await event.edit("`Tunggu...! Saya menemukan lagu Anda...`")
     else:
         await event.edit("`Apa yang harus saya temukan?`")
         return
 
     video_link = await getmusic(str(query))
     loa = glob.glob("*.mp3")[0]
-    await event.edit("`Oke...\nMengunggah lagunya...`")
+    await event.edit("`Mengunggah lagu Anda...`")
     c_time = time.time()
     with open(loa, "rb") as f:
         result = await upload_file(
@@ -105,19 +105,19 @@ async def _(event):
     reply = await event.get_reply_message()
     if event.pattern_match.group(1):
         query = event.pattern_match.group(1)
-        await event.edit("`Tunggu...!\nSaya menemukan lagu videonya...`")
+        await event.edit("`Tunggu...! Saya menemukan lagu video Anda...`")
     elif reply:
         query = str(reply.message)
-        await event.edit("`Tunggu...!\nSaya menemukan lagu videonya...`")
+        await event.edit("`Tunggu...! Saya menemukan lagu video Anda...`")
     else:
         await event.edit("`Apa yang harus saya temukan?`")
         return
     await getmusicvideo(query)
-    l = glob.glob(("*.mp4")) + glob.glob(("*.mkv")) + glob.glob(("*.webm"))
+    l = glob.glob("*.mp4") + glob.glob("*.mkv") + glob.glob("*.webm")
     if l:
         await event.edit("`Saya menemukan sesuatu...`")
     else:
-        await event.edit(f"`Maaf...\nSaya tidak dapat menemukan apa pun untuk`  **{query}**")
+        await event.edit(f"`Maaf...! Saya tidak dapat menemukan apa pun untuk`  **{query}**")
         return
     try:
         loa = l[0]
@@ -163,7 +163,7 @@ async def _(event):
                 )
             ],
         )
-        await event.edit(f"**{query}**  berhasil diunggah.")
+        await event.edit(f"**{query}**  `berhasil diunggah!`")
         os.remove(thumb_image)
         os.system("rm *.mkv *.mp4 *.webm")
     except BaseException:
@@ -179,7 +179,7 @@ async def _(event):
     if event.pattern_match.group(1) == "now":
         playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
         if playing is None:
-            return await event.edit("**Kesalahan** :\n`Tidak ada data scrobbling yang ditemukan.`")
+            return await event.edit("`Kesalahan: Tidak ada data scrobbling yang ditemukan.`")
         artist = playing.get_artist()
         song = playing.get_title()
     else:
@@ -188,7 +188,7 @@ async def _(event):
     track = str(artist) + " - " + str(song)
     chat = "@SpotifyMusicDownloaderBot"
     try:
-        await event.edit("`Mendapatkan musiknya...`")
+        await event.edit("`Mendapatkan musik Anda...`")
         async with bot.conversation(chat) as conv:
             await asyncio.sleep(2)
             await event.edit("`Mengunduh...`")
@@ -204,14 +204,14 @@ async def _(event):
                 r = await res
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await event.reply("`Buka blokir`  **@SpotifyMusicDownloaderBot**  `dan ulangi!`")
+                await event.reply("`Buka blokir`  **@SpotifyMusicDownloaderBot**  `dan coba lagi!`")
                 return
             await bot.forward_messages(event.chat_id, respond.message)
         await event.client.delete_messages(conv.chat_id, [msg.id, r.id, respond.id])
         await event.delete()
     except TimeoutError:
         return await event.edit(
-            "**Kesalahan** :\n**@SpotifyMusicDownloaderBot**  `tidak menanggapi atau lagu tidak ditemukan.`"
+            "`Kesalahan:`  **@SpotifyMusicDownloaderBot**  tidak menanggapi atau Lagu tidak ditemukan!`"
         )
 
 
@@ -222,7 +222,7 @@ async def _(event):
     if event.pattern_match.group(1) == "now":
         playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
         if playing is None:
-            return await event.edit("**Kesalahan** :\n`Saat ini tidak ada scrobble yang ditemukan.`")
+            return await event.edit("`Kesalahan: Tidak ditemukan scrobble saat ini.`")
         artist = playing.get_artist()
         song = playing.get_title()
     else:
@@ -231,11 +231,11 @@ async def _(event):
     track = str(artist) + " - " + str(song)
     chat = "@WooMaiBot"
     link = f"/netease {track}"
-    await event.edit("`Sedang mencari...`")
+    await event.edit("`Mencari...`")
     try:
         async with bot.conversation(chat) as conv:
             await asyncio.sleep(2)
-            await event.edit("`Memproses...\nTunggu sebentar!`")
+            await event.edit("`Memproses...\nTunggu sebentar...`")
             try:
                 msg = await conv.send_message(link)
                 response = await conv.get_response()
@@ -244,7 +244,7 @@ async def _(event):
             except YouBlockedUserError:
                 await event.reply("`Harap buka blokir`  **@WooMaiBot**  `dan coba lagi!`")
                 return
-            await event.edit("`Mengirim musik...`")
+            await event.edit("`Mengirim musik Anda...`")
             await asyncio.sleep(3)
             await bot.send_file(event.chat_id, respond)
         await event.client.delete_messages(
@@ -253,7 +253,7 @@ async def _(event):
         await event.delete()
     except TimeoutError:
         return await event.edit(
-            "**Kesalahan** :\n**@WooMaiBot**  `tidak menanggapi atau lagu tidak ditemukan!`"
+            "`Kesalahan:`  **@WooMaiBot**  `tidak menanggapi atau Lagu tidak ditemukan!`"
         )
 
 
@@ -263,9 +263,9 @@ async def _(event):
         return
     d_link = event.pattern_match.group(1)
     if ".com" not in d_link:
-        await event.edit("`Masukkan tautan yang valid untuk mengunduh!`")
+        await event.edit("`Masukkan tautan yang valid untuk mengunduh.`")
     else:
-        await event.edit("`Sedang memproses...`")
+        await event.edit("`Memproses...`")
     chat = "@MusicsHunterBot"
     try:
         async with bot.conversation(chat) as conv:
@@ -277,7 +277,7 @@ async def _(event):
                 song = await conv.get_response()
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await event.edit("`Buka blokir`  **@MusicsHunterBot**  `dan ulangi!`")
+                await event.edit("`Buka blokir`  **@MusicsHunterBot**  `dan coba lagi!`")
                 return
             await bot.send_file(event.chat_id, song, caption=details.text)
             await event.client.delete_messages(
@@ -286,11 +286,13 @@ async def _(event):
             await event.delete()
     except TimeoutError:
         return await event.edit(
-            "**Kesalahan** :\n**@MusicsHunterBot**  `tidak menanggapi atau lagu tidak ditemukan!`"
+            "`Kesalahan:`  **@MusicsHunterBot**  `tidak menanggapi atau Lagu tidak ditemukan!`"
         )
 
 
-@register(outgoing=True, pattern=r"^\.deez (.+?|) (FLAC|MP3\_320|MP3\_256|MP3\_128)")
+@register(
+    outgoing=True, pattern=r"^\.deez (now|.+)( FLAC| MP3\_320| MP3\_256| MP3\_128)?"
+)
 async def _(event):
     """DeezLoader by @An0nimia. Ported for UniBorg by @SpEcHlDe"""
     if event.fwd_from:
@@ -299,8 +301,8 @@ async def _(event):
     strings = {
         "name": "DeezLoad",
         "arl_token_cfg_doc": "Token ARL untuk Deezer",
-        "invalid_arl_token": "harap tetapkan variabel yang dibutuhkan modul ini",
-        "wrong_cmd_syntax": "Bro, sekarang kupikir seberapa jauh kita harus melangkah. Tolong hentikan sesi saya.",
+        "invalid_arl_token": "silahkan atur variabel yang diperlukan untuk modul ini",
+        "wrong_cmd_syntax": "bro, sekarang saya berpikir bagaimana kita harus pergi. Tolong hentikan Sesi saya.",
         "server_error": "Kami mengalami kesulitan teknis.",
         "processing": "`Mengunduh...`",
         "uploading": "`Mengunggah...`",
@@ -324,6 +326,7 @@ async def _(event):
 
     required_link = event.pattern_match.group(1)
     required_qty = event.pattern_match.group(2)
+    required_qty = required_qty.strip() if required_qty else "MP3_320"
 
     await event.edit(strings["processing"])
 
@@ -389,6 +392,29 @@ async def _(event):
             shutil.rmtree(temp_dl_path)
             await event.delete()
 
+    elif "now" in required_link:
+        playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
+        artist = str(playing.get_artist())
+        song = str(playing.get_title())
+        try:
+            required_track = loader.download_name(
+                artist=artist,
+                song=song,
+                output=temp_dl_path,
+                quality=required_qty,
+                recursive_quality=True,
+                recursive_download=True,
+                not_interface=True,
+            )
+        except BaseException as err:
+            await event.edit(f"**Kesalahan :** {err}")
+            await asyncio.sleep(5)
+            return
+        await event.edit(strings["uploading"])
+        await upload_track(required_track, event)
+        shutil.rmtree(temp_dl_path)
+        await event.delete()
+
     else:
         await event.edit(strings["wrong_cmd_syntax"])
 
@@ -440,22 +466,24 @@ async def upload_track(track_location, message):
 
 CMD_HELP.update(
     {
-        "getmusic": "`.song [artis - judul lagu]`"
-        "\n➥  Mencari dan mengunggah lagu."
-        "\n\n`.vsong [artis - judul lagu]`"
-        "\n➥  Mencari dan mengunggah videoclip."
-        "\n\n`.smd [artis - judul lagu]`"
-        "\n➥  Mengunduh musik dari Spotify menggunakan **@SpotifyMusicDownloaderBot**."
-        "\n\n`.smd now`"
-        "\n➥  Unduh scrobble LastFM saat ini menggunakan **@SpotifyMusicDownloaderBot**."
-        "\n\n`.net [artis - judul lagu]`"
-        "\n➥  Unduh musik menggunakan **@WooMaiBot**."
-        "\n\n`.net now`"
-        "\n➥  Unduh scrobble LastFM saat ini menggunakan **@WooMaiBot**."
-        "\n\n`.mhb [tautan Spotify/Deezer]`"
-        "\n➥  Unduh musik dari Spotify/Deezer menggunakan **@MusicsHunterBot**."
-        "\n\n`.deez [tautan Spotify/Deezer] FORMAT`"
-        "\n➥  Unduh musik dari Spotify/Deezer."
-        "\n**Format :** `FLAC`, `MP3_320`, `MP3_256`, `MP3_128`."
+        "getmusic": "`.song [artis - judul]`"
+        "\n➥  Menemukan dan mengunggah lagu.\n\n"
+        "`.vsong [artis - judul]`"
+        "\n➥  Menemukan dan mengunggah klip video.\n\n"
+        "`.smd [artis - judul]`"
+        "\n➥  Unduh lagu dari spotify menggunakan  **@SpotifyMusicDownloaderBot**.\n\n"
+        "`.smd now`"
+        "\n➥  Unduh scrobble LastFM saat ini menggunakan  **@SpotifyMusicDownloaderBot**.\n\n"
+        "`.net [artis - judul]`"
+        "\n➥  Unduh lagu menggunakan  **@WooMaiBot**.\n\n"
+        "`.net now`"
+        "\n➥  Unduh scrobble LastFM saat ini menggunakan  **@WooMaiBot**.\n\n"
+        "`.mhb [spotify/tautan deezer]`"
+        "\n➥  Unduh lagu dari Spotify atau Deezer menggunakan  **@MusicsHunterBot**.\n\n"
+        "`.deez [spotify/tautan deezer] FORMAT`"
+        "\n➥  Unduh lagu dari Deezer atau Spotify.\n\n"
+        "`.deez now FORMAT`"
+        "\n➥  Unduh scrobble LastFM saat ini menggunakan deezloader."
+        "\nFormat (opsional): `FLAC`, `MP3_320`, `MP3_256`, `MP3_128`."
     }
 )

@@ -5,7 +5,7 @@
 #
 # The entire source code is OSSRPL except 'whois' which is MPL
 # License: MPL and OSSRPL
-"""Userbot module for getting info about any user on Telegram(including you!)."""
+""" Userbot module for getting info about any user on Telegram(including you!). """
 
 import os
 
@@ -31,14 +31,14 @@ async def who(event):
     replied_user = await get_user(event)
     if replied_user is None:
         await event.edit(
-            "`Ini adalah admin anonim dalam grup ini\nTidak dapat mengambil info`"
+            "`Ini adalah admin anonim di grup ini.\nTidak dapat mengambil info.`"
         )
         return
 
     try:
         photo, caption = await fetch_info(replied_user, event)
     except AttributeError:
-        await event.edit("`Tidak dapat mengambil info dari orang ini.`")
+        await event.edit("`Tidak dapat mengambil info dari pengguna ini.`")
         return
 
     message_id_to_reply = event.message.reply_to_msg_id
@@ -71,7 +71,9 @@ async def get_user(event):
         previous_message = await event.get_reply_message()
         if previous_message.sender_id is None and not event.is_private:
             return None
-        replied_user = await event.client(GetFullUserRequest(previous_message.sender_id))
+        replied_user = await event.client(
+            GetFullUserRequest(previous_message.sender_id)
+        )
     else:
         user = event.pattern_match.group(1)
 
@@ -106,7 +108,7 @@ async def fetch_info(replied_user, event):
         )
     )
     replied_user_profile_photos_count = (
-        "Person needs help with uploading profile picture."
+        "Seseorang membutuhkan bantuan dengan mengunggah foto profil."
     )
     try:
         replied_user_profile_photos_count = replied_user_profile_photos.count
@@ -116,9 +118,9 @@ async def fetch_info(replied_user, event):
     first_name = replied_user.user.first_name
     last_name = replied_user.user.last_name
     try:
-        dc_id, location = get_input_location(replied_user.profile_photo)
+        dc_id, _ = get_input_location(replied_user.profile_photo)
     except Exception as e:
-        dc_id = "Tidak dapat mengambil ID DC!"
+        dc_id = "Tidak dapat mengambil ID Pusat Data!"
         str(e)
     common_chat = replied_user.common_chats_count
     username = replied_user.user.username
@@ -137,8 +139,8 @@ async def fetch_info(replied_user, event):
     last_name = (
         last_name.replace("\u2060", "") if last_name else ("Orang ini tidak memiliki nama belakang")
     )
-    username = "@{}".format(username) if username else ("Orang ini tidak memiliki nama pengguna")
-    user_bio = "Orang ini tidak memiliki tentang" if not user_bio else user_bio
+    username = f"@{username}" if username else ("Orang ini tidak memiliki nama pengguna")
+    user_bio = "Orang ini tidak memiliki bio" if not user_bio else user_bio
 
     caption = "<b>INFO</b>\n\n"
     caption += f"<b>Nama Depan</b> : {first_name}\n"
@@ -152,7 +154,7 @@ async def fetch_info(replied_user, event):
     caption += f"<b>ID</b> : <code>{user_id}</code>\n\n"
     caption += f"<b>BIO</b> \n<code>{user_bio}</code>\n\n"
     caption += f"<b>Obrolan Umum dengan Pengguna</b> : {common_chat}\n"
-    caption += f"<b>Tautan Permanan ke Profil</b> : "
+    caption += f"<b>Tautan Permanen ke Profil</b> : "
     caption += f'<a href="tg://user?id={user_id}">{first_name}</a>'
 
     return photo, caption
@@ -160,7 +162,7 @@ async def fetch_info(replied_user, event):
 
 CMD_HELP.update(
     {
-        "whois": "`.whois [nama pengguna/balas pesan]`"
+        "whois": "`.whois [nama pengguna/balas pesan seseorang]`"
         "\n➥  Dapatkan info seseorang."
     }
 )

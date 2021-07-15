@@ -3,15 +3,16 @@
 import io
 import os
 import os.path
-import re
 import shutil
 import time
 from datetime import datetime
-from os.path import basename, dirname, exists, isdir, isfile, join, relpath
+from os.path import basename, dirname, exists, isdir, isfile, join, relpath, splitext
 from shutil import rmtree
+from tarfile import TarFile, is_tarfile
 from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile, is_zipfile
 
 from natsort import os_sorted
+from py7zr import Bad7zFile, SevenZipFile, is_7zfile
 from rarfile import BadRarFile, RarFile, is_rarfile
 
 from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
@@ -21,7 +22,7 @@ from userbot.utils import humanbytes
 MAX_MESSAGE_SIZE_LIMIT = 4095
 
 
-@register(outgoing=True, pattern=r"^\.ls (?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.ls(?: |$)(.*)")
 async def lst(event):
     if event.fwd_from:
         return
@@ -29,14 +30,14 @@ async def lst(event):
     path = cat if cat else os.getcwd()
     if not exists(path):
         await event.edit(
-            f"`Tidak ada direktori atau file seperti itu dengan nama`  **{cat}**,  `periksa lagi!"
+            f"`Tidak ada direktori atau file seperti itu dengan nama “{cat}” periksa lagi!`"
         )
         return
     if isdir(path):
         if cat:
-            msg = "`Folder dan file di`  **{}** :\n\n".format(path)
+            msg = f"Folder dan file di  **{path}** :\n\n"
         else:
-            msg = "`Folder dan file di direktori saat ini` :\n\n"
+            msg = "Folder dan file di direktori saat ini :\n\n"
         lists = os.listdir(path)
         files = ""
         folders = ""
@@ -46,7 +47,7 @@ async def lst(event):
                 size = os.stat(catpath).st_size
                 if contents.endswith((".mp3", ".flac", ".wav", ".m4a")):
                     files += "🎵 "
-                elif contents.endswith((".opus")):
+                elif contents.endswith(".opus"):
                     files += "🎙 "
                 elif contents.endswith(
                     (".mkv", ".mp4", ".webm", ".avi", ".mov", ".flv")
@@ -66,20 +67,20 @@ async def lst(event):
                     files += "💿 "
                 elif contents.endswith((".apk", ".xapk")):
                     files += "📱 "
-                elif contents.endswith((".py")):
+                elif contents.endswith(".py"):
                     files += "🐍 "
                 else:
                     files += "📄 "
-                files += f"`{contents}`  -  __{humanbytes(size)}__\n"
+                files += f"`{contents}` (__{humanbytes(size)}__)\n"
             else:
                 folders += f"📁 `{contents}`\n"
-        msg = msg + folders + files if files or folders else msg + "__direktori kosong__"
+        msg = msg + folders + files if files or folders else msg + "__empty path__"
     else:
         size = os.stat(path).st_size
         msg = "The details of given file :\n\n"
         if path.endswith((".mp3", ".flac", ".wav", ".m4a")):
             mode = "🎵 "
-        elif path.endswith((".opus")):
+        elif path.endswith(".opus"):
             mode = "🎙 "
         elif path.endswith((".mkv", ".mp4", ".webm", ".avi", ".mov", ".flv")):
             mode = "🎞 "
@@ -93,7 +94,7 @@ async def lst(event):
             mode = "💿 "
         elif path.endswith((".apk", ".xapk")):
             mode = "📱 "
-        elif path.endswith((".py")):
+        elif path.endswith(".py"):
             mode = "🐍 "
         else:
             mode = "📄 "
@@ -103,8 +104,8 @@ async def lst(event):
         msg += f"**Lokasi :** `{path}`\n"
         msg += f"**Ikon :** `{mode}`\n"
         msg += f"**Ukuran :** `{humanbytes(size)}`\n"
-        msg += f"**Waktu terakhir diubah :** `{time2}`\n"
-        msg += f"**Waktu terakhir diakses :** `{time3}`"
+        msg += f"**Waktu modifikasi terakhir:** `{time2}`\n"
+        msg += f"**Waktu terakhir diakses:** `{time3}`"
 
     if len(msg) > MAX_MESSAGE_SIZE_LIMIT:
         with io.BytesIO(str.encode(msg)) as out_file:
@@ -121,7 +122,7 @@ async def lst(event):
         await event.edit(msg)
 
 
-@register(outgoing=True, pattern=r"^\.rm (?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.rm(?: |$)(.*)")
 async def rmove(event):
     """Removing Directory/File"""
     cat = event.pattern_match.group(1)
@@ -135,7 +136,7 @@ async def rmove(event):
         os.remove(cat)
     else:
         rmtree(cat)
-    await event.edit(f"**{cat}**  dihapus.")
+    await event.edit(f"`“{cat}” dihapus.`")
 
 
 @register(outgoing=True, pattern=r"^\.rn ([^|]+)\|([^|]+)")
@@ -144,11 +145,11 @@ async def rname(event):
     cat = str(event.pattern_match.group(1)).strip()
     new_name = str(event.pattern_match.group(2)).strip()
     if not exists(cat):
-        await event.edit(f"`Jalur file`  **{cat}**  `tidak ada!`")
+        await event.edit(f"`Jalur berkas : “{cat}” tidak ada!`")
         return
     new_path = join(dirname(cat), new_name)
     shutil.move(cat, new_path)
-    await event.edit(f"**{cat}**  `diubah namanya menjadi`  **{new_path}**")
+    await event.edit(f"`“{cat}” diubah ke “{new_path}”`")
 
 
 @register(outgoing=True, pattern=r"^\.zip (.*)")
@@ -165,7 +166,7 @@ async def zip_file(event):
         path = path.strip()
         zip_name = zip_name.strip()
     if exists(path):
-        await event.edit("`Membuat zip...`")
+        await event.edit("`Membuat arsip...`")
         start_time = datetime.now()
         if isdir(path):
             dir_path = path.split("/")[-1]
@@ -184,7 +185,7 @@ async def zip_file(event):
                         zip_obj.write(files_path, arc_path)
             end_time = (datetime.now() - start_time).seconds
             await event.edit(
-                f"**{path}**  `dibuat zip menjadi`  **{zip_path}**  `dalam`  **{end_time}**  `detik.`"
+                f"**{path}**  dibuat zip ke  **{zip_path}**  dalam  **{end_time}**  detik."
             )
         elif isfile(path):
             file_name = basename(path)
@@ -195,9 +196,9 @@ async def zip_file(event):
                     zip_path += ".zip"
             with ZipFile(zip_path, "w", ZIP_DEFLATED) as zip_obj:
                 zip_obj.write(path, file_name)
-            await event.edit(f"**{path}**  `dibuat zip menjadi`  **{zip_path}**")
+            await event.edit(f"**{path}**  dibuat zip ke  **{zip_path}**")
     else:
-        await event.edit("**404 :** tidak ditemukan.")
+        await event.edit("`404: Tidak ditemukan.`")
 
 
 @register(outgoing=True, pattern=r"^\.unzip (.*)")
@@ -207,32 +208,39 @@ async def unzip_file(event):
     if not exists(TEMP_DOWNLOAD_DIRECTORY):
         os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
     input_str = event.pattern_match.group(1)
-    file_name = basename(input_str)
-    output_path = TEMP_DOWNLOAD_DIRECTORY + re.split("(.zip|.rar)", file_name)[0]
+    output_path = TEMP_DOWNLOAD_DIRECTORY + basename(splitext(input_str)[0])
     if exists(input_str):
         start_time = datetime.now()
-        await event.edit("`Mengekstrak file...`")
+        await event.edit("`Mengekstrak...`")
         if is_zipfile(input_str):
             zip_type = ZipFile
         elif is_rarfile(input_str):
             zip_type = RarFile
+        elif is_tarfile(input_str):
+            zip_type = TarFile
+        elif is_7zfile(input_str):
+            zip_type = SevenZipFile
         else:
-            return await event.edit("`Jenis file tidak didukung!`\n`Hanya file ZIP dan RAR`")
+            return await event.edit(
+                "`Tipe file tidak didukung!`\n`Hanya ZIP, TAR, 7z, dan RAR`"
+            )
         try:
             with zip_type(input_str, "r") as zip_obj:
                 zip_obj.extractall(output_path)
         except BadRarFile:
-            return await event.edit("**Kesalahan :** `File RAR rusak.`")
+            return await event.edit("**Kesalahan:** `File RAR rusak`")
         except BadZipFile:
-            return await event.edit("**Kesalahan :** `File ZIP rusak.`")
+            return await event.edit("**Kesalahan:** `File ZIP rusak`")
+        except Bad7zFile:
+            return await event.edit("**Kesalahan:** `File 7z rusak`")
         except BaseException as err:
-            return await event.edit(f"**Kesalahan :** `{err}`")
+            return await event.edit(f"**Kesalahan:** `{err}`")
         end_time = (datetime.now() - start_time).seconds
         await event.edit(
-            f"`Mengekstrak`  **{input_str}**  `menjadi`  **{output_path}**  `dalam`  **{end_time}**  `detik.`"
+            f"Mengekstrak  **{input_str}**  ke  **{output_path}**  dalam  **{end_time}**  detik."
         )
     else:
-        await event.edit("**404 :** tidak ditemukan.")
+        await event.edit("`404: Not Found`")
 
 
 CMD_HELP.update(
@@ -243,10 +251,10 @@ CMD_HELP.update(
         "\n➥  Hapus file atau direktori."
         "\n\n`.rn [direktori/file] | [nama baru]`"
         "\n➥  Mengubah nama file atau direktori."
-        "\n\n`.zip [file/jalur folder] | [nama zip] (opsional)`"
-        "\n➥  Untuk membuat zip file atau folder."
+        "\n\n>`.zip [file/jalur folder] | [nama zip] (opsional)`"
+        "\n➥  Untuk membuat file atau folder menjadi arsip."
         "\n\n`.unzip [jalur ke file zip]`"
         "\n➥  Untuk mengekstrak file arsip."
-        "\n**CATATAN :** Hanya didukung file ZIP and RAR!"
+        "\n**Catatan :** Hanya didukung file ZIP, TAR, 7z, dan RAR!"
     }
 )

@@ -17,9 +17,8 @@ import re
 import shlex
 import textwrap
 import time
-from asyncio.exceptions import TimeoutError
 from random import randint, uniform
-from typing import Optional, Tuple
+from typing import Optional
 
 from glitch_this import ImageGlitcher
 from hachoir.metadata import extractMetadata
@@ -144,7 +143,7 @@ async def glitch(event):
 async def memify(event):
     reply_msg = await event.get_reply_message()
     input_str = event.pattern_match.group(1)
-    await event.edit("`Sedang memproses...`")
+    await event.edit("`Memproses...`")
 
     if not reply_msg:
         return await event.edit("`Balas pesan yang berisi media!`")
@@ -249,7 +248,7 @@ async def add_text_img(image_path, text):
     return final_image
 
 
-async def runcmd(cmd: str) -> Tuple[str, str, int, int]:
+async def runcmd(cmd: str) -> tuple[str, str, int, int]:
     """run command in terminal"""
     args = shlex.split(cmd)
     process = await asyncio.create_subprocess_exec(
@@ -289,12 +288,11 @@ async def quotess(qotli):
         await qotli.edit("`Balas pesan teks!`")
         return
     chat = "@QuotLyBot"
-    reply_message.sender
     if reply_message.sender.bot:
         await qotli.edit("`Balas pesan pengguna sebenarnya!`")
         return
     try:
-        await qotli.edit("`Sedang memproses...`")
+        await qotli.edit("`Memproses...`")
         async with bot.conversation(chat) as conv:
             try:
                 response = conv.wait_event(
@@ -304,7 +302,7 @@ async def quotess(qotli):
                 response = await response
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await qotli.reply("`Harap buka blokir`  **@QuotLyBot**  `dan coba lagi!`")
+                await qotli.reply("`Harap buka blokir  **@QuotLyBot**  dan coba lagi!`")
                 return
             if response.text.startswith("Hi!"):
                 await qotli.edit(
@@ -321,7 +319,7 @@ async def quotess(qotli):
                 await bot.send_read_acknowledge(qotli.chat_id)
                 await qotli.client.delete_messages(conv.chat_id, [msg.id, response.id])
                 os.remove(downloaded_file_name)
-    except TimeoutError:
+    except asyncio.exceptions.TimeoutError:
         await qotli.edit("**@QuotlyBot**  `tidak menanggapi!`")
         await qotli.client.delete_messages(conv.chat_id, [msg.id])
 
@@ -333,7 +331,7 @@ async def hazz(hazmat):
     if hazmat.fwd_from:
         return
     if not hazmat.reply_to_msg_id:
-        await hazmat.edit("`WoWoWo Kapten!, kita tidak akan cocok dengan hantu!`")
+        await hazmat.edit("`WoWoWo Kapten! Kita tidak akan cocok dengan hantu.`")
         return
     reply_message = await hazmat.get_reply_message()
     if not reply_message.media:
@@ -343,7 +341,7 @@ async def hazz(hazmat):
         await hazmat.edit("`Balas ke pengguna sebenarnya!`")
         return
     chat = "@hazmat_suit_bot"
-    await hazmat.edit("`Siapkan Kapten! kita akan membersihkan beberapa virus...`")
+    await hazmat.edit("`Siapkan Kapten! Kita akan membersihkan beberapa virus...`")
     message_id_to_reply = hazmat.message.reply_to_msg_id
     msg_reply = None
     async with hazmat.client.conversation(chat) as conv:
@@ -364,7 +362,7 @@ async def hazz(hazmat):
             """don't spam notif"""
             await bot.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            await hazmat.reply("`Harap buka blokir`  **@hazmat_suit_bot**")
+            await hazmat.reply("`Harap buka blokir`  **@hazmat_suit_bot**`...`")
             return
         if response.text.startswith("I can't"):
             await hazmat.edit("`Tidak dapat menangani GIF ini...`")
@@ -404,7 +402,7 @@ async def fryerrr(fry):
         return
     reply_message = await fry.get_reply_message()
     if not reply_message.media:
-        await fry.edit("`Tidak ada gambar untuk digoreng`")
+        await fry.edit("`Tidak ada gambar untuk digoreng!`")
         return
     if reply_message.sender.bot:
         await fry.edit("`Balas ke pengguna sebenarnya!`")
@@ -422,10 +420,10 @@ async def fryerrr(fry):
                 response = await conv.get_response()
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await fry.reply("`Harap buka blokir`  **@image_deepfrybot**")
+                await fry.reply("`Harap buka blokir`  **@image_deepfrybot**`...`")
                 return
             if response.text.startswith("Forward"):
-                await fry.edit("`Nonaktifkan setelan privasi penerusan Anda!`")
+                await fry.edit("`Harap menonaktifkan setelan privasi penerusan Anda.`")
             else:
                 downloaded_file_name = await fry.client.download_media(
                     response.media, TEMP_DOWNLOAD_DIRECTORY
@@ -448,8 +446,8 @@ async def fryerrr(fry):
                     )
         await fry.delete()
         return os.remove(downloaded_file_name)
-    except TimeoutError:
-        await fry.edit("**@image_deepfrybot**  `tidak menanggapi!`")
+    except asyncio.exceptions.TimeoutError:
+        await fry.edit("**@image_deepfrybot**  `tidak menanggapi...`")
         await fry.client.delete_messages(conv.chat_id, [msg.id])
 
 
@@ -558,7 +556,7 @@ async def lastname(steal):
     message = await steal.get_reply_message()
     chat = "@SangMataInfo_bot"
     user_id = message.sender.id
-    id = f"/search_id {user_id}"
+    sent_msg = f"/search_id {user_id}"
     if message.sender.bot:
         await steal.edit("`Balas pesan pengguna sebenarnya!`")
         return
@@ -566,11 +564,11 @@ async def lastname(steal):
     try:
         async with bot.conversation(chat) as conv:
             try:
-                msg = await conv.send_message(id)
+                msg = await conv.send_message(sent_msg)
                 r = await conv.get_response()
                 response = await conv.get_response()
             except YouBlockedUserError:
-                await steal.reply("`Harap buka blokir`  **@sangmatainfo_bot**  `dan coba lagi!`")
+                await steal.reply("`Harap buka blokir`  **@sangmatainfo_bot**  dan coba lagi!`")
                 return
             if r.text.startswith("Name"):
                 respond = await conv.get_response()
@@ -582,7 +580,7 @@ async def lastname(steal):
             if response.text.startswith("No records") or r.text.startswith(
                 "No records"
             ):
-                await steal.edit("`Tidak ada catatan yang ditemukan untuk pengguna ini`")
+                await steal.edit("`Tidak ada catatan yang ditemukan untuk pengguna ini.")
                 await steal.client.delete_messages(
                     conv.chat_id, [msg.id, r.id, response.id]
                 )
@@ -593,8 +591,8 @@ async def lastname(steal):
             await steal.client.delete_messages(
                 conv.chat_id, [msg.id, r.id, response.id, respond.id]
             )
-    except TimeoutError:
-        return await steal.edit("`[KESALAHAN]`\n**@SangMataInfo_bot**  `tidak menanggapi!`")
+    except asyncio.exceptions.TimeoutError:
+        return await steal.edit("`Kesalahan :` **@SangMataInfo_bot** `tidak menanggapi!`")
 
 
 @register(outgoing=True, pattern=r"^\.waifu(?: |$)(.*)")
@@ -627,7 +625,7 @@ def deEmojify(inputString: str) -> str:
 CMD_HELP.update(
     {
         "glitch": "`.glitch [1-8]`"
-        "\n➥  Balas stiker/gambar dan kirim dengan cmd(perintah).\nNilainya berkisar 1-8, jika tidak maka akan diberikan nilai default yaitu 2."
+        "\n➥  Balas stiker/gambar dan kirim dengan cmd(perintah).\nNilainya berkisar 1-8, jika tidak maka akan disetel ke default yaitu 2."
     }
 )
 
@@ -650,8 +648,8 @@ CMD_HELP.update(
 
 CMD_HELP.update(
     {
-        "hazmat": "`.hz / .hz [flip, x2, rotate (degree), background (number), black]`"
-        "\n➥  Balas gambar / stiker sesuai keinginan."
+        "hazmat": "`.hz / .hz [flip, x2, rotate (derajat), background (nomor), black]`"
+        "\n➥  Balas gambar/stiker sesuai keinginan."
         "\n**@hazmat_suit_bot**"
     }
 )
@@ -659,7 +657,7 @@ CMD_HELP.update(
 CMD_HELP.update(
     {
         "deepfry": "`.df / .df [level(1-8)]`"
-        "\n➥  Goreng gambar / stiker dari balasan."
+        "\n➥  Goreng gambar/stiker dari balasan."
         "\n**@image_deepfrybot**"
         "\n\n`.deepfry`"
         "\n➥  Gambar krispi."

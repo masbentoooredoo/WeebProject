@@ -62,7 +62,7 @@ async def download(target_file):
             diff = now - c_time
             percentage = downloader.get_progress() * 100
             speed = downloader.get_speed()
-            progress_str = "[{0}{1}] `{2}%`".format(
+            progress_str = "[{}{}] `{}%`".format(
                 "".join(["■" for i in range(math.floor(percentage / 10))]),
                 "".join(["▨" for i in range(10 - math.floor(percentage / 10))]),
                 round(percentage, 2),
@@ -85,13 +85,13 @@ async def download(target_file):
                 LOGS.info(str(e))
         if downloader.isSuccessful():
             await target_file.edit(
-                "Berhasil diunduh ke `{}`!".format(downloaded_file_name)
+                f"Berhasil diunduh ke `{downloaded_file_name}`!"
             )
         else:
-            await target_file.edit("**URL salah**\n{}".format(url))
+            await target_file.edit(f"**URL salah**\n{url}")
     elif replied:
         if not replied.media:
-            return await target_file.edit("`Balas file atau media`")
+            return await target_file.edit("`Balas file atau media.`")
         try:
             media = replied.media
             if hasattr(media, "document"):
@@ -130,11 +130,11 @@ async def download(target_file):
         else:
             try:
                 await target_file.edit(
-                    "Berhasil diunduh ke `{}` dalam `{}` detik.".format(result.name, dl_time)
+                    f"Diunduh ke `{result.name}` dalam `{dl_time}` detik."
                 )
             except AttributeError:
                 await target_file.edit(
-                    "Berhasil diunduh ke `{}` dalam `{}` detik.".format(result, dl_time)
+                    f"Diunduh ke `{result}` dalam `{dl_time}` detik."
                 )
     else:
         await target_file.edit("Lihat `“.help download”` untuk info lebih lanjut.")
@@ -230,10 +230,10 @@ async def upload(event):
         elif os.path.isdir(input_str):
             start_time = datetime.now()
             lst_files = []
-            for root, dirs, files in os.walk(input_str):
+            for root, _, files in os.walk(input_str):
                 for file in files:
                     lst_files.append(os.path.join(root, file))
-            if len(lst_files) == 0:
+            if not lst_files:
                 return await event.edit(f"`{input_str}` kosong.")
             await event.edit(f"Ditemukan `{len(lst_files)}` file.\n`Sedang mengunggah...`")
             for files in os_sorted(lst_files):
@@ -306,7 +306,7 @@ async def upload(event):
                 f"dalam `{up_time}` detik."
             )
     else:
-        await event.edit("**404** : File/Folder tidak ditemukan.")
+        await event.edit("**404** : `File/Folder tidak ditemukan.`")
 
 
 CMD_HELP.update(

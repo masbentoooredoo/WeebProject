@@ -34,8 +34,8 @@ async def welcome_to_chat(event):
             title = chat.title if chat.title else "this chat"
             participants = await event.client.get_participants(chat)
             count = len(participants)
-            mention = "[{}](tg://user?id={})".format(a_user.first_name, a_user.id)
-            my_mention = "[{}](tg://user?id={})".format(me.first_name, me.id)
+            mention = f"[{a_user.first_name}](tg://user?id={a_user.id})"
+            my_mention = f"[{me.first_name}](tg://user?id={me.id})"
             first = a_user.first_name
             last = a_user.last_name
             if last:
@@ -95,8 +95,8 @@ async def save_welcome(event):
         if BOTLOG_CHATID:
             await event.client.send_message(
                 BOTLOG_CHATID,
-                f"#WELCOME_NOTE \n**ID Obrolan** : {event.chat_id}"
-                "\nPesan berikut ini disimpan sebagai pesan selamat datang baru untuk mengobrol."
+                f"#CATATN_SELAMAT DATANG\nID OBROLAN : {event.chat_id}"
+                "\nPesan berikut ini disimpan sebagai pesan selamat datang baru untuk mengobrol. "
                 "\n**Tolong jangan dihapus!**",
             )
             msg_o = await event.client.forward_messages(
@@ -110,7 +110,7 @@ async def save_welcome(event):
     elif event.reply_to_msg_id and not string:
         rep_msg = await event.get_reply_message()
         string = rep_msg.text
-    success = "`Catatan selamat datang`  **{}**  `untuk obrolan ini.`"
+    success = "`Pesan selamat datang “{}” untuk obrolan ini.`"
     if add_welcome_setting(event.chat_id, 0, string, msg_id) is True:
         await event.edit(success.format("disimpan"))
     else:
@@ -130,10 +130,10 @@ async def show_welcome(event):
         msg_o = await event.client.get_messages(
             entity=BOTLOG_CHATID, ids=int(cws.f_mesg_id)
         )
-        await event.edit("`Saat ini saya menyambut anggota baru dengan catatan selamat datang ini.`")
+        await event.edit("`Saat ini saya menyambut anggota baru dengan pesan selamat datang ini.`")
         await event.reply(msg_o.message, file=msg_o.media)
     elif cws and cws.reply:
-        await event.edit("`Saat ini saya menyambut anggota baru dengan catatan selamat datang ini.`")
+        await event.edit("`Saat ini saya menyambut anggota baru dengan pesan selamat datang ini.`")
         await event.reply(cws.reply)
 
 
@@ -144,7 +144,7 @@ async def del_welcome(event):
     except AttributeError:
         return await event.edit("`Berjalan di mode Non-SQL!`")
     if rm_welcome_setting(event.chat_id) is True:
-        await event.edit("`Catatan selamat datang dihapus untuk obrolan ini.`")
+        await event.edit("`Pesan selamat datang dihapus untuk obrolan ini.`")
     else:
         await event.edit("`Apakah saya punya pesan selamat datang di sini?`")
 
@@ -152,14 +152,14 @@ async def del_welcome(event):
 CMD_HELP.update(
     {
         "welcome": "`.setwelcome [pesan selamat datang/balas pesan]`"
-        "\n➥  Menyimpan pesan sebagai catatan selamat datang di obrolan."
+        "\n➥  Menyimpan pesan sebagai catatan/pesan selamat datang di obrolan."
         "\n\n**Variabel yang tersedia untuk memformat pesan selamat datang** :"
         "\n`{mention}, {title}, {count}, {first}, {last}, {fullname}, "
         "{userid}, {username}, {my_first}, {my_fullname}, {my_last}, "
         "{my_mention}, {my_username}`"
         "\n\n`.checkwelcome`"
-        "\n➥  Periksa apakah Anda memiliki catatan selamat datang di obrolan."
+        "\n➥  Memeriksa apakah Anda memiliki catatan/pesan selamat datang di obrolan."
         "\n\n`.rmwelcome`"
-        "\n➥  Menghapus catatan selamat datang untuk obrolan saat ini."
+        "\n➥  Menghapus catatan/pesan selamat datang untuk obrolan saat ini."
     }
 )

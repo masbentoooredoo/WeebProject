@@ -12,7 +12,7 @@ async def github(event):
         async with session.get(URL) as request:
             if request.status == 404:
                 return await event.reply(
-                    "`" + event.pattern_match.group(1) + " tidak ditemukan`"
+                    "`" + event.pattern_match.group(1) +  "tidak ditemukan.`"
                 )
 
             result = await request.json()
@@ -24,9 +24,9 @@ async def github(event):
             created_at = result.get("created_at", "Not Found")
 
             REPLY = (
-                f"**Info GitHub untuk {event.pattern_match.group(1)}**"
-                f"\n**Nama Pengguna :** `{name}`\n**Bio :** `{bio}`\n**URL :** {url}"
-                f"\n**Perusahaan :** `{company}`\n**Dibuat :** `{created_at}`"
+                f"Info GitHub untuk “{event.pattern_match.group(1)}”"
+                f"\nNama pengguna: “{name}”\nBio: “{bio}”\nURL: {url}"
+                f"\nPerusahaan: “{company}”\nDibuat: “{created_at}”"
             )
 
             if not result.get("repos_url", None):
@@ -38,14 +38,14 @@ async def github(event):
 
                 result = await request.json()
 
-                REPLY += "\n**Repo :**\n"
+                REPLY += "\nRepo:\n"
 
-                for nr in range(len(result)):
+                for nr, _ in enumerate(result):
                     REPLY += f"[{result[nr].get('name', None)}]({result[nr].get('html_url', None)})\n"
 
                 await event.edit(REPLY)
 
 
 CMD_HELP.update(
-    {"git": "`.git [nama pengguna]`" "\n➥  Seperti `.whois` tetapi untuk nama pengguna GitHub."}
+    {"git": "`.git [nama pengguna]`" "\n➥  Sama seperti “.whois” tetapi untuk nama pengguna GitHub."}
 )
