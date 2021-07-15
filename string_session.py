@@ -5,23 +5,27 @@
 # you may not use this file except in compliance with the License.
 #
 
-from telethon.sync import TelegramClient
 from telethon.sessions import StringSession
+from telethon.sync import TelegramClient
 
-print("""Silahkan buka my.telegram.org
+print(
+    """Silakan masuk ke my.telegram.org
 Masuk menggunakan akun Telegram Anda
-Klik di API Development Tools
+Klik pada Alat Pengembangan API
 Buat aplikasi baru, dengan memasukkan detail yang diperlukan
-Periksa bagian pesan tersimpan Telegram Anda untuk menyalin STRING_SESSION""")
-API_KEY = int(input("Masukkan API_KEY disini: "))
-API_HASH = input("Masukkan API_HASH disini: ")
+Periksa bagian pesan tersimpan Telegram Anda untuk menyalin STRING_SESSION"""
+)
+API_KEY = int(input("Masukkan API_KEY di sini: "))
+API_HASH = input("Masukkan API_HASH di sini: ")
 
 with TelegramClient(StringSession(), API_KEY, API_HASH) as client:
-    print("Periksa pesan tersimpan Telegram Anda untuk menyalin kode STRING_SESSION")
+    print("Periksa Pesan Tersimpan Telegram Anda untuk menyalin kode STRING_SESSION")
     session_string = client.session.save()
     saved_messages_template = """Support: @userbotindo
 
-<b>#STRING_SESSION :</b> <code>{}</code>
+<code>STRING_SESSION</code>: <code>{}</code>
 
-⚠️ <i>Harap berhati-hati untuk memberikan kode ini kepada pihak ketiga</i>""".format(session_string)
+⚠️ <i>Harap berhati-hati untuk memberikan kode ini kepada pihak ketiga</i>""".format(
+        session_string
+    )
     client.send_message("me", saved_messages_template, parse_mode="html")
