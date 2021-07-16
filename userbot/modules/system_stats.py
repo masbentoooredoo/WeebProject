@@ -173,7 +173,8 @@ async def amireallyalive(alive):
         f"**⌯  Versi Telethon** : `{version.__version__}`\n"
         f"**⌯  Berjalan di** : `{repo.active_branch.name}`\n"
         f"**⌯  Modul dimuat** : `{len(CMD_HELP)}`\n"
-        f"**⌯  Bot aktif sejak** : `{uptime}`\n"
+        f"**⌯  Bot aktif sejak** : `{uptime}`\n\n"
+        f"🛡️ [RPL v1.d](https://github.com/BianSepang/WeebProject/blob/master/LICENSE) | 👤 [WeebProject](https://github.com/BianSepang) | 📌 [Repo](https://github.com/BianSepang/WeebProject.git)\n"
     )
     if ALIVE_LOGO:
         try:

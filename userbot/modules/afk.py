@@ -75,12 +75,12 @@ async def mention_afk(mention):
         if mention.sender_id not in USERS or chat_title not in USERS:
             if AFKREASON:
                 await mention.reply(
-                    f"**Sedang offline.**\n**Sejak :** {afk_str}"
+                    f"**Sedang Offline.**\n**Sejak :** {afk_str}"
                     f"\n**Alasan :** `{AFKREASON}.`"
                 )
             else:
                 await mention.reply(
-                    f"**Sedang offline.**\n**Sejak :** {afk_str}"
+                    f"**Sedang Offline.**\n**Sejak :** {afk_str}"
                     "\n**Silahkan hubungi lagi nanti.**"
                 )
             if mention.sender_id is not None:
@@ -91,13 +91,13 @@ async def mention_afk(mention):
             if USERS[mention.sender_id] % randint(2, 4) == 0:
                 if AFKREASON:
                     await mention.reply(
-                        f"**Sedang offline.**\n**Sejak :** {afk_str}"
+                        f"**Sedang Offline.**\n**Sejak :** {afk_str}"
                         f"\n**Alasan :** `{AFKREASON}.`"
                     )
                 else:
                     await mention.reply(
-                        f"**Sedang offline.**\n**Sejak :** {afk_str}"
-                        "\n**Silahkan hubungi lagi nanti.**"
+                        f"**Sedang Offline.**\n**Sejak :** {afk_str}"
+                        "\n**Cobalah beberapa saat lagi.**"
                     )
             if mention.sender_id is not None:
                 USERS[mention.sender_id] += 1
@@ -162,12 +162,12 @@ async def afk_on_pm(sender):
             if sender.sender_id not in USERS:
                 if AFKREASON:
                     await sender.reply(
-                        f"**Sedang offline.**\n**Sejak :** {afk_str}"
+                        f"**Sedang Offline.**\n**Sejak :** {afk_str}"
                         f"\n**Alasan :** `{AFKREASON}.`"
                     )
                 else:
                     await sender.reply(
-                        f"**Sedang offline.**\n**Sejak :** {afk_str}"
+                        f"**Sedang Offline.**\n**Sejak :** {afk_str}"
                         "\n**Silahkan hubungi lagi nanti.**"
                     )
                 USERS.update({sender.sender_id: 1})
@@ -176,13 +176,13 @@ async def afk_on_pm(sender):
                 if USERS[sender.sender_id] % randint(2, 4) == 0:
                     if AFKREASON:
                         await sender.reply(
-                            f"**Sedang offline.**\n**Sejak :** {afk_str}"
+                            f"**Sedang Offline.**\n**Sejak :** {afk_str}"
                             f"\n**Alasan :** `{AFKREASON}.`"
                         )
                     else:
                         await sender.reply(
-                            f"**Sedang offline.**\n**Sejak :** {afk_str}"
-                            "\n**Silahkan hubungi lagi nanti.**"
+                            f"**Sedang Offline.**\n**Sejak :** {afk_str}"
+                            "\n**Cobalah beberapa saat lagi.**"
                         )
                     USERS[sender.sender_id] = USERS[sender.sender_id] + 1
                     COUNT_MSG = COUNT_MSG + 1
@@ -241,7 +241,7 @@ async def type_afk_is_not_true(notafk):
                 + str(COUNT_MSG)
                 + " pesan dari "
                 + str(len(USERS))
-                + " ketika Anda pergi",
+                + " ketika Anda offline",
             )
             for i in USERS:
                 if str(i).isnumeric():
@@ -278,7 +278,7 @@ CMD_HELP.update(
     {
         "afk": "`.off [Alasan Opsional]`"
         "\n➥  Jadikan Anda offline.\nBalasan untuk siapa saja yang memberi tag/pesan. "
-        "Anda memberi tahu mereka bahwa Anda AFK (Alasan Opsional)."
+        "Anda memberi tahu mereka bahwa Anda AFK/Offline (Alasan Opsional)."
         "\n\n`.on`"
         "\n➥  Menjadikan Anda online dari mode AFK/Offline."
     }

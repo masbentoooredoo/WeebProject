@@ -454,7 +454,7 @@ async def translateme(trans):
     try:
         reply_text = translator.translate(deEmojify(message), dest=target_lang)
     except ValueError:
-        return await trans.edit("Bahasa tujuan tidak valid.")
+        return await trans.edit("`Bahasa tujuan tidak valid!`")
 
     source_lan = LANGUAGES[f"{reply_text.src.lower()}"]
     transl_lan = LANGUAGES[f"{reply_text.dest.lower()}"]
@@ -506,7 +506,7 @@ async def lang(value):
         addgvar("tts_lang", arg)
         LANG = tts_langs()[arg]
 
-    await value.edit(f"**Bahasa untuk __{scraper}__ diubah ke __{LANG.title()}.__**")
+    await value.edit(f"Bahasa untuk __{scraper}__ diubah ke __{LANG.title()}__.")
     if BOTLOG:
         await value.client.send_message(
             BOTLOG_CHATID, f"Bahasa untuk {scraper} diubah ke {LANG.title()}."
